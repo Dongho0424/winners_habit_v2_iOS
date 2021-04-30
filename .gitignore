@@ -1,0 +1,8 @@
+.DS_Store
+Pods/
+Podfile
+Podfile.lock
+Winners' habit.xcodeproj/
+Winners' habit.xcworkspace/
+Winners' habitTests/
+Winners' habitUITests/
