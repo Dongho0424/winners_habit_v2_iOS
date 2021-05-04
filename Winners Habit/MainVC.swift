@@ -107,16 +107,62 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @objc func longPress(_ sender: UILongPressGestureRecognizer){
         
-//        let point = sender.location(in: self.tableView)
-//        if let indexPath = self.tableView.indexPathForRow(at: point),
-//           let cell = self.tableView.cellForRow(at: indexPath) {
-//            switch sender.state {
-//            case .began:
-//
-//            default:
-//                ()
-//            }
-//        }
+        let point = sender.location(in: self.tableView)
+        if let indexPath = self.tableView.indexPathForRow(at: point),
+           let cell = self.tableView.cellForRow(at: indexPath) as? HabitCell
+        {
+            let checkBGView = UIView().then {
+                $0.backgroundColor = UIColor(rgb: 0x363636)
+                $0.layer.cornerRadius = cell.hView.layer.cornerRadius
+            }
+            let checkView = UIImageView().then {
+                let checkImg = UIImage(systemName: "checkmark")
+                $0.image = checkImg
+                $0.tintColor = UIColor(rgb: 0x525252)
+            }
+            
+            switch sender.state {
+            case .began:
+                if cell.isChecked {
+                    print("cell: \(indexPath.row), isChecked: \(cell.isChecked)")
+//                    checkBGView.removeFromSuperview()
+//                    checkBGView.isHidden = true
+                    cell.isChecked = !cell.isChecked
+                    
+                    if checkBGView.superview != nil {
+                        print("super is alive")
+                    } else {
+                        print("super is dead")
+                    }
+                    
+                    
+                } else {
+                    print("cell: \(indexPath.row), isChecked: \(cell.isChecked)")
+                    
+                    cell.hView.addSubview(checkBGView)
+                    print("checkBGView.hashValue: \(checkBGView.hashValue)")
+                    checkBGView.addSubview(checkView)
+                    checkBGView.snp.makeConstraints { make in
+                        make.size.equalTo(cell.hView.snp.size)
+                        make.center.equalTo(cell.hView.snp.center)
+                    }
+                    checkView.snp.makeConstraints { make in
+                        make.size.equalTo(CGSize(width: 50, height: 50))
+                        make.center.equalTo(checkBGView.snp.center)
+                    }
+                    
+                    cell.isChecked = !cell.isChecked
+                    if checkBGView.superview != nil {
+                        print("super is alive")
+                    } else {
+                        print("super is dead")
+                    }
+                }
+                
+            default:
+                ()
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -167,6 +213,7 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         cell.habitAttr.textColor = cellColor
         
         cell.selectedBackgroundView = UIView()
+        
         
         return cell
     }

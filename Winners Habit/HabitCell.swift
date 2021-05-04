@@ -14,7 +14,9 @@ class HabitCell: UITableViewCell {
     @IBOutlet weak var habitAlarmTime: UILabel!
     @IBOutlet weak var habitAttr: UILabel!
     @IBOutlet weak var hView: UIView!
-
+    
+    var isChecked = false
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
