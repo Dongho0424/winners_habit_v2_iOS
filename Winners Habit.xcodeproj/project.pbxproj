@@ -3,27 +3,39 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E50A7A5263FDAC90035C8E9 /* OpenAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 2E50A7A4263FDAC90035C8E9 /* OpenAPIClient */; };
+		2E50A7B1263FDC9E0035C8E9 /* billgates.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E50A7AF263FDB8B0035C8E9 /* billgates.png */; };
 		2E662E5C263FD3CB00638E73 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E662E5B263FD3CB00638E73 /* AppDelegate.swift */; };
 		2E662E5E263FD3CB00638E73 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E662E5D263FD3CB00638E73 /* SceneDelegate.swift */; };
-		2E662E60263FD3CB00638E73 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E662E5F263FD3CB00638E73 /* ViewController.swift */; };
+		2E662E60263FD3CB00638E73 /* MainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E662E5F263FD3CB00638E73 /* MainVC.swift */; };
 		2E662E63263FD3CB00638E73 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E662E61263FD3CB00638E73 /* Main.storyboard */; };
 		2E662E65263FD3CB00638E73 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2E662E64263FD3CB00638E73 /* Assets.xcassets */; };
 		2E662E68263FD3CB00638E73 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E662E66263FD3CB00638E73 /* LaunchScreen.storyboard */; };
+		2EB3B962263FD7D800CDD544 /* HabitCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB3B961263FD7D800CDD544 /* HabitCell.swift */; };
+		2EB3B965263FD80A00CDD544 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB3B964263FD80A00CDD544 /* Utils.swift */; };
+		DEB43B153E392CB0185DCB88 /* Pods_Winners_Habit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9AE7A4EFF6458B0322CF95 /* Pods_Winners_Habit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2E50A7A2263FDAC20035C8E9 /* OpenAPI */ = {isa = PBXFileReference; lastKnownFileType = folder; path = OpenAPI; sourceTree = "<group>"; };
+		2E50A7AF263FDB8B0035C8E9 /* billgates.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = billgates.png; sourceTree = "<group>"; };
 		2E662E58263FD3CB00638E73 /* Winners Habit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Winners Habit.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E662E5B263FD3CB00638E73 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2E662E5D263FD3CB00638E73 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		2E662E5F263FD3CB00638E73 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		2E662E5F263FD3CB00638E73 /* MainVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainVC.swift; sourceTree = "<group>"; };
 		2E662E62263FD3CB00638E73 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2E662E64263FD3CB00638E73 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2E662E67263FD3CB00638E73 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2E662E69263FD3CB00638E73 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2EB3B961263FD7D800CDD544 /* HabitCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitCell.swift; sourceTree = "<group>"; };
+		2EB3B964263FD80A00CDD544 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		934D4C68FB47C5F3A6CF1CAA /* Pods-Winners Habit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Winners Habit.release.xcconfig"; path = "Target Support Files/Pods-Winners Habit/Pods-Winners Habit.release.xcconfig"; sourceTree = "<group>"; };
+		BE9AE7A4EFF6458B0322CF95 /* Pods_Winners_Habit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Winners_Habit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5BB49922476B939ADCEF53A /* Pods-Winners Habit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Winners Habit.debug.xcconfig"; path = "Target Support Files/Pods-Winners Habit/Pods-Winners Habit.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,17 +43,48 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E50A7A5263FDAC90035C8E9 /* OpenAPIClient in Frameworks */,
+				DEB43B153E392CB0185DCB88 /* Pods_Winners_Habit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B2E67EF5317C768F3319FF5 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				D5BB49922476B939ADCEF53A /* Pods-Winners Habit.debug.xcconfig */,
+				934D4C68FB47C5F3A6CF1CAA /* Pods-Winners Habit.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		2124EA21BE62813DCA185C79 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BE9AE7A4EFF6458B0322CF95 /* Pods_Winners_Habit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2E50A7AE263FDB8B0035C8E9 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2E50A7AF263FDB8B0035C8E9 /* billgates.png */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		2E662E4F263FD3CB00638E73 = {
 			isa = PBXGroup;
 			children = (
+				2E50A7AE263FDB8B0035C8E9 /* Resources */,
+				2E50A7A2263FDAC20035C8E9 /* OpenAPI */,
 				2E662E5A263FD3CB00638E73 /* Winners Habit */,
 				2E662E59263FD3CB00638E73 /* Products */,
+				0B2E67EF5317C768F3319FF5 /* Pods */,
+				2124EA21BE62813DCA185C79 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -58,7 +101,9 @@
 			children = (
 				2E662E5B263FD3CB00638E73 /* AppDelegate.swift */,
 				2E662E5D263FD3CB00638E73 /* SceneDelegate.swift */,
-				2E662E5F263FD3CB00638E73 /* ViewController.swift */,
+				2E662E5F263FD3CB00638E73 /* MainVC.swift */,
+				2EB3B961263FD7D800CDD544 /* HabitCell.swift */,
+				2EB3B964263FD80A00CDD544 /* Utils.swift */,
 				2E662E61263FD3CB00638E73 /* Main.storyboard */,
 				2E662E64263FD3CB00638E73 /* Assets.xcassets */,
 				2E662E66263FD3CB00638E73 /* LaunchScreen.storyboard */,
@@ -74,15 +119,21 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2E662E6C263FD3CB00638E73 /* Build configuration list for PBXNativeTarget "Winners Habit" */;
 			buildPhases = (
+				9F9CAA78241CCF141F4896B1 /* [CP] Check Pods Manifest.lock */,
 				2E662E54263FD3CB00638E73 /* Sources */,
 				2E662E55263FD3CB00638E73 /* Frameworks */,
 				2E662E56263FD3CB00638E73 /* Resources */,
+				F2957A39FAC44E4EA70D9EF6 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				2E50A7A7263FDACE0035C8E9 /* PBXTargetDependency */,
 			);
 			name = "Winners Habit";
+			packageProductDependencies = (
+				2E50A7A4263FDAC90035C8E9 /* OpenAPIClient */,
+			);
 			productName = "Winners Habit";
 			productReference = 2E662E58263FD3CB00638E73 /* Winners Habit.app */;
 			productType = "com.apple.product-type.application";
@@ -124,6 +175,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E50A7B1263FDC9E0035C8E9 /* billgates.png in Resources */,
 				2E662E68263FD3CB00638E73 /* LaunchScreen.storyboard in Resources */,
 				2E662E65263FD3CB00638E73 /* Assets.xcassets in Resources */,
 				2E662E63263FD3CB00638E73 /* Main.storyboard in Resources */,
@@ -132,18 +184,69 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		9F9CAA78241CCF141F4896B1 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Winners Habit-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F2957A39FAC44E4EA70D9EF6 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Winners Habit/Pods-Winners Habit-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Winners Habit/Pods-Winners Habit-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Winners Habit/Pods-Winners Habit-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		2E662E54263FD3CB00638E73 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2E662E60263FD3CB00638E73 /* ViewController.swift in Sources */,
+				2EB3B965263FD80A00CDD544 /* Utils.swift in Sources */,
+				2E662E60263FD3CB00638E73 /* MainVC.swift in Sources */,
 				2E662E5C263FD3CB00638E73 /* AppDelegate.swift in Sources */,
+				2EB3B962263FD7D800CDD544 /* HabitCell.swift in Sources */,
 				2E662E5E263FD3CB00638E73 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2E50A7A7263FDACE0035C8E9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 2E50A7A6263FDACE0035C8E9 /* OpenAPIClient */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		2E662E61263FD3CB00638E73 /* Main.storyboard */ = {
@@ -283,6 +386,7 @@
 		};
 		2E662E6D263FD3CB00638E73 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D5BB49922476B939ADCEF53A /* Pods-Winners Habit.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -302,6 +406,7 @@
 		};
 		2E662E6E263FD3CB00638E73 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 934D4C68FB47C5F3A6CF1CAA /* Pods-Winners Habit.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -341,6 +446,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2E50A7A4263FDAC90035C8E9 /* OpenAPIClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OpenAPIClient;
+		};
+		2E50A7A6263FDACE0035C8E9 /* OpenAPIClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OpenAPIClient;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2E662E50263FD3CB00638E73 /* Project object */;
 }
