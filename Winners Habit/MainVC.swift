@@ -17,6 +17,10 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var challengeName: UILabel!
     @IBOutlet weak var tableView: UITableView!
     
+    var dateLabel: UILabel!
+    var prevDay: UIButton!
+    var postDay: UIButton!
+    
     let habits = [
         Habit(habitId: 1, habitName: "새벽 기상", icon: "https://cpng.pikpng.com/pngl/s/61-610145_half-moon-transparent-yellow-half-moon-png-clipart.png", color: "F5D423", defaultAttributeValue: nil, attribute: "s/f", alarmFlag: false, alarmTime: "06:30:00"),
         Habit(habitId: 2, habitName: "운동", icon: "https://w7.pngwing.com/pngs/416/969/png-transparent-kaatsu-exercise-pictogram-strength-training-others-thumbnail.png", color: "FA331B", defaultAttributeValue: 20, attribute: "min", alarmFlag: false, alarmTime: "06:30:00"),
@@ -25,7 +29,7 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     let challenge = Challenge(challengeId: 1, challengeName: "빌 게이츠", challengeImage: "", challengeDDay: 35)
     
-
+    // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -45,6 +49,15 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         self.navigationController?.navigationBar.isTranslucent = true
         self.navigationController?.view.backgroundColor = UIColor.clear
         
+        // navigation title view settings
+        self.initTitle()
+        
+        // long press recognizer
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPress(_:)))
+        self.tableView.addGestureRecognizer(longPressRecognizer)
+    }
+    
+    func initTitle() {
         let titleCtnView = UIView()
         titleCtnView.frame.size = CGSize(width: 200, height: 44)
         self.navigationItem.titleView = titleCtnView
@@ -53,7 +66,7 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             $0.dateFormat = "M'월' d'일'"
         }
         
-        let todayLabel = UILabel().then {
+        self.dateLabel = UILabel().then {
             let date = Calendar.current.dateComponents([.weekday], from: Date()).weekday
             $0.text = "\(df.string(from: Date())) (\(getWeekDayKor(date: date)))"
             $0.textColor = .label
@@ -67,7 +80,7 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         // use Then libary
         // all settings of todayLabel are written in then closure
-        let prevDay = UIButton().then {
+        self.prevDay = UIButton().then {
             let prevImg = UIImage(systemName: "arrowtriangle.left")
             // $0 means current UIButton() instance
             $0.setImage(prevImg, for: .normal)
@@ -75,27 +88,39 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             titleCtnView.addSubview($0)
             // use SnapKit to set auto layout settings
             $0.snp.makeConstraints { make in
-                make.right.equalTo(todayLabel.snp.left).offset(-10)
+                make.right.equalTo(self.dateLabel.snp.left).offset(-10)
                 make.centerY.equalTo(titleCtnView.snp.centerY)
             }
         }
         
-        let postDay = UIButton().then {
+        self.postDay = UIButton().then {
             let postImg = UIImage(systemName: "arrowtriangle.right")
             $0.setImage(postImg, for: .normal)
             $0.tintColor = .label
             titleCtnView.addSubview($0)
             $0.snp.makeConstraints { make in
-                make.left.equalTo(todayLabel.snp.right).offset(10)
+                make.left.equalTo(self.dateLabel.snp.right).offset(10)
                 make.centerY.equalTo(titleCtnView.snp.centerY)
             }
         }
+    }
+    
+    @objc func longPress(_ sender: UILongPressGestureRecognizer){
         
-
+//        let point = sender.location(in: self.tableView)
+//        if let indexPath = self.tableView.indexPathForRow(at: point),
+//           let cell = self.tableView.cellForRow(at: indexPath) {
+//            switch sender.state {
+//            case .began:
+//
+//            default:
+//                ()
+//            }
+//        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        self.tableView.reloadData()
+        
     }
     
     // MARK: - TableView Data Source
@@ -158,11 +183,15 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             $0.backgroundColor = .systemBackground
         }
         
-        return UISwipeActionsConfiguration(actions: [editAction]).then {
+        let checkAction = UIContextualAction(style: .normal, title: nil) { action, view, completion in
+            completion(true)
+        }.then {
+            $0.image = UIImage(systemName: "checkmark")
+            $0.backgroundColor = .systemBackground
+        }
+        
+        return UISwipeActionsConfiguration(actions: [editAction, checkAction]).then {
             $0.performsFirstActionWithFullSwipe = false
         }
     }
-
-
 }
-
