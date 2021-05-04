@@ -149,6 +149,19 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 90
     }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let editAction = UIContextualAction(style: .normal, title: nil) { action, view, completion in
+            completion(true)
+        }.then {
+            $0.image = UIImage(systemName: "pencil")
+            $0.backgroundColor = .systemBackground
+        }
+        
+        return UISwipeActionsConfiguration(actions: [editAction]).then {
+            $0.performsFirstActionWithFullSwipe = false
+        }
+    }
 
 
 }
