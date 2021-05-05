@@ -5,39 +5,98 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="collection view cell content view" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--성공하는 습관을 찾아 추가하세요-->
         <scene sceneID="2Ee-Zo-OBM">
             <objects>
-                <viewController id="ZH5-6L-0L4" sceneMemberID="viewController">
+                <viewController id="ZH5-6L-0L4" customClass="ChallengeListVC" customModule="Winners_Habit" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ZBV-IC-gHA">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="H0V-YO-I4U">
-                                <rect key="frame" x="0.0" y="88" width="414" height="56"/>
+                                <rect key="frame" x="20" y="88" width="374" height="56"/>
                                 <textInputTraits key="textInputTraits"/>
+                                <scopeButtonTitles>
+                                    <string>Title</string>
+                                    <string>Title</string>
+                                </scopeButtonTitles>
                             </searchBar>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Dx7-r5-hCs">
-                                <rect key="frame" x="0.0" y="184" width="414" height="629"/>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="UZc-CN-6Pg">
+                                <rect key="frame" x="20" y="174" width="374" height="639"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                            </tableView>
+                                <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="2Im-uh-D26">
+                                    <size key="itemSize" width="187" height="187"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell" id="wcG-MF-q2R" customClass="ChallengeCell" customModule="Winners_Habit" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="182" height="182"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="tr3-8a-VPj">
+                                            <rect key="frame" x="0.0" y="0.0" width="182" height="182"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="HE7-Jp-q1c">
+                                                    <rect key="frame" x="0.0" y="0.0" width="182" height="182"/>
+                                                </imageView>
+                                                <view alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BFp-hM-WM7">
+                                                    <rect key="frame" x="0.0" y="132" width="182" height="50"/>
+                                                    <color key="backgroundColor" systemColor="systemGray4Color"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="50" id="Lss-jh-OET"/>
+                                                    </constraints>
+                                                </view>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="빌 게이츠" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qCA-Yf-PEd">
+                                                    <rect key="frame" x="20" y="146" width="56" height="18"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="HE7-Jp-q1c" firstAttribute="leading" secondItem="tr3-8a-VPj" secondAttribute="leading" id="M7m-2a-4gL"/>
+                                                <constraint firstAttribute="bottom" secondItem="qCA-Yf-PEd" secondAttribute="bottom" constant="18" id="MpE-QK-hgd"/>
+                                                <constraint firstAttribute="trailing" secondItem="BFp-hM-WM7" secondAttribute="trailing" id="dcw-zi-heu"/>
+                                                <constraint firstItem="HE7-Jp-q1c" firstAttribute="top" secondItem="tr3-8a-VPj" secondAttribute="top" id="flg-HV-ZoG"/>
+                                                <constraint firstItem="qCA-Yf-PEd" firstAttribute="leading" secondItem="tr3-8a-VPj" secondAttribute="leading" constant="20" id="ibg-V1-eH1"/>
+                                                <constraint firstItem="BFp-hM-WM7" firstAttribute="leading" secondItem="tr3-8a-VPj" secondAttribute="leading" id="ijV-Ik-6d1"/>
+                                                <constraint firstAttribute="bottom" secondItem="BFp-hM-WM7" secondAttribute="bottom" id="kb3-gS-0a1"/>
+                                                <constraint firstAttribute="bottom" secondItem="HE7-Jp-q1c" secondAttribute="bottom" id="roT-4y-sE1"/>
+                                                <constraint firstAttribute="trailing" secondItem="HE7-Jp-q1c" secondAttribute="trailing" id="w2J-Md-4bC"/>
+                                            </constraints>
+                                        </collectionViewCellContentView>
+                                        <size key="customSize" width="182" height="182"/>
+                                        <connections>
+                                            <outlet property="challengeImg" destination="HE7-Jp-q1c" id="jtT-w4-B32"/>
+                                            <outlet property="label" destination="qCA-Yf-PEd" id="t7c-5d-Beo"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="zGw-R5-X45"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="H0V-YO-I4U" firstAttribute="top" secondItem="zGw-R5-X45" secondAttribute="top" id="4HI-Gx-l1B"/>
-                            <constraint firstItem="H0V-YO-I4U" firstAttribute="leading" secondItem="zGw-R5-X45" secondAttribute="leading" id="Drj-P7-f1g"/>
-                            <constraint firstItem="Dx7-r5-hCs" firstAttribute="top" secondItem="H0V-YO-I4U" secondAttribute="bottom" constant="40" id="Fc7-oI-sKg"/>
-                            <constraint firstItem="H0V-YO-I4U" firstAttribute="trailing" secondItem="zGw-R5-X45" secondAttribute="trailing" id="Wcy-gm-yQ1"/>
-                            <constraint firstItem="Dx7-r5-hCs" firstAttribute="trailing" secondItem="zGw-R5-X45" secondAttribute="trailing" id="hKM-ZL-QPH"/>
-                            <constraint firstItem="Dx7-r5-hCs" firstAttribute="leading" secondItem="zGw-R5-X45" secondAttribute="leading" id="tl3-P4-zqh"/>
-                            <constraint firstItem="Dx7-r5-hCs" firstAttribute="bottom" secondItem="zGw-R5-X45" secondAttribute="bottom" id="zvO-VG-FlE"/>
+                            <constraint firstItem="H0V-YO-I4U" firstAttribute="leading" secondItem="zGw-R5-X45" secondAttribute="leading" constant="20" id="Drj-P7-f1g"/>
+                            <constraint firstItem="UZc-CN-6Pg" firstAttribute="leading" secondItem="zGw-R5-X45" secondAttribute="leading" constant="20" id="WAb-7T-oX2"/>
+                            <constraint firstItem="H0V-YO-I4U" firstAttribute="trailing" secondItem="zGw-R5-X45" secondAttribute="trailing" constant="-20" id="Wcy-gm-yQ1"/>
+                            <constraint firstItem="UZc-CN-6Pg" firstAttribute="trailing" secondItem="zGw-R5-X45" secondAttribute="trailing" constant="-20" id="ed5-xS-uRp"/>
+                            <constraint firstItem="UZc-CN-6Pg" firstAttribute="bottom" secondItem="zGw-R5-X45" secondAttribute="bottom" id="kjT-z4-ELp"/>
+                            <constraint firstItem="UZc-CN-6Pg" firstAttribute="top" secondItem="H0V-YO-I4U" secondAttribute="bottom" constant="30" id="pvi-PG-Ac3"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="성공하는 습관을 찾아 추가하세요" id="rIV-3Y-9Vs"/>
+                    <connections>
+                        <outlet property="collectionView" destination="UZc-CN-6Pg" id="5dX-zV-UEf"/>
+                        <outlet property="searchBar" destination="H0V-YO-I4U" id="dHn-y6-YMx"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eoz-Nc-eJo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -487,6 +546,9 @@
         </systemColor>
         <systemColor name="systemFillColor">
             <color red="0.47058823529411764" green="0.47058823529411764" blue="0.50196078431372548" alpha="0.20000000000000001" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGray4Color">
+            <color red="0.81960784313725488" green="0.81960784313725488" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray6Color">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

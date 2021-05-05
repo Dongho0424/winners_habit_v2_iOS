@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E32899326429A5800433C2C /* ChallengeListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E32899226429A5800433C2C /* ChallengeListVC.swift */; };
+		2E3289962642C4C500433C2C /* ChallengeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E3289952642C4C500433C2C /* ChallengeCell.swift */; };
+		2E32899B2642DE8900433C2C /* xmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E32899A2642DE8900433C2C /* xmark.png */; };
 		2E50A7A5263FDAC90035C8E9 /* OpenAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 2E50A7A4263FDAC90035C8E9 /* OpenAPIClient */; };
 		2E50A7B1263FDC9E0035C8E9 /* billgates.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E50A7AF263FDB8B0035C8E9 /* billgates.png */; };
 		2E662E5C263FD3CB00638E73 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E662E5B263FD3CB00638E73 /* AppDelegate.swift */; };
@@ -21,6 +24,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2E32899226429A5800433C2C /* ChallengeListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeListVC.swift; sourceTree = "<group>"; };
+		2E3289952642C4C500433C2C /* ChallengeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeCell.swift; sourceTree = "<group>"; };
+		2E32899A2642DE8900433C2C /* xmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = xmark.png; sourceTree = "<group>"; };
 		2E50A7A2263FDAC20035C8E9 /* OpenAPI */ = {isa = PBXFileReference; lastKnownFileType = folder; path = OpenAPI; sourceTree = "<group>"; };
 		2E50A7AF263FDB8B0035C8E9 /* billgates.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = billgates.png; sourceTree = "<group>"; };
 		2E662E58263FD3CB00638E73 /* Winners Habit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Winners Habit.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -72,6 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				2E50A7AF263FDB8B0035C8E9 /* billgates.png */,
+				2E32899A2642DE8900433C2C /* xmark.png */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -105,6 +112,8 @@
 				2EB3B961263FD7D800CDD544 /* HabitCell.swift */,
 				2EB3B964263FD80A00CDD544 /* Utils.swift */,
 				2E662E61263FD3CB00638E73 /* Main.storyboard */,
+				2E3289952642C4C500433C2C /* ChallengeCell.swift */,
+				2E32899226429A5800433C2C /* ChallengeListVC.swift */,
 				2E662E64263FD3CB00638E73 /* Assets.xcassets */,
 				2E662E66263FD3CB00638E73 /* LaunchScreen.storyboard */,
 				2E662E69263FD3CB00638E73 /* Info.plist */,
@@ -179,6 +188,7 @@
 				2E50A7B1263FDC9E0035C8E9 /* billgates.png in Resources */,
 				2E662E68263FD3CB00638E73 /* LaunchScreen.storyboard in Resources */,
 				2E662E65263FD3CB00638E73 /* Assets.xcassets in Resources */,
+				2E32899B2642DE8900433C2C /* xmark.png in Resources */,
 				2E662E63263FD3CB00638E73 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -250,8 +260,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				2EB3B965263FD80A00CDD544 /* Utils.swift in Sources */,
+				2E3289962642C4C500433C2C /* ChallengeCell.swift in Sources */,
 				2E662E60263FD3CB00638E73 /* MainVC.swift in Sources */,
 				2E662E5C263FD3CB00638E73 /* AppDelegate.swift in Sources */,
+				2E32899326429A5800433C2C /* ChallengeListVC.swift in Sources */,
 				2EB3B962263FD7D800CDD544 /* HabitCell.swift in Sources */,
 				2E662E5E263FD3CB00638E73 /* SceneDelegate.swift in Sources */,
 			);
