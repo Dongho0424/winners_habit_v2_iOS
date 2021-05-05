@@ -20,7 +20,11 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var dateLabel: UILabel!
     var prevDay: UIButton!
     var postDay: UIButton!
+    var titleCtnView : UIView!
     
+    var currentDate: Date!
+    
+    // temp
     let habits = [
         Habit(habitId: 1, habitName: "새벽 기상", icon: "https://cpng.pikpng.com/pngl/s/61-610145_half-moon-transparent-yellow-half-moon-png-clipart.png", color: "F5D423", defaultAttributeValue: nil, attribute: "s/f", alarmFlag: false, alarmTime: "06:30:00"),
         Habit(habitId: 2, habitName: "운동", icon: "https://w7.pngwing.com/pngs/416/969/png-transparent-kaatsu-exercise-pictogram-strength-training-others-thumbnail.png", color: "FA331B", defaultAttributeValue: 20, attribute: "min", alarmFlag: false, alarmTime: "06:30:00"),
@@ -28,6 +32,15 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     ]
     
     let challenge = Challenge(challengeId: 1, challengeName: "빌 게이츠", challengeImage: "", challengeDDay: 35)
+    
+    // 2021-05-04
+    // given by order which is same with habits
+    let habitHistories = [
+        HabitHistory(habitId: 1, doneFlag: true),
+        HabitHistory(habitId: 2, doneFlag: false),
+        HabitHistory(habitId: 3, doneFlag: true),
+    ]
+    
     
     // MARK: - View Life Cycle
     override func viewDidLoad() {
@@ -49,26 +62,33 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         self.navigationController?.navigationBar.isTranslucent = true
         self.navigationController?.view.backgroundColor = UIColor.clear
         
-        // navigation title view settings
+        // set title by today date
         self.initTitle()
         
         // long press recognizer
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPress(_:)))
         self.tableView.addGestureRecognizer(longPressRecognizer)
+        
     }
     
-    func initTitle() {
-        let titleCtnView = UIView()
-        titleCtnView.frame.size = CGSize(width: 200, height: 44)
-        self.navigationItem.titleView = titleCtnView
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
         
-        let df = DateFormatter().then {
-            $0.dateFormat = "M'월' d'일'"
+        // set title to default - today
+        self.currentDate = Date()
+        self.setTitleDate(date: dateStringDetail(date: self.currentDate), leftArrow: true, rightArrow: false)
+    }
+    
+    // MARK: - Actions
+    
+    func initTitle() {
+        
+        self.titleCtnView = UIView().then {
+            $0.frame.size = CGSize(width: 200, height: 44)
+            self.navigationItem.titleView = $0
         }
         
         self.dateLabel = UILabel().then {
-            let date = Calendar.current.dateComponents([.weekday], from: Date()).weekday
-            $0.text = "\(df.string(from: Date())) (\(getWeekDayKor(date: date)))"
             $0.textColor = .label
             $0.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
             $0.sizeToFit()
@@ -77,31 +97,105 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 make.center.equalTo(titleCtnView.snp.center)
             }
         }
-        
-        // use Then libary
-        // all settings of todayLabel are written in then closure
+
         self.prevDay = UIButton().then {
             let prevImg = UIImage(systemName: "arrowtriangle.left")
-            // $0 means current UIButton() instance
             $0.setImage(prevImg, for: .normal)
             $0.tintColor = .label
-            titleCtnView.addSubview($0)
-            // use SnapKit to set auto layout settings
-            $0.snp.makeConstraints { make in
-                make.right.equalTo(self.dateLabel.snp.left).offset(-10)
-                make.centerY.equalTo(titleCtnView.snp.centerY)
-            }
+            $0.addTarget(self, action: #selector(goPrevDay(_:)), for: .touchUpInside)
         }
         
         self.postDay = UIButton().then {
             let postImg = UIImage(systemName: "arrowtriangle.right")
             $0.setImage(postImg, for: .normal)
             $0.tintColor = .label
-            titleCtnView.addSubview($0)
-            $0.snp.makeConstraints { make in
+            $0.addTarget(self, action: #selector(goPostDay(_:)), for: .touchUpInside)
+        }
+    }
+    
+    func setTitleDate(date: String, leftArrow: Bool, rightArrow: Bool) {
+        self.dateLabel.text = date
+        
+        if leftArrow {
+            self.titleCtnView.addSubview(self.prevDay)
+            // use SnapKit to set auto layout settings
+            self.prevDay.snp.makeConstraints { make in
+                make.right.equalTo(self.dateLabel.snp.left).offset(-10)
+                make.centerY.equalTo(titleCtnView.snp.centerY)
+            }
+        }
+        
+        if rightArrow {
+            self.titleCtnView.addSubview(self.postDay)
+            // use SnapKit to set auto layout settings
+            self.postDay.snp.makeConstraints { make in
                 make.left.equalTo(self.dateLabel.snp.right).offset(10)
                 make.centerY.equalTo(titleCtnView.snp.centerY)
             }
+        }
+    }
+    
+    @objc func goPrevDay(_ sender: UIButton){
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate)!
+        self.currentDate = yesterday
+        
+         /**
+         call api (/habit-history)
+         using dateSring(date:)
+         and save to habitHistories
+         */
+        
+        // set title and arrows
+        self.setTitleDate(date: dateStringDetail(date: yesterday), leftArrow: true, rightArrow: true)
+        
+        // reload table
+        if let cells = self.tableView.visibleCells as? [HabitCell] {
+            for cell in cells {
+                cell.clearChecking()
+            }
+        }
+        
+        // set done flags by habit-histories
+        for i in 0 ..< self.habits.count {
+            guard let cell = self.tableView.visibleCells[i] as? HabitCell else {
+                fatalError("cell type wrong!")
+            }
+            
+            cell.setChecking(done: self.habitHistories[i].doneFlag)
+        }
+    }
+    
+    @objc func goPostDay(_ sender: UIButton) {
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: self.currentDate)!
+        self.currentDate = tomorrow
+        
+         /**
+         call api (/habit-history)
+         using dateSring(date:)
+         and save to habitHistories
+         */
+        
+        // set title and arrows
+        if tomorrow == Date() {
+            self.setTitleDate(date: dateStringDetail(date: tomorrow), leftArrow: true, rightArrow: false)
+        } else {
+            self.setTitleDate(date: dateStringDetail(date: tomorrow), leftArrow: true, rightArrow: true)
+        }
+        
+        // reload table
+        if let cells = self.tableView.visibleCells as? [HabitCell] {
+            for cell in cells {
+                cell.clearChecking()
+            }
+        }
+        
+        // set done flags by habit-histories
+        for i in 0 ..< self.habits.count {
+            guard let cell = self.tableView.visibleCells[i] as? HabitCell else {
+                fatalError("cell type wrong!")
+            }
+            
+            cell.setChecking(done: self.habitHistories[i].doneFlag)
         }
     }
     
@@ -119,10 +213,7 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
         }
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        
-    }
+
     
     // MARK: - TableView Data Source
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -178,6 +269,11 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        guard let cell = self.tableView.cellForRow(at: indexPath) as? HabitCell else {
+            fatalError("trailingSwipeActionsConfigurationForRowAt error")
+        }
+        
         let editAction = UIContextualAction(style: .normal, title: nil) { action, view, completion in
             completion(true)
         }.then {
@@ -187,6 +283,7 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         let checkAction = UIContextualAction(style: .normal, title: nil) { action, view, completion in
             completion(true)
+            cell.toggleChecking()
         }.then {
             $0.image = UIImage(systemName: "checkmark")
             $0.backgroundColor = .systemBackground

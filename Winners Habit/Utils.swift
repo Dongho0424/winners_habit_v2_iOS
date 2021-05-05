@@ -49,6 +49,22 @@ func getWeekDayKor(date: Int?) -> String {
     default:
         return "날짜 변환 오류"
     }
-    
 }
 
+// 2021-04-24 -> 4월 24일 (월)
+func dateSring(date: String) -> String {
+    let dateDf = DateFormatter().then {
+        $0.dateFormat = "yyyy-MM-dd"
+    }
+    let tempDate = dateDf.date(from: date)!
+    return dateStringDetail(date: tempDate)
+}
+
+// return 4월 24일 (월)
+func dateStringDetail(date: Date) -> String {
+    let strDf = DateFormatter().then {
+        $0.dateFormat = "M'월' d'일'"
+    }
+    let weekDayKor = Calendar.current.dateComponents([.weekday], from: date).weekday
+    return "\(strDf.string(from: date)) (\(getWeekDayKor(date: weekDayKor)))"
+}

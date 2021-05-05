@@ -120,6 +120,7 @@
 			buildConfigurationList = 2E662E6C263FD3CB00638E73 /* Build configuration list for PBXNativeTarget "Winners Habit" */;
 			buildPhases = (
 				9F9CAA78241CCF141F4896B1 /* [CP] Check Pods Manifest.lock */,
+				2E32898826427C5C00433C2C /* ShellScript */,
 				2E662E54263FD3CB00638E73 /* Sources */,
 				2E662E55263FD3CB00638E73 /* Frameworks */,
 				2E662E56263FD3CB00638E73 /* Resources */,
@@ -185,6 +186,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		2E32898826427C5C00433C2C /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\n# open api generator\n# generate by oas.yaml in local directory - ../Dev/oas/oas.yaml\nopenapi-generator generate -i /Users/donghochoi/Documents/Dev/Project-WinnersHabit/oas/oas.yaml -g swift5 -o /Users/donghochoi/Documents/Dev/Project-WinnersHabit/Winners\\ Habit/OpenAPI\n\n";
+		};
 		9F9CAA78241CCF141F4896B1 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

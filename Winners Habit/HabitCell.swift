@@ -53,4 +53,27 @@ class HabitCell: UITableViewCell {
             isChecked = !isChecked
         }
     }
+    
+    func clearChecking() {
+        if isChecked {
+            checkBGView.removeFromSuperview()
+            isChecked = !isChecked
+        }
+    }
+    
+    func setChecking(done: Bool) {
+        if done {
+            self.hView.addSubview(checkBGView)
+            checkBGView.addSubview(checkView)
+            checkBGView.snp.makeConstraints { make in
+                make.size.equalTo(self.hView.snp.size)
+                make.center.equalTo(self.hView.snp.center)
+            }
+            checkView.snp.makeConstraints { make in
+                make.size.equalTo(CGSize(width: 50, height: 50))
+                make.center.equalTo(checkBGView.snp.center)
+            }
+            isChecked = !isChecked
+        }
+    }
 }

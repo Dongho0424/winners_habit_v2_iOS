@@ -10,12 +10,12 @@ import Foundation
 /** a single history of habit */
 public struct HabitHistory: Codable {
 
-    public var id: Int
-    public var date: String
+    public var habitId: Int
+    public var date: String?
     public var doneFlag: Bool
 
-    public init(id: Int, date: String, doneFlag: Bool) {
-        self.id = id
+    public init(habitId: Int, date: String? = nil, doneFlag: Bool) {
+        self.habitId = habitId
         self.date = date
         self.doneFlag = doneFlag
     }

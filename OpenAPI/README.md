@@ -28,6 +28,7 @@ Class | Method | HTTP request | Description
 *ChallengeAPI* | [**allChallengesGet**](docs/ChallengeAPI.md#allchallengesget) | **GET** /allChallenges | 모든 챌린지 리스트 가져오기
 *ChallengeAPI* | [**challengeGet**](docs/ChallengeAPI.md#challengeget) | **GET** /challenge | {userId}가 속한 챌린지의 습관들 불러오기
 *HabitAPI* | [**habitHabitIdGet**](docs/HabitAPI.md#habithabitidget) | **GET** /habit/{habitId} | 유저의 특정 습관의 상세 정보 불러오기
+*HabitAPI* | [**habitHistoryGet**](docs/HabitAPI.md#habithistoryget) | **GET** /habit-history | userId, date에 해당하는 습관의 히스토리 가져오기
 
 
 ## Documentation For Models

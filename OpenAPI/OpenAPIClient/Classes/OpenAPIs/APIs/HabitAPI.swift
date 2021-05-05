@@ -59,4 +59,52 @@ open class HabitAPI {
         return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, headers: headerParameters)
     }
 
+    /**
+     userId, date에 해당하는 습관의 히스토리 가져오기
+     
+     - parameter userId: (query) PK of user 
+     - parameter date: (query) date which user want to show history of habits 
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    open class func habitHistoryGet(userId: Int, date: String, apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue, completion: @escaping ((_ data: HabitHistory?, _ error: Error?) -> Void)) {
+        habitHistoryGetWithRequestBuilder(userId: userId, date: date).execute(apiResponseQueue) { result -> Void in
+            switch result {
+            case let .success(response):
+                completion(response.body, nil)
+            case let .failure(error):
+                completion(nil, error)
+            }
+        }
+    }
+
+    /**
+     userId, date에 해당하는 습관의 히스토리 가져오기
+     - GET /habit-history
+     - parameter userId: (query) PK of user 
+     - parameter date: (query) date which user want to show history of habits 
+     - returns: RequestBuilder<HabitHistory> 
+     */
+    open class func habitHistoryGetWithRequestBuilder(userId: Int, date: String) -> RequestBuilder<HabitHistory> {
+        let path = "/habit-history"
+        let URLString = OpenAPIClientAPI.basePath + path
+        let parameters: [String: Any]? = nil
+
+        var url = URLComponents(string: URLString)
+        url?.queryItems = APIHelper.mapValuesToQueryItems([
+            "user_id": userId.encodeToJSON(),
+            "date": date.encodeToJSON(),
+        ])
+
+        let nillableHeaders: [String: Any?] = [
+            :
+        ]
+
+        let headerParameters = APIHelper.rejectNilHeaders(nillableHeaders)
+
+        let requestBuilder: RequestBuilder<HabitHistory>.Type = OpenAPIClientAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, headers: headerParameters)
+    }
+
 }
