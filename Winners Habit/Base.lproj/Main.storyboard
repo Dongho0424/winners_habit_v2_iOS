@@ -153,6 +153,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
+                                            <outlet property="alarmImg" destination="OU7-eW-rVR" id="ssJ-kH-god"/>
                                             <outlet property="hView" destination="O2J-Ug-IE2" id="YKt-Aa-eVY"/>
                                             <outlet property="habitAlarmTime" destination="Mye-dQ-I57" id="e27-eq-Gok"/>
                                             <outlet property="habitAttr" destination="c3B-QW-6Sv" id="Eb3-tl-uyO"/>

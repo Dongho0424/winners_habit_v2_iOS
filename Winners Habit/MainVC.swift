@@ -26,9 +26,9 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     // temp
     let habits = [
-        Habit(habitId: 1, habitName: "새벽 기상", icon: "https://cpng.pikpng.com/pngl/s/61-610145_half-moon-transparent-yellow-half-moon-png-clipart.png", color: "F5D423", defaultAttributeValue: nil, attribute: "s/f", alarmFlag: false, alarmTime: "06:30:00"),
-        Habit(habitId: 2, habitName: "운동", icon: "https://w7.pngwing.com/pngs/416/969/png-transparent-kaatsu-exercise-pictogram-strength-training-others-thumbnail.png", color: "FA331B", defaultAttributeValue: 20, attribute: "min", alarmFlag: false, alarmTime: "06:30:00"),
-        Habit(habitId: 3, habitName: "독서", icon: "https://icons555.com/images/icons-blue/image_icon_book_pic_512x512.png", color: "2B42F5", defaultAttributeValue: 20, attribute: "pages", alarmFlag: false, alarmTime: "17:30:00"),
+        Habit(habitId: 1, habitName: "새벽 기상", icon: "https://cpng.pikpng.com/pngl/s/61-610145_half-moon-transparent-yellow-half-moon-png-clipart.png", color: "F5D423", defaultAttributeValue: nil, attribute: "s/f", alarmFlag: true, alarmTime: "06:30:00"),
+        Habit(habitId: 2, habitName: "운동", icon: "https://w7.pngwing.com/pngs/416/969/png-transparent-kaatsu-exercise-pictogram-strength-training-others-thumbnail.png", color: "FA331B", defaultAttributeValue: 20, attribute: "min", alarmFlag: true, alarmTime: "06:30:00"),
+        Habit(habitId: 3, habitName: "독서", icon: "https://icons555.com/images/icons-blue/image_icon_book_pic_512x512.png", color: "2B42F5", defaultAttributeValue: 20, attribute: "pages", alarmFlag: false, alarmTime: nil),
     ]
     
     let challenge = Challenge(challengeId: 1, challengeName: "빌 게이츠", challengeImage: "", challengeDDay: 35)
@@ -123,6 +123,8 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 make.right.equalTo(self.dateLabel.snp.left).offset(-10)
                 make.centerY.equalTo(titleCtnView.snp.centerY)
             }
+        } else {
+            self.prevDay.removeFromSuperview()
         }
         
         if rightArrow {
@@ -132,12 +134,15 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 make.left.equalTo(self.dateLabel.snp.right).offset(10)
                 make.centerY.equalTo(titleCtnView.snp.centerY)
             }
+        } else  {
+            self.postDay.removeFromSuperview()
         }
     }
     
     @objc func goPrevDay(_ sender: UIButton){
         let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate)!
         self.currentDate = yesterday
+        print(currentDate)
         
          /**
          call api (/habit-history)
@@ -166,8 +171,8 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
     
     @objc func goPostDay(_ sender: UIButton) {
-        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: self.currentDate)!
-        self.currentDate = tomorrow
+        let tommorrow = Calendar.current.date(byAdding: .day, value: 1, to: self.currentDate)!
+        self.currentDate = tommorrow
         
          /**
          call api (/habit-history)
@@ -176,10 +181,13 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
          */
         
         // set title and arrows
-        if tomorrow == Date() {
-            self.setTitleDate(date: dateStringDetail(date: tomorrow), leftArrow: true, rightArrow: false)
+        // if tommorrow is today
+        if dateStringDetail(date: tommorrow) == dateStringDetail(date: Date()) {
+            print(1)
+            self.setTitleDate(date: dateStringDetail(date: tommorrow), leftArrow: true, rightArrow: false)
         } else {
-            self.setTitleDate(date: dateStringDetail(date: tomorrow), leftArrow: true, rightArrow: true)
+            print(2)
+            self.setTitleDate(date: dateStringDetail(date: tommorrow), leftArrow: true, rightArrow: true)
         }
         
         // reload table
@@ -231,21 +239,27 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let url = URL(string: habit.icon)
         cell.habitImg.image = (try? UIImage(data: Data(contentsOf: url!))) ?? UIImage()
         
-        // convert "HH:mm:ss" -> "오전 h:mm"
-        let dateString = habit.alarmTime! as NSString
-        let hPart = dateString.substring(with: NSMakeRange(0, 2))
-        let df = DateFormatter()
-        df.dateFormat = "HH:mm:ss"
-        let alarmDate = df.date(from: dateString as String)
-        df.dateFormat = "h:mm"
-        let alarm = df.string(from: alarmDate!)
-        if hPart.hasPrefix("0") || (Int(hPart)!) < 12 {
-            cell.habitAlarmTime.text = "오전 \(alarm)"
+        if habit.alarmFlag {
+            // convert "HH:mm:ss" -> "오전 h:mm"
+            let dateString = habit.alarmTime! as NSString
+            let hPart = dateString.substring(with: NSMakeRange(0, 2))
+            let df = DateFormatter()
+            df.dateFormat = "HH:mm:ss"
+            let alarmDate = df.date(from: dateString as String)
+            df.dateFormat = "h:mm"
+            let alarm = df.string(from: alarmDate!)
+            if hPart.hasPrefix("0") || (Int(hPart)!) < 12 {
+                cell.habitAlarmTime.text = "오전 \(alarm)"
+            } else {
+                cell.habitAlarmTime.text = "오후 \(alarm)"
+            }
+            cell.habitAlarmTime.textColor = cellColor
         } else {
-            cell.habitAlarmTime.text = "오후 \(alarm)"
+//            cell.alarmImg = nil
+            cell.alarmImg.removeFromSuperview()
+            cell.habitAlarmTime.removeFromSuperview()
         }
         
-        cell.habitAlarmTime.textColor = cellColor
         switch habit.attribute {
         case "s/f":
             cell.habitAttr.text = "성공/실패"

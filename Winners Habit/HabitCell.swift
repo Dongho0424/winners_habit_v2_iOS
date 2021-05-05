@@ -13,6 +13,7 @@ class HabitCell: UITableViewCell {
     @IBOutlet weak var habitTitle: UILabel!
     @IBOutlet weak var habitAlarmTime: UILabel!
     @IBOutlet weak var habitAttr: UILabel!
+    @IBOutlet weak var alarmImg: UIImageView!
     @IBOutlet weak var hView: UIView!
     
     var isChecked = false
