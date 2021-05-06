@@ -27,39 +27,33 @@ class ChallengeListVC: UIViewController, UICollectionViewDataSource, UICollectio
     override func viewDidLoad() {
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
+        
+//        self.initSearchBar()
+    }
+    
+    func initSearchBar() {
         self.searchBar.delegate = self
-        
-        let xmarkImg = UIImage(named: "xmark.png")
-//        let xmarkImg = UIImage(systemName: "xmark")?.withRenderingMode(.alwaysTemplate)
-        self.searchBar.setImage(xmarkImg, for: .bookmark, state: .normal)
-        
-        if let textField = self.searchBar.value(forKey: "searchField") as? UITextField {
-            
-            textField.backgroundColor = .white
-//            textField.placeholder = "롤모델을 검색하세요."
-//            textField.attributedPlaceholder = NSAttributedString(
-            self.searchBar.placeholder = "롤모델을 검색하세요."
-            textField.font = UIFont.systemFont(ofSize: 13)
-            textField.textColor = .black
-            
-            if let leftView = textField.leftView as? UIImageView {
-//                leftView.image = leftView.image?.withRenderingMode(.alwaysOriginal)
-                leftView.tintColor = .black
-                print("hiasdasd")
+        self.searchBar.showsBookmarkButton = true
+        let clearBtn = UIButton().then {
+            $0.setImage(UIImage(systemName: "xmark"), for: .normal)
+            $0.setImage(UIImage(systemName: "xmark"), for: .highlighted)
+            $0.snp.makeConstraints { make in
+                make.size.equalTo(CGSize(width: 20, height: 20))
             }
-            
-//
-//            if let rightView = textField.rightView as? UIImageView {
-//                rightView.image = rightView.image?.withRenderingMode(.alwaysTemplate)
-//                print("hi")
-//                rightView.tintColor = .black
-//            }
-//            textField.rightViewMode = .whileEditing
-//            textField.rightView = UIImageView().then {
-//                $0.image = xmarkImg
-//                $0.tintColor = .black
-//            }
+            $0.tintColor = .label
+            $0.addTarget(self, action: #selector(clear(_:)), for: .touchUpInside)
         }
+        self.searchBar.searchTextField.rightView = clearBtn
+        self.searchBar.searchTextField.clearButtonMode = .never
+        self.searchBar.searchTextField.rightViewMode = .whileEditing
+    }
+    
+    @objc func clear(_ sender: Any){
+        self.searchBar.text = ""
     }
     
     // MARK: - CollectionView Data Source
