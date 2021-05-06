@@ -32,7 +32,7 @@ class ChallengeListVC: UIViewController, UICollectionViewDataSource, UICollectio
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
         
-//        self.initSearchBar()
+        self.initSearchBar()
     }
     
     func initSearchBar() {
@@ -46,19 +46,24 @@ class ChallengeListVC: UIViewController, UICollectionViewDataSource, UICollectio
             }
             $0.tintColor = .label
             $0.addTarget(self, action: #selector(clear(_:)), for: .touchUpInside)
+            
         }
+        
+        
+        
         self.searchBar.searchTextField.rightView = clearBtn
         self.searchBar.searchTextField.clearButtonMode = .never
         self.searchBar.searchTextField.rightViewMode = .whileEditing
     }
     
-    @objc func clear(_ sender: Any){
+    @objc func clear(_ sender: UIButton){
         self.searchBar.text = ""
+        self.searchBar.resignFirstResponder()
     }
     
     // MARK: - CollectionView Data Source
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return self.challenges.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -66,9 +71,8 @@ class ChallengeListVC: UIViewController, UICollectionViewDataSource, UICollectio
         guard let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? ChallengeCell else {
             fatalError()
         }
-        
-        
-        cell.label.text = "dongho"
+
+        cell.label.text = self.challenges[indexPath.row].challengeName
         cell.label.textColor = .label
         
         return cell
