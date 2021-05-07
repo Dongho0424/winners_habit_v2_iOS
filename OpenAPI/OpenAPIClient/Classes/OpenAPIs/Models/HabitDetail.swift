@@ -10,10 +10,11 @@ import Foundation
 /** 세부 습관 페이지에서 보여주는 습관 */
 public struct HabitDetail: Codable {
 
-    public var userHabitId: Int?
-    public var createDate: String?
-    public var time: String?
-    public var alarmFlag: Bool?
+    public var userHabitId: Int
+    public var createDate: String
+    public var alarmFlag: Bool
+    /** form; 06:30:00 */
+    public var alarmTime: String?
     public var alarmMusic: String?
     public var alarmHaptic: String?
     public var repeatMon: Bool?
@@ -24,13 +25,13 @@ public struct HabitDetail: Codable {
     public var repeatSat: Bool?
     public var repeatSun: Bool?
     public var memo: String?
-    public var history: [HabitHistory]?
+    public var habitHistories: [HabitHistory]?
 
-    public init(userHabitId: Int? = nil, createDate: String? = nil, time: String? = nil, alarmFlag: Bool? = nil, alarmMusic: String? = nil, alarmHaptic: String? = nil, repeatMon: Bool? = nil, repeatTue: Bool? = nil, repeatWed: Bool? = nil, repeatThu: Bool? = nil, repeatFri: Bool? = nil, repeatSat: Bool? = nil, repeatSun: Bool? = nil, memo: String? = nil, history: [HabitHistory]? = nil) {
+    public init(userHabitId: Int, createDate: String, alarmFlag: Bool, alarmTime: String? = nil, alarmMusic: String? = nil, alarmHaptic: String? = nil, repeatMon: Bool? = nil, repeatTue: Bool? = nil, repeatWed: Bool? = nil, repeatThu: Bool? = nil, repeatFri: Bool? = nil, repeatSat: Bool? = nil, repeatSun: Bool? = nil, memo: String? = nil, habitHistories: [HabitHistory]? = nil) {
         self.userHabitId = userHabitId
         self.createDate = createDate
-        self.time = time
         self.alarmFlag = alarmFlag
+        self.alarmTime = alarmTime
         self.alarmMusic = alarmMusic
         self.alarmHaptic = alarmHaptic
         self.repeatMon = repeatMon
@@ -41,25 +42,7 @@ public struct HabitDetail: Codable {
         self.repeatSat = repeatSat
         self.repeatSun = repeatSun
         self.memo = memo
-        self.history = history
-    }
-
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case userHabitId
-        case createDate
-        case time
-        case alarmFlag = "alarm_flag"
-        case alarmMusic = "alarm_music"
-        case alarmHaptic = "alarm_haptic"
-        case repeatMon
-        case repeatTue
-        case repeatWed
-        case repeatThu
-        case repeatFri
-        case repeatSat
-        case repeatSun
-        case memo
-        case history
+        self.habitHistories = habitHistories
     }
 
 }

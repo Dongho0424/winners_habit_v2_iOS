@@ -8,5 +8,6 @@ target 'Winners Habit' do
   # Pods for Winners Habit
   pod 'Then'
   pod 'SnapKit'
+  pod 'FSCalendar'
 
 end

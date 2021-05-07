@@ -20,6 +20,8 @@
 		2E662E68263FD3CB00638E73 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E662E66263FD3CB00638E73 /* LaunchScreen.storyboard */; };
 		2EB3B962263FD7D800CDD544 /* HabitCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB3B961263FD7D800CDD544 /* HabitCell.swift */; };
 		2EB3B965263FD80A00CDD544 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB3B964263FD80A00CDD544 /* Utils.swift */; };
+		2EC84EBF2644F6760076FB28 /* HabitDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC84EBE2644F6760076FB28 /* HabitDetailVC.swift */; };
+		2EC84EC626450F3F0076FB28 /* HabitVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC84EC526450F3F0076FB28 /* HabitVO.swift */; };
 		DEB43B153E392CB0185DCB88 /* Pods_Winners_Habit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9AE7A4EFF6458B0322CF95 /* Pods_Winners_Habit.framework */; };
 /* End PBXBuildFile section */
 
@@ -39,6 +41,8 @@
 		2E662E69263FD3CB00638E73 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2EB3B961263FD7D800CDD544 /* HabitCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitCell.swift; sourceTree = "<group>"; };
 		2EB3B964263FD80A00CDD544 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		2EC84EBE2644F6760076FB28 /* HabitDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitDetailVC.swift; sourceTree = "<group>"; };
+		2EC84EC526450F3F0076FB28 /* HabitVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitVO.swift; sourceTree = "<group>"; };
 		934D4C68FB47C5F3A6CF1CAA /* Pods-Winners Habit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Winners Habit.release.xcconfig"; path = "Target Support Files/Pods-Winners Habit/Pods-Winners Habit.release.xcconfig"; sourceTree = "<group>"; };
 		BE9AE7A4EFF6458B0322CF95 /* Pods_Winners_Habit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Winners_Habit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5BB49922476B939ADCEF53A /* Pods-Winners Habit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Winners Habit.debug.xcconfig"; path = "Target Support Files/Pods-Winners Habit/Pods-Winners Habit.debug.xcconfig"; sourceTree = "<group>"; };
@@ -109,9 +113,11 @@
 				2E662E5B263FD3CB00638E73 /* AppDelegate.swift */,
 				2E662E5D263FD3CB00638E73 /* SceneDelegate.swift */,
 				2E662E5F263FD3CB00638E73 /* MainVC.swift */,
+				2EC84EC526450F3F0076FB28 /* HabitVO.swift */,
 				2EB3B961263FD7D800CDD544 /* HabitCell.swift */,
 				2EB3B964263FD80A00CDD544 /* Utils.swift */,
 				2E662E61263FD3CB00638E73 /* Main.storyboard */,
+				2EC84EBE2644F6760076FB28 /* HabitDetailVC.swift */,
 				2E3289952642C4C500433C2C /* ChallengeCell.swift */,
 				2E32899226429A5800433C2C /* ChallengeListVC.swift */,
 				2E662E64263FD3CB00638E73 /* Assets.xcassets */,
@@ -261,8 +267,10 @@
 			files = (
 				2EB3B965263FD80A00CDD544 /* Utils.swift in Sources */,
 				2E3289962642C4C500433C2C /* ChallengeCell.swift in Sources */,
+				2EC84EBF2644F6760076FB28 /* HabitDetailVC.swift in Sources */,
 				2E662E60263FD3CB00638E73 /* MainVC.swift in Sources */,
 				2E662E5C263FD3CB00638E73 /* AppDelegate.swift in Sources */,
+				2EC84EC626450F3F0076FB28 /* HabitVO.swift in Sources */,
 				2E32899326429A5800433C2C /* ChallengeListVC.swift in Sources */,
 				2EB3B962263FD7D800CDD544 /* HabitCell.swift in Sources */,
 				2E662E5E263FD3CB00638E73 /* SceneDelegate.swift in Sources */,

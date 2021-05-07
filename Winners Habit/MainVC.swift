@@ -25,10 +25,16 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var currentDate: Date!
     
     // temp
-    let habits = [
+    let _habits = [
         Habit(habitId: 1, habitName: "새벽 기상", icon: "https://cpng.pikpng.com/pngl/s/61-610145_half-moon-transparent-yellow-half-moon-png-clipart.png", color: "F5D423", defaultAttributeValue: nil, attribute: "s/f", alarmFlag: true, alarmTime: "06:30:00"),
         Habit(habitId: 2, habitName: "운동", icon: "https://w7.pngwing.com/pngs/416/969/png-transparent-kaatsu-exercise-pictogram-strength-training-others-thumbnail.png", color: "FA331B", defaultAttributeValue: 20, attribute: "min", alarmFlag: true, alarmTime: "06:30:00"),
         Habit(habitId: 3, habitName: "독서", icon: "https://icons555.com/images/icons-blue/image_icon_book_pic_512x512.png", color: "2B42F5", defaultAttributeValue: 20, attribute: "pages", alarmFlag: false, alarmTime: nil),
+    ]
+    
+    lazy var habits = [
+        HabitVO(habit: self._habits[0], habitImg: nil),
+        HabitVO(habit: self._habits[1], habitImg: nil),
+        HabitVO(habit: self._habits[2], habitImg: nil)
     ]
     
     let challenge = Challenge(challengeId: 1, challengeName: "빌 게이츠", challengeImage: "", challengeDDay: 35)
@@ -68,6 +74,12 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // long press recognizer
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPress(_:)))
         self.tableView.addGestureRecognizer(longPressRecognizer)
+        
+        // back button title to nil
+        let backBarButtonIten = UIBarButtonItem(title: nil, style: .plain, target: self, action: nil).then{
+            $0.tintColor = .label
+            self.navigationItem.backBarButtonItem = $0
+        }
         
     }
     
@@ -142,7 +154,6 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @objc func goPrevDay(_ sender: UIButton){
         let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate)!
         self.currentDate = yesterday
-        print(currentDate)
         
          /**
          call api (/habit-history)
@@ -183,10 +194,8 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // set title and arrows
         // if tommorrow is today
         if dateStringDetail(date: tommorrow) == dateStringDetail(date: Date()) {
-            print(1)
             self.setTitleDate(date: dateStringDetail(date: tommorrow), leftArrow: true, rightArrow: false)
         } else {
-            print(2)
             self.setTitleDate(date: dateStringDetail(date: tommorrow), leftArrow: true, rightArrow: true)
         }
         
@@ -221,6 +230,23 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
         }
     }
+    
+    func getHabitImg(_ index: Int) -> UIImage? {
+        
+        var habitVO = self.habits[index]
+        
+        if let savedImg = habitVO.habitImg {
+            return savedImg
+        } else {
+            if let url = URL(string: habitVO.habit.icon),
+               let imgData = try? Data(contentsOf: url) {
+                habitVO.habitImg = UIImage(data: imgData)
+                return habitVO.habitImg
+            } else {
+                return UIImage()
+            }
+        }
+    }
 
     
     // MARK: - TableView Data Source
@@ -233,26 +259,16 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             fatalError("habit cell fucked up")
         }
 
-        let habit = self.habits[indexPath.row]
-        let cellColor = hexToUIColor(hex: habit.color)
-        cell.habitTitle.text = habit.habitName
-        let url = URL(string: habit.icon)
-        cell.habitImg.image = (try? UIImage(data: Data(contentsOf: url!))) ?? UIImage()
+        let habitVO = self.habits[indexPath.row]
+        let cellColor = hexToUIColor(hex: habitVO.habit.color)
+        cell.habitTitle.text = habitVO.habit.habitName
         
-        if habit.alarmFlag {
-            // convert "HH:mm:ss" -> "오전 h:mm"
-            let dateString = habit.alarmTime! as NSString
-            let hPart = dateString.substring(with: NSMakeRange(0, 2))
-            let df = DateFormatter()
-            df.dateFormat = "HH:mm:ss"
-            let alarmDate = df.date(from: dateString as String)
-            df.dateFormat = "h:mm"
-            let alarm = df.string(from: alarmDate!)
-            if hPart.hasPrefix("0") || (Int(hPart)!) < 12 {
-                cell.habitAlarmTime.text = "오전 \(alarm)"
-            } else {
-                cell.habitAlarmTime.text = "오후 \(alarm)"
-            }
+        DispatchQueue.main.async {
+            cell.habitImg.image = self.getHabitImg(indexPath.row)
+        }
+        
+        if habitVO.habit.alarmFlag {
+            cell.habitAlarmTime.text = convertAlarmTime(time: habitVO.habit.alarmTime!)
             cell.habitAlarmTime.textColor = cellColor
         } else {
 //            cell.alarmImg = nil
@@ -260,13 +276,13 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.habitAlarmTime.removeFromSuperview()
         }
         
-        switch habit.attribute {
+        switch habitVO.habit.attribute {
         case "s/f":
             cell.habitAttr.text = "성공/실패"
         case "min":
-            cell.habitAttr.text = "0/\(habit.defaultAttributeValue!) min"
+            cell.habitAttr.text = "0/\(habitVO.habit.defaultAttributeValue!) min"
         case "pages":
-            cell.habitAttr.text = "0/\(habit.defaultAttributeValue!) 장"
+            cell.habitAttr.text = "0/\(habitVO.habit.defaultAttributeValue!) 장"
         default:
             ()
         }
@@ -306,5 +322,16 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         return UISwipeActionsConfiguration(actions: [editAction, checkAction]).then {
             $0.performsFirstActionWithFullSwipe = false
         }
+    }
+    
+    // MARK: - TableView Delegate
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let habitDetailVC = self.storyboard?.instantiateViewController(identifier: "HabitDetailVC") as? HabitDetailVC else {
+            fatalError("MainVC: tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)")
+        }
+        
+        habitDetailVC.habitVO = self.habits[indexPath.row]
+        habitDetailVC.challenge = self.challenge
+        self.navigationController?.pushViewController(habitDetailVC, animated: true)
     }
 }

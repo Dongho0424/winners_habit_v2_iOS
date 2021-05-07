@@ -51,6 +51,23 @@ func getWeekDayKor(date: Int?) -> String {
     }
 }
 
+// 06:30:00 -> 오전 6:30
+func convertAlarmTime(time: String) -> String {
+    // convert "HH:mm:ss" -> "오전 h:mm"
+    let dateString = time as NSString
+    let hPart = dateString.substring(with: NSMakeRange(0, 2))
+    let df = DateFormatter()
+    df.dateFormat = "HH:mm:ss"
+    let alarmDate = df.date(from: dateString as String)
+    df.dateFormat = "h:mm"
+    let alarm = df.string(from: alarmDate!)
+    if hPart.hasPrefix("0") || (Int(hPart)!) < 12 {
+        return "오전 \(alarm)"
+    } else {
+        return "오후 \(alarm)"
+    }
+}
+
 // 2021-04-24 -> 4월 24일 (월)
 func dateSring(date: String) -> String {
     let dateDf = DateFormatter().then {
@@ -67,4 +84,31 @@ func dateStringDetail(date: Date) -> String {
     }
     let weekDayKor = Calendar.current.dateComponents([.weekday], from: date).weekday
     return "\(strDf.string(from: date)) (\(getWeekDayKor(date: weekDayKor)))"
+}
+
+// 2021-04-24 -> Date
+func stringDate(date: String) -> Date {
+    let df = DateFormatter()
+    df.dateFormat = "yyyy-MM-dd"
+    return df.date(from: date)!
+}
+
+// 2021-01-03 -> 2021.01.03
+func convertDate1(date: String) -> String {
+    let df = DateFormatter()
+    df.dateFormat = "yyyy-MM-dd"
+    let tempDate = df.date(from: date)
+    df.dateFormat = "yyyy.MM.dd"
+    return df.string(from: tempDate!)
+}
+
+// 2021-04-24 -> 4
+// 2021-12-24 -> 12
+func getMonth(date: String) -> String {
+    let temp = date as NSString
+    if temp.substring(from: 5) == "0" {
+        return temp.substring(from: 6)
+    } else {
+        return temp.substring(with: NSMakeRange(5, 7))
+    }
 }

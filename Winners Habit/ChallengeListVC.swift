@@ -31,7 +31,6 @@ class ChallengeListVC: UIViewController, UICollectionViewDataSource, UICollectio
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
-        
         self.initSearchBar()
     }
     
