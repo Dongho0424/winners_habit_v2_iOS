@@ -35,31 +35,17 @@ class ChallengeListVC: UIViewController, UICollectionViewDataSource, UICollectio
         self.initSearchBar()
     }
     
+    // custom UISearchBar clear button image with tint color of its imageView to black
     func initSearchBar() {
         self.searchBar.delegate = self
-        self.searchBar.showsBookmarkButton = true
-        let clearBtn = UIButton().then {
-            $0.setImage(UIImage(systemName: "xmark"), for: .normal)
-            $0.setImage(UIImage(systemName: "xmark"), for: .highlighted)
-            $0.snp.makeConstraints { make in
-                make.size.equalTo(CGSize(width: 20, height: 20))
-            }
-            $0.tintColor = .label
-            $0.addTarget(self, action: #selector(clear(_:)), for: .touchUpInside)
-            
+        self.searchBar.setImage(UIImage(systemName: "xmark"), for: .clear, state: .normal)
+        
+        if let textfield = self.searchBar.value(forKey: "searchField") as? UITextField,
+           let clearButton = textfield.value(forKey: "clearButton") as? UIButton {
+            clearButton.tintColor = .black
         }
-        
-        
-        
-        self.searchBar.searchTextField.rightView = clearBtn
-        self.searchBar.searchTextField.clearButtonMode = .never
-        self.searchBar.searchTextField.rightViewMode = .whileEditing
     }
-    
-    @objc func clear(_ sender: UIButton){
-        self.searchBar.text = ""
-        self.searchBar.resignFirstResponder()
-    }
+
     
     // MARK: - CollectionView Data Source
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
