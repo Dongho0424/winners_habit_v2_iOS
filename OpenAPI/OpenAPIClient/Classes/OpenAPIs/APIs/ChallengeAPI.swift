@@ -6,22 +6,27 @@
 //
 
 import Foundation
+import RxSwift
 
 open class ChallengeAPI {
     /**
      모든 챌린지 리스트 가져오기
      
      - parameter apiResponseQueue: The queue on which api response is dispatched.
-     - parameter completion: completion handler to receive the data and the error objects
+     - returns: Observable<[Challenge]>
      */
-    open class func allChallengesGet(apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue, completion: @escaping ((_ data: [Challenge]?, _ error: Error?) -> Void)) {
-        allChallengesGetWithRequestBuilder().execute(apiResponseQueue) { result -> Void in
-            switch result {
-            case let .success(response):
-                completion(response.body, nil)
-            case let .failure(error):
-                completion(nil, error)
+    open class func allChallengesGet(apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue) -> Observable<[Challenge]> {
+        return Observable.create { observer -> Disposable in
+            allChallengesGetWithRequestBuilder().execute(apiResponseQueue) { result -> Void in
+                switch result {
+                case let .success(response):
+                    observer.onNext(response.body!)
+                case let .failure(error):
+                    observer.onError(error)
+                }
+                observer.onCompleted()
             }
+            return Disposables.create()
         }
     }
 
@@ -53,16 +58,20 @@ open class ChallengeAPI {
      
      - parameter userId: (query) PK of user 
      - parameter apiResponseQueue: The queue on which api response is dispatched.
-     - parameter completion: completion handler to receive the data and the error objects
+     - returns: Observable<ChallengeInfo>
      */
-    open class func challengeGet(userId: Int64, apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue, completion: @escaping ((_ data: ChallengeInfo?, _ error: Error?) -> Void)) {
-        challengeGetWithRequestBuilder(userId: userId).execute(apiResponseQueue) { result -> Void in
-            switch result {
-            case let .success(response):
-                completion(response.body, nil)
-            case let .failure(error):
-                completion(nil, error)
+    open class func challengeGet(userId: Int64, apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue) -> Observable<ChallengeInfo> {
+        return Observable.create { observer -> Disposable in
+            challengeGetWithRequestBuilder(userId: userId).execute(apiResponseQueue) { result -> Void in
+                switch result {
+                case let .success(response):
+                    observer.onNext(response.body!)
+                case let .failure(error):
+                    observer.onError(error)
+                }
+                observer.onCompleted()
             }
+            return Disposables.create()
         }
     }
 

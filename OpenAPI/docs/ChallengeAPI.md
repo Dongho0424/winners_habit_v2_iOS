@@ -10,7 +10,7 @@ Method | HTTP request | Description
 
 # **allChallengesGet**
 ```swift
-    open class func allChallengesGet(completion: @escaping (_ data: [Challenge]?, _ error: Error?) -> Void)
+    open class func allChallengesGet() -> Observable<[Challenge]>
 ```
 
 모든 챌린지 리스트 가져오기
@@ -21,17 +21,7 @@ Method | HTTP request | Description
 import OpenAPIClient
 
 
-// 모든 챌린지 리스트 가져오기
-ChallengeAPI.allChallengesGet() { (response, error) in
-    guard error == nil else {
-        print(error)
-        return
-    }
-
-    if (response) {
-        dump(response)
-    }
-}
+// TODO RxSwift sample code not yet implemented. To contribute, please open a ticket via http://github.com/OpenAPITools/openapi-generator/issues/new
 ```
 
 ### Parameters
@@ -54,7 +44,7 @@ No authorization required
 
 # **challengeGet**
 ```swift
-    open class func challengeGet(userId: Int64, completion: @escaping (_ data: ChallengeInfo?, _ error: Error?) -> Void)
+    open class func challengeGet(userId: Int64) -> Observable<ChallengeInfo>
 ```
 
 {userId}가 속한 챌린지의 습관들 불러오기
@@ -66,17 +56,7 @@ import OpenAPIClient
 
 let userId = 987 // Int64 | PK of user
 
-// {userId}가 속한 챌린지의 습관들 불러오기
-ChallengeAPI.challengeGet(userId: userId) { (response, error) in
-    guard error == nil else {
-        print(error)
-        return
-    }
-
-    if (response) {
-        dump(response)
-    }
-}
+// TODO RxSwift sample code not yet implemented. To contribute, please open a ticket via http://github.com/OpenAPITools/openapi-generator/issues/new
 ```
 
 ### Parameters

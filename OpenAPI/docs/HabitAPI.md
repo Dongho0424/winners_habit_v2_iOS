@@ -10,7 +10,7 @@ Method | HTTP request | Description
 
 # **habitHabitIdGet**
 ```swift
-    open class func habitHabitIdGet(habitId: Int, userId: Int, completion: @escaping (_ data: HabitDetail?, _ error: Error?) -> Void)
+    open class func habitHabitIdGet(habitId: Int, userId: Int) -> Observable<HabitDetail>
 ```
 
 유저의 특정 습관의 상세 정보 불러오기
@@ -25,17 +25,7 @@ import OpenAPIClient
 let habitId = 987 // Int | PK of habit
 let userId = 987 // Int | PK of user
 
-// 유저의 특정 습관의 상세 정보 불러오기
-HabitAPI.habitHabitIdGet(habitId: habitId, userId: userId) { (response, error) in
-    guard error == nil else {
-        print(error)
-        return
-    }
-
-    if (response) {
-        dump(response)
-    }
-}
+// TODO RxSwift sample code not yet implemented. To contribute, please open a ticket via http://github.com/OpenAPITools/openapi-generator/issues/new
 ```
 
 ### Parameters
@@ -62,7 +52,7 @@ No authorization required
 
 # **habitHistoryGet**
 ```swift
-    open class func habitHistoryGet(userId: Int, date: String, completion: @escaping (_ data: HabitHistory?, _ error: Error?) -> Void)
+    open class func habitHistoryGet(userId: Int, date: String) -> Observable<HabitHistory>
 ```
 
 userId, date에 해당하는 습관의 히스토리 가져오기
@@ -75,17 +65,7 @@ import OpenAPIClient
 let userId = 987 // Int | PK of user
 let date = "date_example" // String | date which user want to show history of habits
 
-// userId, date에 해당하는 습관의 히스토리 가져오기
-HabitAPI.habitHistoryGet(userId: userId, date: date) { (response, error) in
-    guard error == nil else {
-        print(error)
-        return
-    }
-
-    if (response) {
-        dump(response)
-    }
-}
+// TODO RxSwift sample code not yet implemented. To contribute, please open a ticket via http://github.com/OpenAPITools/openapi-generator/issues/new
 ```
 
 ### Parameters

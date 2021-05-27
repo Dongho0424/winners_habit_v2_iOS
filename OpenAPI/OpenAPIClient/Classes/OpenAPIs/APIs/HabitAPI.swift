@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import RxSwift
 
 open class HabitAPI {
     /**
@@ -14,16 +15,20 @@ open class HabitAPI {
      - parameter habitId: (path) PK of habit 
      - parameter userId: (query) PK of user 
      - parameter apiResponseQueue: The queue on which api response is dispatched.
-     - parameter completion: completion handler to receive the data and the error objects
+     - returns: Observable<HabitDetail>
      */
-    open class func habitHabitIdGet(habitId: Int, userId: Int, apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue, completion: @escaping ((_ data: HabitDetail?, _ error: Error?) -> Void)) {
-        habitHabitIdGetWithRequestBuilder(habitId: habitId, userId: userId).execute(apiResponseQueue) { result -> Void in
-            switch result {
-            case let .success(response):
-                completion(response.body, nil)
-            case let .failure(error):
-                completion(nil, error)
+    open class func habitHabitIdGet(habitId: Int, userId: Int, apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue) -> Observable<HabitDetail> {
+        return Observable.create { observer -> Disposable in
+            habitHabitIdGetWithRequestBuilder(habitId: habitId, userId: userId).execute(apiResponseQueue) { result -> Void in
+                switch result {
+                case let .success(response):
+                    observer.onNext(response.body!)
+                case let .failure(error):
+                    observer.onError(error)
+                }
+                observer.onCompleted()
             }
+            return Disposables.create()
         }
     }
 
@@ -65,16 +70,20 @@ open class HabitAPI {
      - parameter userId: (query) PK of user 
      - parameter date: (query) date which user want to show history of habits 
      - parameter apiResponseQueue: The queue on which api response is dispatched.
-     - parameter completion: completion handler to receive the data and the error objects
+     - returns: Observable<HabitHistory>
      */
-    open class func habitHistoryGet(userId: Int, date: String, apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue, completion: @escaping ((_ data: HabitHistory?, _ error: Error?) -> Void)) {
-        habitHistoryGetWithRequestBuilder(userId: userId, date: date).execute(apiResponseQueue) { result -> Void in
-            switch result {
-            case let .success(response):
-                completion(response.body, nil)
-            case let .failure(error):
-                completion(nil, error)
+    open class func habitHistoryGet(userId: Int, date: String, apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue) -> Observable<HabitHistory> {
+        return Observable.create { observer -> Disposable in
+            habitHistoryGetWithRequestBuilder(userId: userId, date: date).execute(apiResponseQueue) { result -> Void in
+                switch result {
+                case let .success(response):
+                    observer.onNext(response.body!)
+                case let .failure(error):
+                    observer.onError(error)
+                }
+                observer.onCompleted()
             }
+            return Disposables.create()
         }
     }
 

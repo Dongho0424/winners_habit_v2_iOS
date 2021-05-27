@@ -9,5 +9,8 @@ target 'Winners Habit' do
   pod 'Then'
   pod 'SnapKit'
   pod 'FSCalendar'
+  pod 'RxSwift'
+  pod 'RxCocoa'
+  pod 'RxViewController'
 
 end
