@@ -20,7 +20,7 @@ return HabitDetail
 ### Example 
 ```swift
 // The following code samples are still beta. For any issue, please report via http://github.com/OpenAPITools/openapi-generator/issues/new
-import OpenAPIClient
+import WinnersHabitOAS
 
 let habitId = 987 // Int | PK of habit
 let userId = 987 // Int | PK of user
@@ -60,7 +60,7 @@ userId, date에 해당하는 습관의 히스토리 가져오기
 ### Example 
 ```swift
 // The following code samples are still beta. For any issue, please report via http://github.com/OpenAPITools/openapi-generator/issues/new
-import OpenAPIClient
+import WinnersHabitOAS
 
 let userId = 987 // Int | PK of user
 let date = "date_example" // String | date which user want to show history of habits

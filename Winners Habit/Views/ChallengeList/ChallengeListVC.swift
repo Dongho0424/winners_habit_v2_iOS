@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-import OpenAPIClient
+import WinnersHabitOAS
 import Then
 
 class ChallengeListVC: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UISearchBarDelegate {

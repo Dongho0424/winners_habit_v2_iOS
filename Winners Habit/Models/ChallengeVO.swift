@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-import OpenAPIClient
+import WinnersHabitOAS
 
 struct ChallengeVO {
     let challengeId: Int

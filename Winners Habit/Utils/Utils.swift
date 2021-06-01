@@ -112,3 +112,9 @@ func getMonth(date: String) -> String {
         return temp.substring(with: NSMakeRange(5, 7))
     }
 }
+
+func compareDate(_ lhs: Date, _ rhs: Date) -> Bool {
+    let df = DateFormatter()
+    df.dateFormat = "yyyy-MM-dd"
+    return df.string(from: lhs) == df.string(from: rhs)
+}

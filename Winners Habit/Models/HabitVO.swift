@@ -5,8 +5,10 @@
 //  Created by 최동호 on 2021/05/07.
 //
 
-import OpenAPIClient
+import WinnersHabitOAS
 import UIKit
+import RxSwift
+import Alamofire
 
 // Model
 struct HabitVO {
@@ -19,8 +21,43 @@ struct HabitVO {
     var alarmFlag: Bool
     var alarmTime: String?
     var doneFlag: Bool
-    
     var iconImage: UIImage?
+    
+    init() {
+        self.habitId = 1
+        self.habitName = ""
+        self.icon = ""
+        self.color = .clear
+        self.defaultAttributeValue = nil
+        self.attribute = ""
+        self.alarmFlag = false
+        self.alarmTime = nil
+        self.doneFlag = false
+        self.iconImage = nil
+    }
+    
+    init(habitId: Int64,
+         habitName: String,
+         icon: String,
+         color: UIColor,
+         defaultAttributeValue: Int64?,
+         attribute: String,
+         alarmFlag: Bool,
+         alarmTime: String?,
+         doneFlag: Bool,
+         iconImage: UIImage?)
+    {
+        self.habitId = habitId
+        self.habitName = habitName
+        self.icon = icon
+        self.color = color
+        self.defaultAttributeValue = defaultAttributeValue
+        self.attribute = attribute
+        self.alarmFlag = alarmFlag
+        self.alarmTime = alarmTime
+        self.doneFlag = doneFlag
+        self.iconImage = iconImage
+    }
 }
 
 extension HabitVO {
@@ -55,16 +92,62 @@ extension HabitVO {
                                   alarmFlag: habit.alarmFlag,
                                   alarmTime: habit.alarmTime,
                                   doneFlag: habitHistory.doneFlag,
-                                  iconImage: UIImage())
+                                  iconImage: nil)
             habitVOList.append(habitVO)
         }
         
         return habitVOList
     }
     
-    func toggle() -> Self {
+    //    func toggle() -> Self {
+    //        var temp = self
+    //        temp.doneFlag = !temp.doneFlag
+    //        return temp
+    //    }
+    
+    func setDoneFlag(_ done: Bool) -> Self {
         var temp = self
-        temp.doneFlag = !temp.doneFlag
+        temp.doneFlag = done
         return temp
+    }
+    
+    func setImage(_ image: UIImage) -> Self {
+        var temp = self
+        temp.iconImage = image
+        return temp
+    }
+}
+
+extension HabitVO: Equatable {
+    // id랑 image가 같아야 두 HabitVO는 같은 것이라고 정의.
+    static func ==(lhs: HabitVO, rhs: HabitVO) -> Bool {
+        return lhs.habitId == rhs.habitId && lhs.iconImage == rhs.iconImage
+    }
+}
+
+extension HabitVO {
+    func getHabitWithImage(_ habitVO: HabitVO) -> Observable<HabitVO> {
+        
+        return Observable.create { observer in
+            
+            guard let url = URL(string: habitVO.icon) else {
+                observer.onError(NSError(domain: "no icon image url", code: 1, userInfo: nil))
+                return Disposables.create()
+            }
+            
+            AF.request(url).responseData { res in
+                if let imgData = res.data,
+                   let img = UIImage(data: imgData) {
+                    var temp = habitVO
+                    temp.iconImage = img
+                    observer.onNext(temp)
+                }
+                else {
+                    observer.onError(NSError(domain: "network error", code: 2))
+                }
+                observer.onCompleted()
+            }
+            return Disposables.create()
+        }
     }
 }

@@ -7,10 +7,15 @@
 
 import Foundation
 import UIKit
-import OpenAPIClient
+import WinnersHabitOAS
 import FSCalendar
+import RxSwift
+import RxCocoa
 
 class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource, FSCalendarDelegateAppearance {
+    static let identifier = "HabitDetailVC"
+    
+    // MARK: - UI Components
     
     @IBOutlet weak var challengeName: UILabel!
     @IBOutlet weak var habitImg: UIImageView!
@@ -36,95 +41,116 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     
     @IBOutlet weak var fsCalendar: FSCalendar!
     
-    var habitVO: HabitVO! = nil
-    let habitDetail = HabitDetail(userHabitId: 1, createDate: "2021-01-03", alarmFlag: true, alarmTime: "06:30:00", alarmMusic: "Oh my god", alarmHaptic: "Basic call", repeatMon: true, repeatTue: true, repeatWed: true, repeatThu: true, repeatFri: true, repeatSat: false, repeatSun: false, memo: "아침에 일어나서 하는 명상은 정말 중요합니다.", habitHistories: [
-        HabitHistory(habitId: 1, date: "2021-05-01", doneFlag: true),
-        HabitHistory(habitId: 1, date: "2021-05-02", doneFlag: true),
-        HabitHistory(habitId: 1, date: "2021-05-03", doneFlag: false),
-        HabitHistory(habitId: 1, date: "2021-05-04", doneFlag: true),
-        HabitHistory(habitId: 1, date: "2021-05-05", doneFlag: true),
-        HabitHistory(habitId: 1, date: "2021-05-06", doneFlag: false),
-        HabitHistory(habitId: 1, date: "2021-05-07", doneFlag: false),
-    ])
-    var challenge: Challenge! = nil
+    private var habitDetailVO: HabitDetailVO!
+    private var habitColor: UIColor!
     
-    lazy var habitColor = habitVO.color
+    // MARK: - MVVM-Rx Components
+    
+    var viewModel : HabitDetailVMType
+    private let disposeBag = DisposeBag()
+    
+    // MARK: - Init
+    
+    init(viewModel: HabitDetailVMType = HabitDetailVM()) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        self.viewModel = HabitDetailVM()
+        super.init(coder: coder)
+    }
     
     
     // MARK: - View Life Cycle
     override func viewDidLoad() {
-        self.initHabitDetails()
         self.initFSCalendar()
+        
+        self.bindUI()
     }
     
-    // MARK: - Actions
-    func initHabitDetails() {
-        self.challengeName.text = self.challenge.challengeName
-        self.habitImg.image = self.habitVO.iconImage
-        self.habitTitle.text = self.habitVO.habitName
+    // MARK: - BindUI
+    
+    private func bindUI() {
+        print("hi HabitDetailVC")
+        // data source
+        self.viewModel.outputs.getHabitDetailVO
+            .subscribe(onNext: { habitDetailVO in
+                // 좋은 방법은 아닌 것 같은데,,,,,,,
+                self.habitDetailVO = habitDetailVO
+                
+                self.challengeName.text = habitDetailVO.challengeName
+                self.habitImg.image = habitDetailVO.habitImg
+                self.habitTitle.text = habitDetailVO.habitTitle
+                
+                self.createDate.text = convertDate1(date: habitDetailVO.createDate)
+                
+                switch habitDetailVO.attribute {
+                case "s/f":
+                    self.attribute.text = "성공/실패"
+                case "min":
+                    self.attribute.text = "0/\(habitDetailVO.defaultAttributeValue!) min"
+                case "pages":
+                    self.attribute.text = "0/\(habitDetailVO.defaultAttributeValue!) 장"
+                default:
+                    ()
+                }
+                self.habitColor = habitDetailVO.color
+                
+                self.alarmTimeSwitch.isEnabled = false
+                self.alarmMusicSwitch.isEnabled = false
+                self.alarmHapticSwitch.isEnabled = false
+                
+                if habitDetailVO.alarmFlag {
+                    self.alarmTimeSwitch.isOn = true
+                    self.alarmTime.text = convertAlarmTime(time: habitDetailVO.alarmTime!)
+                    self.alarmTime2.text = convertAlarmTime(time: habitDetailVO.alarmTime!)
+                    self.alarmTime.textColor = habitDetailVO.color
+                    print("habitDetailVO.color: \(habitDetailVO.color)")
+                    self.alarmHaptic.text = habitDetailVO.alarmHaptic
+                } else {
+                    self.alarmImg.removeFromSuperview()
+                    self.alarmTime.removeFromSuperview()
+                    self.alarmTimeSwitch.isOn = false
+                    self.alarmTime2.text = "없음"
+                    self.alarmTime2.textColor = .systemGray6
+                    self.alarmMusic.textColor = .systemGray6
+                    self.alarmHaptic.textColor = .systemGray6
+                }
+                
+                if habitDetailVO.alarmMusic != nil {
+                    self.alarmMusicSwitch.isOn = true
+                    self.alarmMusic.text = habitDetailVO.alarmMusic
+                } else{
+                    self.alarmMusicSwitch.isOn = false
+                    self.alarmMusic.text = "없음"
+                }
+                
+                if habitDetailVO.alarmHaptic != nil {
+                    self.alarmHapticSwitch.isOn = true
+                    self.alarmHaptic.text = habitDetailVO.alarmHaptic
+                } else{
+                    self.alarmHapticSwitch.isOn = false
+                    self.alarmHaptic.text = "없음"
+                }
+                
+                self.alarmDay(btn: self.alarmMon, repeat: habitDetailVO.repeatMon!, color: habitDetailVO.color)
+                self.alarmDay(btn: self.alarmTue, repeat: habitDetailVO.repeatTue!, color: habitDetailVO.color)
+                self.alarmDay(btn: self.alarmWed, repeat: habitDetailVO.repeatWed!, color: habitDetailVO.color)
+                self.alarmDay(btn: self.alarmThu, repeat: habitDetailVO.repeatThu!, color: habitDetailVO.color)
+                self.alarmDay(btn: self.alarmFri, repeat: habitDetailVO.repeatFri!, color: habitDetailVO.color)
+                self.alarmDay(btn: self.alarmSat, repeat: habitDetailVO.repeatSat!, color: habitDetailVO.color)
+                self.alarmDay(btn: self.alarmSun, repeat: habitDetailVO.repeatSun!, color: habitDetailVO.color)
+                
+                self.memo.text = habitDetailVO.memo
+                self.memo.isEditable = false
+            })
+            .disposed(by: self.disposeBag)
         
-        self.createDate.text = convertDate1(date: self.habitDetail.createDate)
         
-        switch habitVO.attribute {
-        case "s/f":
-            self.attribute.text = "성공/실패"
-        case "min":
-            self.attribute.text = "0/\(habitVO.defaultAttributeValue!) min"
-        case "pages":
-            self.attribute.text = "0/\(habitVO.defaultAttributeValue!) 장"
-        default:
-            ()
-        }
-        self.attribute.textColor = self.habitColor
-        
-        self.alarmTimeSwitch.isEnabled = false
-        self.alarmMusicSwitch.isEnabled = false
-        self.alarmHapticSwitch.isEnabled = false
-        
-        if self.habitVO.alarmFlag {
-            self.alarmTimeSwitch.isOn = true
-            self.alarmTime.text = convertAlarmTime(time: self.habitVO.alarmTime!)
-            self.alarmTime2.text = convertAlarmTime(time: self.habitVO.alarmTime!)
-            self.alarmTime.textColor = self.habitColor
-            self.alarmHaptic.text = self.habitDetail.alarmHaptic
-        } else {
-            self.alarmImg.removeFromSuperview()
-            self.alarmTime.removeFromSuperview()
-            self.alarmTimeSwitch.isOn = false
-            self.alarmTime2.text = "없음"
-            self.alarmTime2.textColor = .systemGray6
-            self.alarmMusic.textColor = .systemGray6
-            self.alarmHaptic.textColor = .systemGray6
-        }
-        
-        if self.habitDetail.alarmMusic != nil {
-            self.alarmMusicSwitch.isOn = true
-            self.alarmMusic.text = self.habitDetail.alarmMusic
-        } else{
-            self.alarmMusicSwitch.isOn = false
-            self.alarmMusic.text = "없음"
-        }
-        
-        if self.habitDetail.alarmHaptic != nil {
-            self.alarmHapticSwitch.isOn = true
-            self.alarmHaptic.text = self.habitDetail.alarmHaptic
-        } else{
-            self.alarmHapticSwitch.isOn = false
-            self.alarmHaptic.text = "없음"
-        }
-        
-        self.alarmDay(btn: self.alarmMon, repeat: self.habitDetail.repeatMon!, color: habitColor)
-        self.alarmDay(btn: self.alarmTue, repeat: self.habitDetail.repeatTue!, color: habitColor)
-        self.alarmDay(btn: self.alarmWed, repeat: self.habitDetail.repeatWed!, color: habitColor)
-        self.alarmDay(btn: self.alarmThu, repeat: self.habitDetail.repeatThu!, color: habitColor)
-        self.alarmDay(btn: self.alarmFri, repeat: self.habitDetail.repeatFri!, color: habitColor)
-        self.alarmDay(btn: self.alarmSat, repeat: self.habitDetail.repeatSat!, color: habitColor)
-        self.alarmDay(btn: self.alarmSun, repeat: self.habitDetail.repeatSun!, color: habitColor)
-        
-        self.memo.text = self.habitDetail.memo
-        self.memo.isEditable = false
     }
     
+    // MARK: - UI
     func alarmDay(btn: UIButton, repeat: Bool, color: UIColor) {
         btn.layer.cornerRadius = btn.frame.width / 2
         if `repeat` {
@@ -147,7 +173,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         
         cell.layer.cornerRadius = cell.frame.width / 2
 
-        guard let habitHistories = self.habitDetail.habitHistories else {
+        guard let habitHistories = self.habitDetailVO.habitHistories else {
             fatalError("calendar(_ calendar: FSCalendar, cellFor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell")
         }
 
@@ -164,7 +190,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     
     func getHistories(month: Int) -> [HabitHistory] {
         var habitHistoriesByMonth = [HabitHistory]()
-        if let habitHistories = self.habitDetail.habitHistories {
+        if let habitHistories = self.habitDetailVO.habitHistories {
             for history in habitHistories {
                 if getMonth(date: history.date!) == "\(month)" {
                     habitHistoriesByMonth.append(history)
@@ -173,5 +199,4 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         }
         return habitHistoriesByMonth
     }
-    
 }

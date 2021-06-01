@@ -10,7 +10,8 @@
 		2E32899326429A5800433C2C /* ChallengeListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E32899226429A5800433C2C /* ChallengeListVC.swift */; };
 		2E3289962642C4C500433C2C /* ChallengeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E3289952642C4C500433C2C /* ChallengeCell.swift */; };
 		2E32899B2642DE8900433C2C /* xmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E32899A2642DE8900433C2C /* xmark.png */; };
-		2E50A7A5263FDAC90035C8E9 /* OpenAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 2E50A7A4263FDAC90035C8E9 /* OpenAPIClient */; };
+		2E4F7A912663875F00A3B561 /* HabitDetailVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4F7A902663875F00A3B561 /* HabitDetailVM.swift */; };
+		2E4F7A952663D27000A3B561 /* HabitDetailVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4F7A942663D27000A3B561 /* HabitDetailVO.swift */; };
 		2E50A7B1263FDC9E0035C8E9 /* billgates.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E50A7AF263FDB8B0035C8E9 /* billgates.png */; };
 		2E662E5C263FD3CB00638E73 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E662E5B263FD3CB00638E73 /* AppDelegate.swift */; };
 		2E662E5E263FD3CB00638E73 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E662E5D263FD3CB00638E73 /* SceneDelegate.swift */; };
@@ -18,21 +19,30 @@
 		2E662E63263FD3CB00638E73 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E662E61263FD3CB00638E73 /* Main.storyboard */; };
 		2E662E65263FD3CB00638E73 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2E662E64263FD3CB00638E73 /* Assets.xcassets */; };
 		2E662E68263FD3CB00638E73 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E662E66263FD3CB00638E73 /* LaunchScreen.storyboard */; };
-		2E746F6D265F733B009443AC /* ViewModelType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E746F6C265F733B009443AC /* ViewModelType.swift */; };
+		2E6BB0342660B9D800E6C609 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 2E6BB0332660B9D800E6C609 /* RxCocoa */; };
+		2E6BB0362660B9D800E6C609 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 2E6BB0352660B9D800E6C609 /* RxRelay */; };
+		2E6BB0382660B9D800E6C609 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2E6BB0372660B9D800E6C609 /* RxSwift */; };
+		2E6BB03B2660B9E800E6C609 /* RxViewController in Frameworks */ = {isa = PBXBuildFile; productRef = 2E6BB03A2660B9E800E6C609 /* RxViewController */; };
 		2E746F72265F7805009443AC /* ChallengeVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E746F71265F7805009443AC /* ChallengeVO.swift */; };
 		2E746F77265F93D1009443AC /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E746F76265F93D1009443AC /* API.swift */; };
+		2E746F9C2660B645009443AC /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 2E746F9B2660B645009443AC /* Alamofire */; };
+		2E746FA02660B671009443AC /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = 2E746F9F2660B671009443AC /* Then */; };
+		2E746FA42660B6B4009443AC /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 2E746FA32660B6B4009443AC /* FSCalendar */; };
+		2E746FA82660B6F7009443AC /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2E746FA72660B6F7009443AC /* SnapKit */; };
 		2EB3B962263FD7D800CDD544 /* HabitCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB3B961263FD7D800CDD544 /* HabitCell.swift */; };
 		2EB3B965263FD80A00CDD544 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB3B964263FD80A00CDD544 /* Utils.swift */; };
 		2EC19FB2265F6955004FE527 /* HabitListVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC19FB1265F6955004FE527 /* HabitListVM.swift */; };
 		2EC84EBF2644F6760076FB28 /* HabitDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC84EBE2644F6760076FB28 /* HabitDetailVC.swift */; };
 		2EC84EC626450F3F0076FB28 /* HabitVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC84EC526450F3F0076FB28 /* HabitVO.swift */; };
-		DEB43B153E392CB0185DCB88 /* Pods_Winners_Habit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9AE7A4EFF6458B0322CF95 /* Pods_Winners_Habit.framework */; };
+		2EE18191266484D500132C7D /* WinnersHabitOAS in Frameworks */ = {isa = PBXBuildFile; productRef = 2EE18190266484D500132C7D /* WinnersHabitOAS */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		2E32899226429A5800433C2C /* ChallengeListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeListVC.swift; sourceTree = "<group>"; };
 		2E3289952642C4C500433C2C /* ChallengeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeCell.swift; sourceTree = "<group>"; };
 		2E32899A2642DE8900433C2C /* xmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = xmark.png; sourceTree = "<group>"; };
+		2E4F7A902663875F00A3B561 /* HabitDetailVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitDetailVM.swift; sourceTree = "<group>"; };
+		2E4F7A942663D27000A3B561 /* HabitDetailVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitDetailVO.swift; sourceTree = "<group>"; };
 		2E50A7A2263FDAC20035C8E9 /* OpenAPI */ = {isa = PBXFileReference; lastKnownFileType = folder; path = OpenAPI; sourceTree = "<group>"; };
 		2E50A7AF263FDB8B0035C8E9 /* billgates.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = billgates.png; sourceTree = "<group>"; };
 		2E662E58263FD3CB00638E73 /* Winners Habit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Winners Habit.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -43,7 +53,6 @@
 		2E662E64263FD3CB00638E73 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2E662E67263FD3CB00638E73 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2E662E69263FD3CB00638E73 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2E746F6C265F733B009443AC /* ViewModelType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelType.swift; sourceTree = "<group>"; };
 		2E746F71265F7805009443AC /* ChallengeVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeVO.swift; sourceTree = "<group>"; };
 		2E746F76265F93D1009443AC /* API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		2EB3B961263FD7D800CDD544 /* HabitCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitCell.swift; sourceTree = "<group>"; };
@@ -51,9 +60,6 @@
 		2EC19FB1265F6955004FE527 /* HabitListVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitListVM.swift; sourceTree = "<group>"; };
 		2EC84EBE2644F6760076FB28 /* HabitDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitDetailVC.swift; sourceTree = "<group>"; };
 		2EC84EC526450F3F0076FB28 /* HabitVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitVO.swift; sourceTree = "<group>"; };
-		934D4C68FB47C5F3A6CF1CAA /* Pods-Winners Habit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Winners Habit.release.xcconfig"; path = "Target Support Files/Pods-Winners Habit/Pods-Winners Habit.release.xcconfig"; sourceTree = "<group>"; };
-		BE9AE7A4EFF6458B0322CF95 /* Pods_Winners_Habit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Winners_Habit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D5BB49922476B939ADCEF53A /* Pods-Winners Habit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Winners Habit.debug.xcconfig"; path = "Target Support Files/Pods-Winners Habit/Pods-Winners Habit.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,29 +67,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2E50A7A5263FDAC90035C8E9 /* OpenAPIClient in Frameworks */,
-				DEB43B153E392CB0185DCB88 /* Pods_Winners_Habit.framework in Frameworks */,
+				2EE18191266484D500132C7D /* WinnersHabitOAS in Frameworks */,
+				2E6BB0342660B9D800E6C609 /* RxCocoa in Frameworks */,
+				2E746F9C2660B645009443AC /* Alamofire in Frameworks */,
+				2E6BB0362660B9D800E6C609 /* RxRelay in Frameworks */,
+				2E6BB03B2660B9E800E6C609 /* RxViewController in Frameworks */,
+				2E746FA02660B671009443AC /* Then in Frameworks */,
+				2E746FA42660B6B4009443AC /* FSCalendar in Frameworks */,
+				2E6BB0382660B9D800E6C609 /* RxSwift in Frameworks */,
+				2E746FA82660B6F7009443AC /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0B2E67EF5317C768F3319FF5 /* Pods */ = {
+		2E4F7A8F266386E900A3B561 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				D5BB49922476B939ADCEF53A /* Pods-Winners Habit.debug.xcconfig */,
-				934D4C68FB47C5F3A6CF1CAA /* Pods-Winners Habit.release.xcconfig */,
+				2EC19FB1265F6955004FE527 /* HabitListVM.swift */,
+				2E4F7A902663875F00A3B561 /* HabitDetailVM.swift */,
 			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
-		2124EA21BE62813DCA185C79 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				BE9AE7A4EFF6458B0322CF95 /* Pods_Winners_Habit.framework */,
-			);
-			name = Frameworks;
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		2E50A7AE263FDB8B0035C8E9 /* Resources */ = {
@@ -102,8 +107,7 @@
 				2E50A7A2263FDAC20035C8E9 /* OpenAPI */,
 				2E662E5A263FD3CB00638E73 /* Winners Habit */,
 				2E662E59263FD3CB00638E73 /* Products */,
-				0B2E67EF5317C768F3319FF5 /* Pods */,
-				2124EA21BE62813DCA185C79 /* Frameworks */,
+				2E6BB0322660B9D800E6C609 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -118,14 +122,21 @@
 		2E662E5A263FD3CB00638E73 /* Winners Habit */ = {
 			isa = PBXGroup;
 			children = (
+				2E4F7A8F266386E900A3B561 /* ViewModels */,
 				2EC19FAE265F6835004FE527 /* Utils */,
 				2EC19FA9265F67E5004FE527 /* Views */,
-				2EC19FAD265F67EE004FE527 /* ViewModels */,
 				2EC19FAC265F67EA004FE527 /* Models */,
 				2EC19FA8265F67DD004FE527 /* App */,
 				2E662E69263FD3CB00638E73 /* Info.plist */,
 			);
 			path = "Winners Habit";
+			sourceTree = "<group>";
+		};
+		2E6BB0322660B9D800E6C609 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		2EC19FA8265F67DD004FE527 /* App */ = {
@@ -156,17 +167,9 @@
 				2EC19FB8265F69B4004FE527 /* Services */,
 				2EC84EC526450F3F0076FB28 /* HabitVO.swift */,
 				2E746F71265F7805009443AC /* ChallengeVO.swift */,
+				2E4F7A942663D27000A3B561 /* HabitDetailVO.swift */,
 			);
 			path = Models;
-			sourceTree = "<group>";
-		};
-		2EC19FAD265F67EE004FE527 /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				2EC19FB1265F6955004FE527 /* HabitListVM.swift */,
-				2E746F6C265F733B009443AC /* ViewModelType.swift */,
-			);
-			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		2EC19FAE265F6835004FE527 /* Utils */ = {
@@ -218,21 +221,27 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2E662E6C263FD3CB00638E73 /* Build configuration list for PBXNativeTarget "Winners Habit" */;
 			buildPhases = (
-				9F9CAA78241CCF141F4896B1 /* [CP] Check Pods Manifest.lock */,
 				2E32898826427C5C00433C2C /* ShellScript */,
 				2E662E54263FD3CB00638E73 /* Sources */,
 				2E662E55263FD3CB00638E73 /* Frameworks */,
 				2E662E56263FD3CB00638E73 /* Resources */,
-				F2957A39FAC44E4EA70D9EF6 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				2E50A7A7263FDACE0035C8E9 /* PBXTargetDependency */,
+				2EE1818C266483F300132C7D /* PBXTargetDependency */,
 			);
 			name = "Winners Habit";
 			packageProductDependencies = (
-				2E50A7A4263FDAC90035C8E9 /* OpenAPIClient */,
+				2E746F9B2660B645009443AC /* Alamofire */,
+				2E746F9F2660B671009443AC /* Then */,
+				2E746FA32660B6B4009443AC /* FSCalendar */,
+				2E746FA72660B6F7009443AC /* SnapKit */,
+				2E6BB0332660B9D800E6C609 /* RxCocoa */,
+				2E6BB0352660B9D800E6C609 /* RxRelay */,
+				2E6BB0372660B9D800E6C609 /* RxSwift */,
+				2E6BB03A2660B9E800E6C609 /* RxViewController */,
+				2EE18190266484D500132C7D /* WinnersHabitOAS */,
 			);
 			productName = "Winners Habit";
 			productReference = 2E662E58263FD3CB00638E73 /* Winners Habit.app */;
@@ -261,6 +270,14 @@
 				Base,
 			);
 			mainGroup = 2E662E4F263FD3CB00638E73;
+			packageReferences = (
+				2E746F8E2660B595009443AC /* XCRemoteSwiftPackageReference "RxSwift" */,
+				2E746F9A2660B645009443AC /* XCRemoteSwiftPackageReference "Alamofire" */,
+				2E746F9E2660B671009443AC /* XCRemoteSwiftPackageReference "Then" */,
+				2E746FA22660B6B4009443AC /* XCRemoteSwiftPackageReference "FSCalendar" */,
+				2E746FA62660B6F7009443AC /* XCRemoteSwiftPackageReference "SnapKit" */,
+				2E746FAA2660B787009443AC /* XCRemoteSwiftPackageReference "RxViewController" */,
+			);
 			productRefGroup = 2E662E59263FD3CB00638E73 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -301,46 +318,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\n# open api generator\n# generate by oas.yaml in local directory - ../Dev/oas/oas.yaml\nopenapi-generator generate -i /Users/donghochoi/Documents/Dev/iOS/Project-WinnersHabit/oas/oas.yaml -g swift5 -o /Users/donghochoi/Documents/Dev/iOS/Project-WinnersHabit/Winners\\ Habit/OpenAPI -p=responseAs=RxSwift\n\n";
-		};
-		9F9CAA78241CCF141F4896B1 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Winners Habit-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F2957A39FAC44E4EA70D9EF6 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Winners Habit/Pods-Winners Habit-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Winners Habit/Pods-Winners Habit-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Winners Habit/Pods-Winners Habit-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\n# open api generator\n# generate by oas.yaml in local directory - ../Dev/oas/oas.yaml\n# openapi-generator generate -i /Users/donghochoi/Documents/Dev/iOS/Project-WinnersHabit/oas/oas.yaml -g swift5 -o /Users/donghochoi/Documents/Dev/iOS/Project-WinnersHabit/Winners\\ Habit/OpenAPI -p=responseAs=RxSwift\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -350,10 +328,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E746F72265F7805009443AC /* ChallengeVO.swift in Sources */,
-				2E746F6D265F733B009443AC /* ViewModelType.swift in Sources */,
 				2EB3B965263FD80A00CDD544 /* Utils.swift in Sources */,
 				2E3289962642C4C500433C2C /* ChallengeCell.swift in Sources */,
 				2EC84EBF2644F6760076FB28 /* HabitDetailVC.swift in Sources */,
+				2E4F7A952663D27000A3B561 /* HabitDetailVO.swift in Sources */,
 				2E662E60263FD3CB00638E73 /* HabitListVC.swift in Sources */,
 				2E662E5C263FD3CB00638E73 /* AppDelegate.swift in Sources */,
 				2EC19FB2265F6955004FE527 /* HabitListVM.swift in Sources */,
@@ -362,15 +340,16 @@
 				2EB3B962263FD7D800CDD544 /* HabitCell.swift in Sources */,
 				2E746F77265F93D1009443AC /* API.swift in Sources */,
 				2E662E5E263FD3CB00638E73 /* SceneDelegate.swift in Sources */,
+				2E4F7A912663875F00A3B561 /* HabitDetailVM.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2E50A7A7263FDACE0035C8E9 /* PBXTargetDependency */ = {
+		2EE1818C266483F300132C7D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 2E50A7A6263FDACE0035C8E9 /* OpenAPIClient */;
+			productRef = 2EE1818B266483F300132C7D /* WinnersHabitOAS */;
 		};
 /* End PBXTargetDependency section */
 
@@ -512,7 +491,6 @@
 		};
 		2E662E6D263FD3CB00638E73 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D5BB49922476B939ADCEF53A /* Pods-Winners Habit.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -532,7 +510,6 @@
 		};
 		2E662E6E263FD3CB00638E73 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 934D4C68FB47C5F3A6CF1CAA /* Pods-Winners Habit.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -573,14 +550,105 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCSwiftPackageProductDependency section */
-		2E50A7A4263FDAC90035C8E9 /* OpenAPIClient */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = OpenAPIClient;
+/* Begin XCRemoteSwiftPackageReference section */
+		2E746F8E2660B595009443AC /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
 		};
-		2E50A7A6263FDACE0035C8E9 /* OpenAPIClient */ = {
+		2E746F9A2660B645009443AC /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.4.3;
+			};
+		};
+		2E746F9E2660B671009443AC /* XCRemoteSwiftPackageReference "Then" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devxoul/Then.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.7.0;
+			};
+		};
+		2E746FA22660B6B4009443AC /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/WenchaoD/FSCalendar.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.8.2;
+			};
+		};
+		2E746FA62660B6F7009443AC /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.1;
+			};
+		};
+		2E746FAA2660B787009443AC /* XCRemoteSwiftPackageReference "RxViewController" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devxoul/RxViewController.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2E6BB0332660B9D800E6C609 /* RxCocoa */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = OpenAPIClient;
+			package = 2E746F8E2660B595009443AC /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxCocoa;
+		};
+		2E6BB0352660B9D800E6C609 /* RxRelay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E746F8E2660B595009443AC /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxRelay;
+		};
+		2E6BB0372660B9D800E6C609 /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E746F8E2660B595009443AC /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+		2E6BB03A2660B9E800E6C609 /* RxViewController */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E746FAA2660B787009443AC /* XCRemoteSwiftPackageReference "RxViewController" */;
+			productName = RxViewController;
+		};
+		2E746F9B2660B645009443AC /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E746F9A2660B645009443AC /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		2E746F9F2660B671009443AC /* Then */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E746F9E2660B671009443AC /* XCRemoteSwiftPackageReference "Then" */;
+			productName = Then;
+		};
+		2E746FA32660B6B4009443AC /* FSCalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E746FA22660B6B4009443AC /* XCRemoteSwiftPackageReference "FSCalendar" */;
+			productName = FSCalendar;
+		};
+		2E746FA72660B6F7009443AC /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E746FA62660B6F7009443AC /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		2EE1818B266483F300132C7D /* WinnersHabitOAS */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WinnersHabitOAS;
+		};
+		2EE18190266484D500132C7D /* WinnersHabitOAS */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WinnersHabitOAS;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
