@@ -1,6 +1,0 @@
-framework module Pods_Winners_Habit {
-  umbrella header "Pods-Winners Habit-umbrella.h"
-
-  export *
-  module * { export * }
-}
