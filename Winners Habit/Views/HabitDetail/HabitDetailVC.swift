@@ -38,11 +38,10 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     @IBOutlet weak var alarmSat: UIButton!
     @IBOutlet weak var alarmSun: UIButton!
     @IBOutlet weak var memo: UITextView!
-    
     @IBOutlet weak var fsCalendar: FSCalendar!
     
-    private var habitDetailVO: HabitDetailVO!
-    private var habitColor: UIColor!
+    private var onEdit: UIBarButtonItem!
+
     
     // MARK: - MVVM-Rx Components
     
@@ -65,19 +64,31 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         self.initFSCalendar()
-        
+        self.initUI()
         self.bindUI()
     }
     
     // MARK: - BindUI
     
     private func bindUI() {
-        print("hi HabitDetailVC")
+        
+        // --------------------------------
+        //             INPUT
+        // --------------------------------
+        
+        // edit 버튼 누르면 edit 모드 바꾸기
+        self.onEdit.rx.tap
+            .debug("onEdit.rx.tap")
+            .bind(to: self.viewModel.inputs.changeEditMode)
+            .disposed(by: self.disposeBag)
+        
+        // --------------------------------
+        //             OUTPUT
+        // --------------------------------
+        
         // data source
         self.viewModel.outputs.getHabitDetailVO
             .subscribe(onNext: { habitDetailVO in
-                // 좋은 방법은 아닌 것 같은데,,,,,,,
-                self.habitDetailVO = habitDetailVO
                 
                 self.challengeName.text = habitDetailVO.challengeName
                 self.habitImg.image = habitDetailVO.habitImg
@@ -95,18 +106,13 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
                 default:
                     ()
                 }
-                self.habitColor = habitDetailVO.color
-                
-                self.alarmTimeSwitch.isEnabled = false
-                self.alarmMusicSwitch.isEnabled = false
-                self.alarmHapticSwitch.isEnabled = false
+                self.attribute.textColor = habitDetailVO.color
                 
                 if habitDetailVO.alarmFlag {
                     self.alarmTimeSwitch.isOn = true
                     self.alarmTime.text = convertAlarmTime(time: habitDetailVO.alarmTime!)
                     self.alarmTime2.text = convertAlarmTime(time: habitDetailVO.alarmTime!)
                     self.alarmTime.textColor = habitDetailVO.color
-                    print("habitDetailVO.color: \(habitDetailVO.color)")
                     self.alarmHaptic.text = habitDetailVO.alarmHaptic
                 } else {
                     self.alarmImg.removeFromSuperview()
@@ -134,28 +140,67 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
                     self.alarmHaptic.text = "없음"
                 }
                 
-                self.alarmDay(btn: self.alarmMon, repeat: habitDetailVO.repeatMon!, color: habitDetailVO.color)
-                self.alarmDay(btn: self.alarmTue, repeat: habitDetailVO.repeatTue!, color: habitDetailVO.color)
-                self.alarmDay(btn: self.alarmWed, repeat: habitDetailVO.repeatWed!, color: habitDetailVO.color)
-                self.alarmDay(btn: self.alarmThu, repeat: habitDetailVO.repeatThu!, color: habitDetailVO.color)
-                self.alarmDay(btn: self.alarmFri, repeat: habitDetailVO.repeatFri!, color: habitDetailVO.color)
-                self.alarmDay(btn: self.alarmSat, repeat: habitDetailVO.repeatSat!, color: habitDetailVO.color)
-                self.alarmDay(btn: self.alarmSun, repeat: habitDetailVO.repeatSun!, color: habitDetailVO.color)
+                self.initAlarmButton(btn: self.alarmMon, repeat: habitDetailVO.repeatMon!, color: habitDetailVO.color)
+                self.initAlarmButton(btn: self.alarmTue, repeat: habitDetailVO.repeatTue!, color: habitDetailVO.color)
+                self.initAlarmButton(btn: self.alarmWed, repeat: habitDetailVO.repeatWed!, color: habitDetailVO.color)
+                self.initAlarmButton(btn: self.alarmThu, repeat: habitDetailVO.repeatThu!, color: habitDetailVO.color)
+                self.initAlarmButton(btn: self.alarmFri, repeat: habitDetailVO.repeatFri!, color: habitDetailVO.color)
+                self.initAlarmButton(btn: self.alarmSat, repeat: habitDetailVO.repeatSat!, color: habitDetailVO.color)
+                self.initAlarmButton(btn: self.alarmSun, repeat: habitDetailVO.repeatSun!, color: habitDetailVO.color)
                 
                 self.memo.text = habitDetailVO.memo
                 self.memo.isEditable = false
             })
             .disposed(by: self.disposeBag)
-        
+
+        // edit mode
+        self.viewModel.outputs.editMode // default mode is not editing mode
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { editMode in
+                if editMode {
+                    // ### open editing Mode ###")
+                    self.alarmTimeSwitch.isEnabled = true
+                    self.alarmMusicSwitch.isEnabled = true
+                    self.alarmHapticSwitch.isEnabled = true
+                    self.onEdit.image = nil
+                    self.onEdit.title = "Done"
+                    self.onEdit.setTitleTextAttributes([.font: UIFont.boldSystemFont(ofSize: 17)], for: .normal)
+                } else { 
+                    // ### not editing Mode ###")
+                    self.alarmTimeSwitch.isEnabled = false
+                    self.alarmMusicSwitch.isEnabled = false
+                    self.alarmHapticSwitch.isEnabled = false
+                    self.onEdit.image = UIImage(systemName: "pencil")
+                    self.onEdit.title = nil
+                }
+            })
+            .disposed(by: self.disposeBag)
         
     }
     
     // MARK: - UI
-    func alarmDay(btn: UIButton, repeat: Bool, color: UIColor) {
+    
+    func initUI() {
+        // edit mode 버튼
+        self.onEdit = UIBarButtonItem().then { [unowned self] in
+            $0.image = UIImage(systemName: "pencil")
+            $0.tintColor = .label
+            self.navigationItem.rightBarButtonItem = $0
+        }
+    }
+    
+    func initAlarmButton(btn: UIButton, repeat: Bool, color: UIColor) {
         btn.layer.cornerRadius = btn.frame.width / 2
         if `repeat` {
             btn.backgroundColor = color
+        } else {
+            btn.backgroundColor = .systemBackground
         }
+    }
+    
+    func enableAllAlarmButton() {
+        self.alarmMon.rx.tap
+            .subscribe(onNext: { })
     }
     
     func initFSCalendar() {
@@ -167,36 +212,46 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         self.fsCalendar.register(FSCalendarCell.self, forCellReuseIdentifier: "cell")
     }
     
+    //    func getHistories(month: Int) -> [HabitHistory] {
+    //        var habitHistoriesByMonth = [HabitHistory]()
+    //        if let habitHistories = self.habitDetailVO.habitHistories {
+    //            for history in habitHistories {
+    //                if getMonth(date: history.date!) == "\(month)" {
+    //                    habitHistoriesByMonth.append(history)
+    //                }
+    //            }
+    //        }
+    //        return habitHistoriesByMonth
+    //    }
+    
+    // MARK: - FS Calendar Delegate
+    
     func calendar(_ calendar: FSCalendar, cellFor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell {
-
-        let cell = calendar.dequeueReusableCell(withIdentifier: "cell", for: date, at: position)
+        var _habitDetailVO: HabitDetailVO? = nil
         
-        cell.layer.cornerRadius = cell.frame.width / 2
-
-        guard let habitHistories = self.habitDetailVO.habitHistories else {
+        self.viewModel.outputs.getHabitDetailVO.subscribe(onNext: {
+            _habitDetailVO = $0
+        })
+        .disposed(by: self.disposeBag)
+        
+        let cell = calendar.dequeueReusableCell(withIdentifier: "cell", for: date, at: position).then {
+            $0.layer.cornerRadius = $0.frame.width / 2
+        }
+        
+        guard let habitDetailVO = _habitDetailVO,
+            let habitHistories = habitDetailVO.habitHistories else {
             fatalError("calendar(_ calendar: FSCalendar, cellFor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell")
         }
-
+        
         for history in habitHistories {
-            if stringDate(date: history.date!) == date && history.doneFlag{
-                cell.backgroundColor = self.habitColor
+            if stringDate(date: history.date!) == date && history.doneFlag {
+                cell.backgroundColor = habitDetailVO.color
                 return cell
             } else {
                 cell.backgroundColor = .systemBackground
             }
         }
+        
         return cell
-    }
-    
-    func getHistories(month: Int) -> [HabitHistory] {
-        var habitHistoriesByMonth = [HabitHistory]()
-        if let habitHistories = self.habitDetailVO.habitHistories {
-            for history in habitHistories {
-                if getMonth(date: history.date!) == "\(month)" {
-                    habitHistoriesByMonth.append(history)
-                }
-            }
-        }
-        return habitHistoriesByMonth
     }
 }

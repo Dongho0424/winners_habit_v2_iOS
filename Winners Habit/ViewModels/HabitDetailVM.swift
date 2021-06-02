@@ -9,13 +9,16 @@ import Foundation
 import WinnersHabitOAS
 import RxSwift
 import RxCocoa
+import UIKit
 
 protocol HabitDetailVMInputs {
-//    var fetchHabitDetailVO: AnyObserver<Void> { get }
+    var changeEditMode: AnyObserver<Void> { get }
+//    var changeAlarmSWtich
 }
 
 protocol HabitDetailVMOutputs {
     var getHabitDetailVO: Observable<HabitDetailVO> { get }
+    var editMode: Observable<Bool> { get }
 }
 
 protocol HabitDetailVMType {
@@ -43,9 +46,12 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
     
     // MARK: - Input
     
+    let changeEditMode: AnyObserver<Void>
+    
     // MARK: - Output
     
     let getHabitDetailVO: Observable<HabitDetailVO>
+    let editMode: Observable<Bool>
     
     // MARK: - Init
     init(currentHabitVO: HabitVO = HabitVO()) {
@@ -53,8 +59,12 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
         
         // MARK: - Streams
         let habitDetailVO$ = Observable<HabitVO>.just(currentHabitVO)
+        let changeEditMode$ = PublishSubject<Void>()
+        let editMode$ = BehaviorSubject(value: false)
  
         // Set Streams
+        
+        // 화면 처음에 데이터 fetching
         self.getHabitDetailVO = habitDetailVO$
             .flatMap { habitVO -> Observable<HabitDetailVO> in
                 let temp1 = domain._API.getHabitDetail(habitVO: habitVO) // server에서 받아온 정보를
@@ -66,5 +76,17 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
             }
             .asObservable()
         
+        // editMode 토글
+        self.editMode = editMode$.asObservable()
+        
+        changeEditMode$
+            .withLatestFrom(self.editMode)
+            .map { !$0 }
+            .subscribe(onNext: editMode$.onNext)
+            .disposed(by: self.disposeBag)
+      
+        // INPUT
+        self.changeEditMode = changeEditMode$.asObserver()
+
     }
 }
