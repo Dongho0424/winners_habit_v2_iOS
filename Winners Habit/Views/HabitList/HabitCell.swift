@@ -15,7 +15,7 @@ class HabitCell: UITableViewCell {
     var cellDisposeBag = DisposeBag()
     
     // MARK: - Stream
-    
+
     private let check$: PublishSubject<Bool>
     private let fetchImage$: PublishSubject<Void>
     private let showHabitDetailView$: PublishSubject<Void>
@@ -35,7 +35,7 @@ class HabitCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         self.check$ = PublishSubject<Bool>()
-        self.checked = self.check$.asObservable()
+        self.checked = self.check$.debug("Cell: self.checked").asObservable()
         self.check = self.check$.asObserver()
         
         self.fetchImage$ = PublishSubject<Void>()
@@ -70,13 +70,12 @@ class HabitCell: UITableViewCell {
         $0.image = checkImg
         $0.tintColor = UIColor(rgb: 0x525252)
     }
-
+    
     func setChecking(done: Bool, date: Date) {
         // 오늘만 check 바꿀 수 있음.
         guard compareDate(date, Date()) else {
             return
         }
-//        print("set Chekcing")
         if done {
             self.hView.addSubview(checkBGView)
             checkBGView.addSubview(checkView)
@@ -99,13 +98,13 @@ class HabitCell: UITableViewCell {
         let cellColor = habitVO.color
         
         self.habitTitle.text = habitVO.habitName
-        
+
         if habitVO.iconImage == nil {
             self.fetchImage$.onNext(())
         } else {
             self.habitImg.image = habitVO.iconImage
         }
-
+        
         if habitVO.alarmFlag {
             self.habitAlarmTime.text = convertAlarmTime(time: habitVO.alarmTime!)
             self.habitAlarmTime.textColor = cellColor
@@ -113,7 +112,7 @@ class HabitCell: UITableViewCell {
             self.alarmImg.isHidden = true
             self.habitAlarmTime.isHidden = true
         }
-
+        
         switch habitVO.attribute {
         case "s/f":
             self.habitAttr.text = "성공/실패"
@@ -125,7 +124,7 @@ class HabitCell: UITableViewCell {
             ()
         }
         self.habitAttr.textColor = cellColor
-
+        
         self.selectedBackgroundView = UIView()
         
         self.hView.layer.cornerRadius = 15

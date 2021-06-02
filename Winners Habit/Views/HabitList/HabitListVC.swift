@@ -44,11 +44,12 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         
         // table view initial settings
         self.tableView.delegate = self
+//        self.tableView.dataSource = self
         self.tableView.separatorStyle = .none
         
         self.initUI()
         
-        self.bindUI()
+        self.bindUIWithViewModel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -73,7 +74,7 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         self.tableView.addGestureRecognizer(longPressRecognizer)
         
         // back button title to nil
-        let backBarButtonIten = UIBarButtonItem(title: nil, style: .plain, target: self, action: nil).then{
+        _ = UIBarButtonItem(title: nil, style: .plain, target: self, action: nil).then { [unowned self] in
             $0.tintColor = .label
             self.navigationItem.backBarButtonItem = $0
         }
@@ -85,12 +86,12 @@ class HabitListVC: UIViewController, UITableViewDelegate {
     
     func initTitle() {
         
-        self.titleCtnView = UIView().then {
+        self.titleCtnView = UIView().then { [unowned self] in
             $0.frame.size = CGSize(width: 200, height: 44)
             self.navigationItem.titleView = $0
         }
         
-        self.dateLabel = UILabel().then {
+        self.dateLabel = UILabel().then { [unowned self] in
             $0.textColor = .label
             $0.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
             $0.sizeToFit()
@@ -104,14 +105,42 @@ class HabitListVC: UIViewController, UITableViewDelegate {
             let prevImg = UIImage(systemName: "chevron.left")
             $0.setImage(prevImg, for: .normal)
             $0.tintColor = .label
-            $0.addTarget(self, action: #selector(goPrevDay(_:)), for: .touchUpInside)
+            $0.rx.tap
+                .subscribe(onNext: { [unowned self] in
+                    // let yesterday
+                    let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate)!
+                    self.currentDate = yesterday
+                    
+                    // set title and arrows
+                    self.setTitleDate(date: dateStringDetail(date: yesterday), leftArrow: true, rightArrow: true)
+                    
+                    // Business logic
+                    self.viewModel.inputs.fetchHabitList.onNext(yesterday)
+                })
+                .disposed(by: self.disposeBag)
         }
         
         self.postDay = UIButton().then {
             let postImg = UIImage(systemName: "chevron.right")
             $0.setImage(postImg, for: .normal)
             $0.tintColor = .label
-            $0.addTarget(self, action: #selector(goPostDay(_:)), for: .touchUpInside)
+            $0.rx.tap
+                .subscribe(onNext: { [unowned self] in
+                    // let tommorrow
+                    let tommorrow = Calendar.current.date(byAdding: .day, value: 1, to: self.currentDate)!
+                    self.currentDate = tommorrow
+                    
+                    // set title view and arrows
+                    if compareDate(tommorrow, Date()) {
+                        self.setTitleDate(date: dateStringDetail(date: tommorrow), leftArrow: true, rightArrow: false)
+                    } else {
+                        self.setTitleDate(date: dateStringDetail(date: tommorrow), leftArrow: true, rightArrow: true)
+                    }
+                    
+                    // Business Logic
+                    self.viewModel.inputs.fetchHabitList.onNext(tommorrow)
+                })
+                .disposed(by: self.disposeBag)
         }
     }
     
@@ -141,34 +170,6 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         }
     }
     
-    @objc func goPrevDay(_ sender: UIButton){
-        // let yesterday
-        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate)!
-        self.currentDate = yesterday
-        
-        // set title and arrows
-        self.setTitleDate(date: dateStringDetail(date: yesterday), leftArrow: true, rightArrow: true)
-        
-        // Business logic
-        self.viewModel.inputs.fetchHabitList.onNext(yesterday)
-    }
-    
-    @objc func goPostDay(_ sender: UIButton) {
-        // let tommorrow
-        let tommorrow = Calendar.current.date(byAdding: .day, value: 1, to: self.currentDate)!
-        self.currentDate = tommorrow
-        
-        // set title view and arrows
-        if compareDate(tommorrow, Date()) {
-            self.setTitleDate(date: dateStringDetail(date: tommorrow), leftArrow: true, rightArrow: false)
-        } else {
-            self.setTitleDate(date: dateStringDetail(date: tommorrow), leftArrow: true, rightArrow: true)
-        }
-        
-        // Business Logic
-        self.viewModel.inputs.fetchHabitList.onNext(tommorrow)
-    }
-    
     @objc func longPress(_ sender: UILongPressGestureRecognizer){
         
         let point = sender.location(in: self.tableView)
@@ -187,7 +188,7 @@ class HabitListVC: UIViewController, UITableViewDelegate {
     
     // MARK: - Bind UI
     
-    func bindUI() {
+    func bindUIWithViewModel() {
         
         // --------------------------------
         //             INPUT
@@ -196,6 +197,7 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         // 처음 로딩할 때, 습관 리스트 및 챌린지 정보 가져오기
         let firstLoad = self.rx.viewWillAppear
             .take(1)
+            .debug("ViewController: rx.viewWillAppear")
             .map { _ in () }
             .share()
         
@@ -215,37 +217,47 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         
         // table view 그리기
         // viewModel의 allHabits와 연결
+        /*
+         6/1 오늘의 정보.
+         allHabits의 새로운 이벤트가 들어가는 순간,
+         이를 구독하는 self.tableView.rx.items의 기존 cell들은 disposed 된다.
+         */
         self.viewModel.outputs.allHabits
+            .debug("ViewController: allHabits")
             .observeOn(MainScheduler.instance)
+//            .delay(RxTimeInterval.milliseconds(500), scheduler: MainScheduler.instance)
             .bind(to: self.tableView.rx.items(cellIdentifier: HabitCell.identifier, cellType: HabitCell.self)) {
                 _, habitVO, cell in
                 
-                // iconImage network에서 불러오기
+                // iconImage network에서 get
                 cell.fetchImage
+                    .debug("ViewController: cell.fetchImage")
                     .map { habitVO }
                     .subscribe(onNext: self.viewModel.inputs.fetchHabitIconImage.onNext)
                     .disposed(by: cell.cellDisposeBag)
-                
+
                 // 특정 습관을 check 하면, habits 업데이트 됨
                 cell.checked
+                    .delay(RxTimeInterval.milliseconds(700), scheduler: MainScheduler.instance)
                     .map { (habitVO, $0) }
+                    .debug("ViewController: cell.checked")
                     .subscribe(onNext: self.viewModel.inputs.checkHabit.onNext)
                     .disposed(by: cell.cellDisposeBag)
-                
+
                 // HabitDetail View 불러올 때
                 cell.getHabitDetailView
                     .map { habitVO }
                     .filter { $0.iconImage != nil }
                     .subscribe(onNext: self.viewModel.inputs.showHabitDetailView.onNext)
-                    .disposed(by: self.disposeBag)
+                    .disposed(by: cell.cellDisposeBag)
                 
-                // cell에 habitVO, viewModel 넣어서
                 cell.initCell(habitVO: habitVO)
             }
             .disposed(by: self.disposeBag)
         
         // challenge 그리기
         self.viewModel.outputs.challenge
+            .debug("ViewController: challenge")
             .subscribe(onNext: { challengeVO in
                 self.challengeName.text  = challengeVO.challengeName
                 self.challengeImage.image = challengeVO.challengeImage
