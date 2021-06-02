@@ -1,5 +1,5 @@
 //
-//  WinnerCell.swift
+//  ChallengeCell.swift
 //  Winners Habit
 //
 //  Created by 최동호 on 2021/05/05.
