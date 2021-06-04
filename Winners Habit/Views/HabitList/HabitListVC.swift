@@ -10,7 +10,6 @@ import Then
 import SnapKit
 import WinnersHabitOAS
 import RxSwift
-import RxViewController
 
 class HabitListVC: UIViewController, UITableViewDelegate {
     
@@ -50,10 +49,12 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         self.initUI()
         
         self.bindUIWithViewModel()
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
+        print("viewWillAppear")
     }
     
     // MARK: - set UI
@@ -86,46 +87,71 @@ class HabitListVC: UIViewController, UITableViewDelegate {
     
     func initTitle() {
         
-        self.titleCtnView = UIView().then { [unowned self] in
+        self.titleCtnView = UIView().then {
             $0.frame.size = CGSize(width: 200, height: 44)
             self.navigationItem.titleView = $0
         }
         
-        self.dateLabel = UILabel().then { [unowned self] in
+        self.dateLabel = UILabel().then {
             $0.textColor = .label
             $0.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
             $0.sizeToFit()
-            titleCtnView.addSubview($0)
+            self.titleCtnView.addSubview($0)
             $0.snp.makeConstraints { make in
-                make.center.equalTo(titleCtnView.snp.center)
+                make.center.equalTo(self.titleCtnView.snp.center)
             }
         }
         
-        self.prevDay = UIButton().then {
+        self.prevDay = UIButton().then { (btn: UIButton) in
+            // UI
             let prevImg = UIImage(systemName: "chevron.left")
-            $0.setImage(prevImg, for: .normal)
-            $0.tintColor = .label
-            $0.rx.tap
-                .subscribe(onNext: { [unowned self] in
+            btn.setImage(prevImg, for: .normal)
+            btn.tintColor = .label
+            self.titleCtnView.addSubview(btn)
+            // use SnapKit to set auto layout settings
+            btn.snp.makeConstraints { make in
+                make.right.equalTo(self.dateLabel.snp.left).offset(-20)
+                make.centerY.equalTo(titleCtnView.snp.centerY)
+            }
+            
+            // RX
+            btn.rx.tap
+                .debug("prevDay")
+                .subscribe(onNext: { [weak self] in
+                    guard let self = self else { return }
+                    
                     // let yesterday
                     let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate)!
                     self.currentDate = yesterday
-                    
+
                     // set title and arrows
                     self.setTitleDate(date: dateStringDetail(date: yesterday), leftArrow: true, rightArrow: true)
-                    
+
                     // Business logic
                     self.viewModel.inputs.fetchHabitList.onNext(yesterday)
-                })
+                }, onCompleted: {print("completed")}, onDisposed: {print("disposed")}
+                )
                 .disposed(by: self.disposeBag)
         }
         
+        
         self.postDay = UIButton().then {
+            // UI
             let postImg = UIImage(systemName: "chevron.right")
             $0.setImage(postImg, for: .normal)
             $0.tintColor = .label
+            self.titleCtnView.addSubview($0)
+            // use SnapKit to set auto layout settings
+            $0.snp.makeConstraints { make in
+                make.left.equalTo(self.dateLabel.snp.right).offset(20)
+                make.centerY.equalTo(titleCtnView.snp.centerY)
+            }
+            
+            // RX
             $0.rx.tap
-                .subscribe(onNext: { [unowned self] in
+                .subscribe(onNext: { [weak self] in
+                    guard let self = self else { return }
+                    
                     // let tommorrow
                     let tommorrow = Calendar.current.date(byAdding: .day, value: 1, to: self.currentDate)!
                     self.currentDate = tommorrow
@@ -146,28 +172,8 @@ class HabitListVC: UIViewController, UITableViewDelegate {
     
     func setTitleDate(date: String, leftArrow: Bool, rightArrow: Bool) {
         self.dateLabel.text = date
-        
-        if leftArrow {
-            self.titleCtnView.addSubview(self.prevDay)
-            // use SnapKit to set auto layout settings
-            self.prevDay.snp.makeConstraints { make in
-                make.right.equalTo(self.dateLabel.snp.left).offset(-10)
-                make.centerY.equalTo(titleCtnView.snp.centerY)
-            }
-        } else {
-            self.prevDay.removeFromSuperview()
-        }
-        
-        if rightArrow {
-            self.titleCtnView.addSubview(self.postDay)
-            // use SnapKit to set auto layout settings
-            self.postDay.snp.makeConstraints { make in
-                make.left.equalTo(self.dateLabel.snp.right).offset(10)
-                make.centerY.equalTo(titleCtnView.snp.centerY)
-            }
-        } else  {
-            self.postDay.removeFromSuperview()
-        }
+        self.prevDay.isHidden = !leftArrow
+        self.postDay.isHidden = !rightArrow
     }
     
     @objc func longPress(_ sender: UILongPressGestureRecognizer){
@@ -185,6 +191,19 @@ class HabitListVC: UIViewController, UITableViewDelegate {
             }
         }
     }
+    /* temp temp temp */
+    @objc func goLeft(_ sender: UIButton) {
+        
+        // let yesterday
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate)!
+        self.currentDate = yesterday
+        // set title and arrows
+        self.setTitleDate(date: dateStringDetail(date: yesterday), leftArrow: true, rightArrow: true)
+        // Business logic
+        self.viewModel.inputs.fetchHabitList.onNext(yesterday)
+    }
+    /* temp temp temp */
+    
     
     // MARK: - Bind UI
     
@@ -193,23 +212,9 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         // --------------------------------
         //             INPUT
         // --------------------------------
-        
-        // 처음 로딩할 때, 습관 리스트 및 챌린지 정보 가져오기
-        let firstLoad = self.rx.viewWillAppear
-            .take(1)
-            .debug("ViewController: rx.viewWillAppear")
-            .map { _ in () }
-            .share()
-        
-        firstLoad
-            .subscribe(onNext: {
-                self.viewModel.inputs.fetchHabitList.onNext(self.currentDate)
-            })
-            .disposed(by: self.disposeBag)
-        
-        firstLoad
-            .bind(to: self.viewModel.inputs.fetchChallenge)
-            .disposed(by: self.disposeBag)
+
+        self.viewModel.inputs.fetchHabitList.onNext(self.currentDate)
+        self.viewModel.inputs.fetchChallenge.onNext(())
         
         // --------------------------------
         //             OUTPUT
@@ -223,15 +228,14 @@ class HabitListVC: UIViewController, UITableViewDelegate {
          이를 구독하는 self.tableView.rx.items의 기존 cell들은 disposed 된다.
          */
         self.viewModel.outputs.allHabits
-            .debug("ViewController: allHabits")
-            .observeOn(MainScheduler.instance)
-//            .delay(RxTimeInterval.milliseconds(500), scheduler: MainScheduler.instance)
+//            .debug("ViewController: allHabits")
+            .observe(on: MainScheduler.instance)
             .bind(to: self.tableView.rx.items(cellIdentifier: HabitCell.identifier, cellType: HabitCell.self)) {
                 _, habitVO, cell in
                 
                 // iconImage network에서 get
                 cell.fetchImage
-                    .debug("ViewController: cell.fetchImage")
+//                    .debug("ViewController: cell.fetchImage")
                     .map { habitVO }
                     .subscribe(onNext: self.viewModel.inputs.fetchHabitIconImage.onNext)
                     .disposed(by: cell.cellDisposeBag)
@@ -240,7 +244,7 @@ class HabitListVC: UIViewController, UITableViewDelegate {
                 cell.checked
                     .delay(RxTimeInterval.milliseconds(700), scheduler: MainScheduler.instance)
                     .map { (habitVO, $0) }
-                    .debug("ViewController: cell.checked")
+//                    .debug("ViewController: cell.checked")
                     .subscribe(onNext: self.viewModel.inputs.checkHabit.onNext)
                     .disposed(by: cell.cellDisposeBag)
 
@@ -248,6 +252,7 @@ class HabitListVC: UIViewController, UITableViewDelegate {
                 cell.getHabitDetailView
                     .map { habitVO }
                     .filter { $0.iconImage != nil }
+//                    .debug("ViewController: cell.getHabitDetailView")
                     .subscribe(onNext: self.viewModel.inputs.showHabitDetailView.onNext)
                     .disposed(by: cell.cellDisposeBag)
                 
@@ -257,7 +262,7 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         
         // challenge 그리기
         self.viewModel.outputs.challenge
-            .debug("ViewController: challenge")
+//            .debug("ViewController: challenge")
             .subscribe(onNext: { challengeVO in
                 self.challengeName.text  = challengeVO.challengeName
                 self.challengeImage.image = challengeVO.challengeImage
@@ -270,15 +275,16 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         // --------------------------------
         
         self.viewModel.outputs.getHabitDetailView
+//            .debug("화면 전환!")
             .filter { $0.iconImage != nil }
             .subscribe(onNext: { [weak self] selectedHabitVO in
                 
-                guard let `self` = self,
+                guard let self = self,
                       let habitDetailVC = self.storyboard?.instantiateViewController(identifier: HabitDetailVC.identifier) as? HabitDetailVC
                 else {
                     fatalError("MainVC: tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)")
                 }
-                
+
                 // habitDetailVC 에 현재 HabitDetailVO injected 된 뷰모델 넘기기
                 habitDetailVC.viewModel = HabitDetailVM(currentHabitVO: selectedHabitVO)
                 

@@ -78,10 +78,10 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
         
         let checkHabit$ = PublishSubject<(HabitVO, Bool)>()
         let fetchHabitList$ = PublishSubject<Date>()
-        let fetchChallenge$ = PublishSubject<Void>()
+        let fetchChallenge$ = BehaviorSubject<Void>(value: ())
         let showHabitDetailView$ = PublishSubject<HabitVO>()
         let fetchHabitIconImage$ = PublishSubject<HabitVO>()
-        let allHabits$ = PublishSubject<[HabitVO]>()
+        let allHabits$ = BehaviorSubject<[HabitVO]>(value: [])
         let errorMessage$ = PublishSubject<NSError>()
         let ad$ = BehaviorSubject<String>(value: "")
         
@@ -110,8 +110,7 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
              기존 [habitVO]에 doneflag만 덮어서 내보내면 되지
              일일이 API 통신을 할 필요는 없으니까.
              */
-            
-            .debug("ViewModel: fetchHabitList STREAM")
+//            .debug("ViewModel: fetchHabitList STREAM")
             .flatMap { date -> Observable<[HabitVO]> in
                 let _histories = domain._API.getHabitHistoriesFromDate(date: date)
                 let _habits = domain._API.getHabits()

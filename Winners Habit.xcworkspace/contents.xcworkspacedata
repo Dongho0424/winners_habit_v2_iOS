@@ -2,6 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:ProxyModular">
+   </FileRef>
+   <FileRef
+      location = "group:OAS">
+   </FileRef>
+   <FileRef
       location = "container:Winners Habit.xcodeproj">
    </FileRef>
 </Workspace>

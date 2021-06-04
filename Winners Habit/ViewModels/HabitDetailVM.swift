@@ -13,11 +13,11 @@ import UIKit
 
 protocol HabitDetailVMInputs {
     var changeEditMode: AnyObserver<Void> { get }
-    var updateHabitDetailVO: AnyObserver<HabitDetailVO> { get }
+    var updateHabitDetailVOOnEditMode: AnyObserver<HabitDetailVO> { get }
 }
 
 protocol HabitDetailVMOutputs {
-    var getHabitDetailVO: Observable<HabitDetailVO> { get }
+    var currentHabitDetailVO: Observable<HabitDetailVO> { get }
     var editMode: Observable<Bool> { get }
 }
 
@@ -47,7 +47,7 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
     // MARK: - Input
     
     let changeEditMode: AnyObserver<Void>
-    var updateHabitDetailVO: AnyObserver<HabitDetailVO>
+    var updateHabitDetailVOOnEditMode: AnyObserver<HabitDetailVO>
     
     // MARK: - Output
     
@@ -55,7 +55,7 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
     // 이런 구조가 예쁘지
     // 서버에서 통신하는거 잘 처리해서 얘로 넘기고
     // 딴거에서 뭐 업데이트되면 잘 처리해서 얘로 넘기고 이런 느낌.
-    let getHabitDetailVO: Observable<HabitDetailVO>
+    let currentHabitDetailVO: Observable<HabitDetailVO>
     let editMode: Observable<Bool>
     
     // MARK: - Init
@@ -66,7 +66,10 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
         let fetchHabitDetailVO$ = Observable<HabitVO>.just(currentHabitVO)
         let changeEditMode$ = PublishSubject<Void>()
         let editMode$ = BehaviorSubject(value: false)
-        let updateHabitDetailVO$ = PublishSubject<HabitDetailVO>()
+        // for input
+        let updateHabitDetailVOOnEditMode$ = PublishSubject<HabitDetailVO>()
+        // for output
+        let currentHabitDetailVO$ = BehaviorSubject<HabitDetailVO>(value: HabitDetailVO())
  
         // ---------------------------------
         //            Set Streams
@@ -75,6 +78,7 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
         // 서버에서 데이터 가져오기
         fetchHabitDetailVO$
             .flatMap { habitVO -> Observable<HabitDetailVO> in
+                
                 let temp1 = domain._API.getHabitDetail(habitVO: habitVO) // server에서 받아온 정보를
                 let temp2 = Observable.just(habitVO) // 원래 있는 정보
                 
@@ -82,7 +86,8 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
                     .map { HabitDetailVO.getHabitDetailVO(habitVO: $1, habitDetail: $0) }
                 return ob
             }
-            .subscribe(onNext: updateHabitDetailVO$.onNext)
+//            .debug("fetchHabitDetailVO$")
+            .subscribe(onNext: currentHabitDetailVO$.onNext)
             .disposed(by: self.disposeBag)
         
         // editMode observable
@@ -97,8 +102,9 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
         
         // edit mode 에서 편집 할 때 마다 업데이트 되는 habitDetailVO 받는 녀석
         // 마지막으로 저장눌렀을 때는 (onComplete) 서버랑 통신
-        updateHabitDetailVO$
-            .do(onNext: updateHabitDetailVO$.onNext) // UI 업데이트용
+        updateHabitDetailVOOnEditMode$
+            .debug("UI UPDATE 후 새로운 habitdetailVO")
+            .do(onNext: currentHabitDetailVO$.onNext) // UI 업데이트용
             .takeLast(1) // 제일 마지막에 오는 놈이 가장 최신 버전의 HabitDetailVO 이므로
             .subscribe(onNext: { _ in
                 /*
@@ -107,12 +113,12 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
                  */
             })
             .disposed(by: self.disposeBag)
-      
+        
         // INPUT
         self.changeEditMode = changeEditMode$.asObserver()
-        self.updateHabitDetailVO = updateHabitDetailVO$.asObserver()
+        self.updateHabitDetailVOOnEditMode = updateHabitDetailVOOnEditMode$.asObserver()
         
         // OUTPUT
-        self.getHabitDetailVO = updateHabitDetailVO$.asObservable()
+        self.currentHabitDetailVO = currentHabitDetailVO$.asObservable()
     }
 }

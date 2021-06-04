@@ -21,12 +21,13 @@
 		2E662E68263FD3CB00638E73 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E662E66263FD3CB00638E73 /* LaunchScreen.storyboard */; };
 		2E746F72265F7805009443AC /* ChallengeVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E746F71265F7805009443AC /* ChallengeVO.swift */; };
 		2E746F77265F93D1009443AC /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E746F76265F93D1009443AC /* API.swift */; };
+		2EAA0D9F266896C500F156B4 /* WinnersHabitOAS in Frameworks */ = {isa = PBXBuildFile; productRef = 2EAA0D9E266896C500F156B4 /* WinnersHabitOAS */; };
 		2EB3B962263FD7D800CDD544 /* HabitCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB3B961263FD7D800CDD544 /* HabitCell.swift */; };
 		2EB3B965263FD80A00CDD544 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB3B964263FD80A00CDD544 /* Utils.swift */; };
 		2EC19FB2265F6955004FE527 /* HabitListVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC19FB1265F6955004FE527 /* HabitListVM.swift */; };
 		2EC84EBF2644F6760076FB28 /* HabitDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC84EBE2644F6760076FB28 /* HabitDetailVC.swift */; };
 		2EC84EC626450F3F0076FB28 /* HabitVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC84EC526450F3F0076FB28 /* HabitVO.swift */; };
-		2EE18191266484D500132C7D /* WinnersHabitOAS in Frameworks */ = {isa = PBXBuildFile; productRef = 2EE18190266484D500132C7D /* WinnersHabitOAS */; };
+		2EE4877C2668B970009FE2CC /* ProxyModular in Frameworks */ = {isa = PBXBuildFile; productRef = 2EE4877B2668B970009FE2CC /* ProxyModular */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,7 +59,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2EE18191266484D500132C7D /* WinnersHabitOAS in Frameworks */,
+				2EE4877C2668B970009FE2CC /* ProxyModular in Frameworks */,
+				2EAA0D9F266896C500F156B4 /* WinnersHabitOAS in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,7 +91,7 @@
 				2E50A7AE263FDB8B0035C8E9 /* Resources */,
 				2E662E5A263FD3CB00638E73 /* Winners Habit */,
 				2E662E59263FD3CB00638E73 /* Products */,
-				2E6BB0322660B9D800E6C609 /* Frameworks */,
+				2EE4877A2668B970009FE2CC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -104,21 +106,14 @@
 		2E662E5A263FD3CB00638E73 /* Winners Habit */ = {
 			isa = PBXGroup;
 			children = (
+				2EC19FA9265F67E5004FE527 /* Views */,
 				2E4F7A8F266386E900A3B561 /* ViewModels */,
 				2EC19FAE265F6835004FE527 /* Utils */,
-				2EC19FA9265F67E5004FE527 /* Views */,
 				2EC19FAC265F67EA004FE527 /* Models */,
 				2EC19FA8265F67DD004FE527 /* App */,
 				2E662E69263FD3CB00638E73 /* Info.plist */,
 			);
 			path = "Winners Habit";
-			sourceTree = "<group>";
-		};
-		2E6BB0322660B9D800E6C609 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		2EC19FA8265F67DD004FE527 /* App */ = {
@@ -196,6 +191,13 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
+		2EE4877A2668B970009FE2CC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -211,11 +213,11 @@
 			buildRules = (
 			);
 			dependencies = (
-				2EE1818C266483F300132C7D /* PBXTargetDependency */,
 			);
 			name = "Winners Habit";
 			packageProductDependencies = (
-				2EE18190266484D500132C7D /* WinnersHabitOAS */,
+				2EAA0D9E266896C500F156B4 /* WinnersHabitOAS */,
+				2EE4877B2668B970009FE2CC /* ProxyModular */,
 			);
 			productName = "Winners Habit";
 			productReference = 2E662E58263FD3CB00638E73 /* Winners Habit.app */;
@@ -244,8 +246,6 @@
 				Base,
 			);
 			mainGroup = 2E662E4F263FD3CB00638E73;
-			packageReferences = (
-			);
 			productRefGroup = 2E662E59263FD3CB00638E73 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -313,13 +313,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		2EE1818C266483F300132C7D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = 2EE1818B266483F300132C7D /* WinnersHabitOAS */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		2E662E61263FD3CB00638E73 /* Main.storyboard */ = {
@@ -519,13 +512,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		2EE1818B266483F300132C7D /* WinnersHabitOAS */ = {
+		2EAA0D9E266896C500F156B4 /* WinnersHabitOAS */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = WinnersHabitOAS;
 		};
-		2EE18190266484D500132C7D /* WinnersHabitOAS */ = {
+		2EE4877B2668B970009FE2CC /* ProxyModular */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = WinnersHabitOAS;
+			productName = ProxyModular;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -35,7 +35,7 @@ class HabitCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         self.check$ = PublishSubject<Bool>()
-        self.checked = self.check$.debug("Cell: self.checked").asObservable()
+        self.checked = self.check$.asObservable()
         self.check = self.check$.asObserver()
         
         self.fetchImage$ = PublishSubject<Void>()
@@ -43,7 +43,9 @@ class HabitCell: UITableViewCell {
         
         self.showHabitDetailView$ = PublishSubject<Void>()
         self.showHabitDetailView = showHabitDetailView$.asObserver()
-        self.getHabitDetailView = showHabitDetailView$.asObservable()
+        self.getHabitDetailView = showHabitDetailView$
+//            .debug("cell click!!! ")
+            .asObservable()
         
         super.init(coder: coder)
     }
