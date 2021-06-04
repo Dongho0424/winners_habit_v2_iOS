@@ -93,7 +93,7 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
         return modifiedRequest
     }
 
-    override open func execute(_ apiResponseQueue: DispatchQueue = WinnersHabitOASAPI.apiResponseQueue, _ completion: @escaping (_ result: Swift.Result<Response<T>, Error>) -> Void) {
+    override open func execute(_ apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue, _ completion: @escaping (_ result: Swift.Result<Response<T>, Error>) -> Void) {
         let urlSessionId = UUID().uuidString
         // Create a new manager for each request to customize its request header
         let urlSession = createURLSession()
@@ -244,7 +244,7 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
         for (key, value) in headers {
             httpHeaders[key] = value
         }
-        for (key, value) in WinnersHabitOASAPI.customHeaders {
+        for (key, value) in OpenAPIClientAPI.customHeaders {
             httpHeaders[key] = value
         }
         return httpHeaders

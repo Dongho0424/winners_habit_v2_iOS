@@ -442,12 +442,6 @@
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="메모" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n2z-TN-bTI">
-                                                <rect key="frame" x="30" y="327" width="28" height="20"/>
-                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2021.01.03" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bNS-4L-CcT">
                                                 <rect key="frame" x="92" y="137" width="82" height="20"/>
                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
@@ -530,7 +524,7 @@
                                                     <color key="titleColor" systemColor="labelColor"/>
                                                 </state>
                                             </button>
-                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="4Zm-94-Xyp">
+                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4Zm-94-Xyp">
                                                 <rect key="frame" x="92" y="327" width="240" height="80"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <constraints>
@@ -539,7 +533,7 @@
                                                 </constraints>
                                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                                 <color key="textColor" systemColor="labelColor"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="14"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                             </textView>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="twl-KQ-2qw" customClass="FSCalendar">
@@ -571,6 +565,12 @@
                                                     </userDefinedRuntimeAttribute>
                                                 </userDefinedRuntimeAttributes>
                                             </view>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="메모" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n2z-TN-bTI">
+                                                <rect key="frame" x="30" y="335" width="28" height="20"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
@@ -581,7 +581,7 @@
                                             <constraint firstAttribute="trailing" secondItem="k7L-Ka-uUz" secondAttribute="trailing" constant="20" symbolic="YES" id="5tW-EQ-quG"/>
                                             <constraint firstItem="bNS-4L-CcT" firstAttribute="centerY" secondItem="War-t9-PAG" secondAttribute="centerY" id="7IG-Uf-H71"/>
                                             <constraint firstItem="War-t9-PAG" firstAttribute="top" secondItem="UJ2-hz-sbC" secondAttribute="bottom" constant="18" id="81y-e4-XqX"/>
-                                            <constraint firstItem="4Zm-94-Xyp" firstAttribute="top" secondItem="n2z-TN-bTI" secondAttribute="top" id="8CH-We-2Il"/>
+                                            <constraint firstItem="4Zm-94-Xyp" firstAttribute="top" secondItem="n2z-TN-bTI" secondAttribute="top" constant="-8" id="8CH-We-2Il"/>
                                             <constraint firstItem="n2z-TN-bTI" firstAttribute="leading" secondItem="3lY-nx-uXO" secondAttribute="leading" constant="30" id="8xo-uz-Kji"/>
                                             <constraint firstItem="Lvx-bj-R4I" firstAttribute="leading" secondItem="hJF-Fz-e95" secondAttribute="leading" id="Ahf-my-ZvC"/>
                                             <constraint firstItem="MJp-bX-koP" firstAttribute="leading" secondItem="3lY-nx-uXO" secondAttribute="leading" constant="30" id="Ata-XU-Ler"/>
@@ -601,7 +601,7 @@
                                             <constraint firstItem="X72-ur-oyA" firstAttribute="centerY" secondItem="b1Y-Fu-CU9" secondAttribute="centerY" id="VoC-mr-TlA"/>
                                             <constraint firstItem="X72-ur-oyA" firstAttribute="leading" secondItem="bNS-4L-CcT" secondAttribute="leading" id="X1r-D1-SqW"/>
                                             <constraint firstItem="hJF-Fz-e95" firstAttribute="leading" secondItem="b1Y-Fu-CU9" secondAttribute="trailing" constant="135" id="Xav-nP-vdm"/>
-                                            <constraint firstItem="n2z-TN-bTI" firstAttribute="top" secondItem="xU5-2M-etX" secondAttribute="bottom" constant="18" id="YFf-0U-tsU"/>
+                                            <constraint firstItem="n2z-TN-bTI" firstAttribute="top" secondItem="xU5-2M-etX" secondAttribute="bottom" constant="26" id="YFf-0U-tsU"/>
                                             <constraint firstItem="k7L-Ka-uUz" firstAttribute="top" secondItem="I5q-9d-fgA" secondAttribute="bottom" id="YL2-WR-v8v"/>
                                             <constraint firstAttribute="trailing" secondItem="I5q-9d-fgA" secondAttribute="trailing" constant="20" id="ZzM-3o-BLY"/>
                                             <constraint firstAttribute="height" constant="800" id="b17-Wj-AaI"/>

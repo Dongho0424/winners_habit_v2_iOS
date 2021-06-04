@@ -44,7 +44,7 @@ class API {
         HabitHistory(habitId: 1, date: "2021-05-29", doneFlag: false),
         HabitHistory(habitId: 1, date: "2021-05-30", doneFlag: true),
     ])
-    private let _habitDetail_2 = HabitDetail(userHabitId: 1, createDate: "2021-01-03", alarmFlag: true, alarmTime: "06:30:00", alarmMusic: "Oh my god", alarmHaptic: "Basic call", repeatMon: true, repeatTue: true, repeatWed: true, repeatThu: true, repeatFri: true, repeatSat: true, repeatSun: true, memo: "아침 운동", habitHistories: [
+    private let _habitDetail_2 = HabitDetail(userHabitId: 1, createDate: "2021-01-03", alarmFlag: true, alarmTime: "06:30:00", alarmMusic: nil, alarmHaptic: "Basic call", repeatMon: true, repeatTue: true, repeatWed: true, repeatThu: true, repeatFri: true, repeatSat: true, repeatSun: true, memo: "아침 운동", habitHistories: [
         HabitHistory(habitId: 2, date: "2021-05-24", doneFlag: false),
         HabitHistory(habitId: 2, date: "2021-05-25", doneFlag: true),
         HabitHistory(habitId: 2, date: "2021-05-26", doneFlag: false),

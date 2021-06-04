@@ -77,7 +77,7 @@ func dateSring(date: String) -> String {
     return dateStringDetail(date: tempDate)
 }
 
-// return 4월 24일 (월)
+// Date(어쩌구) -> 4월 24일 (월)
 func dateStringDetail(date: Date) -> String {
     let strDf = DateFormatter().then {
         $0.dateFormat = "M'월' d'일'"

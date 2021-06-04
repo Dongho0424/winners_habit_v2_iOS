@@ -1,10 +1,10 @@
-name: WinnersHabitOAS
+name: OpenAPIClient
 targets:
-  WinnersHabitOAS:
+  OpenAPIClient:
     type: framework
     platform: iOS
     deploymentTarget: "9.0"
-    sources: [WinnersHabitOAS]
+    sources: [OpenAPIClient]
     info:
       path: ./Info.plist
       version: 1.0.0

@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name = 'WinnersHabitOAS'
+  s.name = 'OpenAPIClient'
   s.ios.deployment_target = '9.0'
   s.osx.deployment_target = '10.11'
   s.tvos.deployment_target = '9.0'
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.authors = 'OpenAPI Generator'
   s.license = 'Proprietary'
   s.homepage = 'https://github.com/OpenAPITools/openapi-generator'
-  s.summary = 'WinnersHabitOAS Swift SDK'
-  s.source_files = 'WinnersHabitOAS/Classes/**/*.swift'
+  s.summary = 'OpenAPIClient Swift SDK'
+  s.source_files = 'OpenAPIClient/Classes/**/*.swift'
   s.dependency 'RxSwift', '~> 5.1.1'
 end

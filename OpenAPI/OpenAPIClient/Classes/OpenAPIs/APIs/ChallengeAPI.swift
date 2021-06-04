@@ -15,7 +15,7 @@ open class ChallengeAPI {
      - parameter apiResponseQueue: The queue on which api response is dispatched.
      - returns: Observable<[Challenge]>
      */
-    open class func allChallengesGet(apiResponseQueue: DispatchQueue = WinnersHabitOASAPI.apiResponseQueue) -> Observable<[Challenge]> {
+    open class func allChallengesGet(apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue) -> Observable<[Challenge]> {
         return Observable.create { observer -> Disposable in
             allChallengesGetWithRequestBuilder().execute(apiResponseQueue) { result -> Void in
                 switch result {
@@ -37,7 +37,7 @@ open class ChallengeAPI {
      */
     open class func allChallengesGetWithRequestBuilder() -> RequestBuilder<[Challenge]> {
         let path = "/allChallenges"
-        let URLString = WinnersHabitOASAPI.basePath + path
+        let URLString = OpenAPIClientAPI.basePath + path
         let parameters: [String: Any]? = nil
 
         let url = URLComponents(string: URLString)
@@ -48,7 +48,7 @@ open class ChallengeAPI {
 
         let headerParameters = APIHelper.rejectNilHeaders(nillableHeaders)
 
-        let requestBuilder: RequestBuilder<[Challenge]>.Type = WinnersHabitOASAPI.requestBuilderFactory.getBuilder()
+        let requestBuilder: RequestBuilder<[Challenge]>.Type = OpenAPIClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, headers: headerParameters)
     }
@@ -60,7 +60,7 @@ open class ChallengeAPI {
      - parameter apiResponseQueue: The queue on which api response is dispatched.
      - returns: Observable<ChallengeInfo>
      */
-    open class func challengeGet(userId: Int64, apiResponseQueue: DispatchQueue = WinnersHabitOASAPI.apiResponseQueue) -> Observable<ChallengeInfo> {
+    open class func challengeGet(userId: Int64, apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue) -> Observable<ChallengeInfo> {
         return Observable.create { observer -> Disposable in
             challengeGetWithRequestBuilder(userId: userId).execute(apiResponseQueue) { result -> Void in
                 switch result {
@@ -83,7 +83,7 @@ open class ChallengeAPI {
      */
     open class func challengeGetWithRequestBuilder(userId: Int64) -> RequestBuilder<ChallengeInfo> {
         let path = "/challenge"
-        let URLString = WinnersHabitOASAPI.basePath + path
+        let URLString = OpenAPIClientAPI.basePath + path
         let parameters: [String: Any]? = nil
 
         var url = URLComponents(string: URLString)
@@ -97,7 +97,7 @@ open class ChallengeAPI {
 
         let headerParameters = APIHelper.rejectNilHeaders(nillableHeaders)
 
-        let requestBuilder: RequestBuilder<ChallengeInfo>.Type = WinnersHabitOASAPI.requestBuilderFactory.getBuilder()
+        let requestBuilder: RequestBuilder<ChallengeInfo>.Type = OpenAPIClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, headers: headerParameters)
     }

@@ -17,7 +17,7 @@ open class HabitAPI {
      - parameter apiResponseQueue: The queue on which api response is dispatched.
      - returns: Observable<HabitDetail>
      */
-    open class func habitHabitIdGet(habitId: Int, userId: Int, apiResponseQueue: DispatchQueue = WinnersHabitOASAPI.apiResponseQueue) -> Observable<HabitDetail> {
+    open class func habitHabitIdGet(habitId: Int, userId: Int, apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue) -> Observable<HabitDetail> {
         return Observable.create { observer -> Disposable in
             habitHabitIdGetWithRequestBuilder(habitId: habitId, userId: userId).execute(apiResponseQueue) { result -> Void in
                 switch result {
@@ -45,7 +45,7 @@ open class HabitAPI {
         let habitIdPreEscape = "\(APIHelper.mapValueToPathItem(habitId))"
         let habitIdPostEscape = habitIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: "{habitId}", with: habitIdPostEscape, options: .literal, range: nil)
-        let URLString = WinnersHabitOASAPI.basePath + path
+        let URLString = OpenAPIClientAPI.basePath + path
         let parameters: [String: Any]? = nil
 
         var url = URLComponents(string: URLString)
@@ -59,7 +59,7 @@ open class HabitAPI {
 
         let headerParameters = APIHelper.rejectNilHeaders(nillableHeaders)
 
-        let requestBuilder: RequestBuilder<HabitDetail>.Type = WinnersHabitOASAPI.requestBuilderFactory.getBuilder()
+        let requestBuilder: RequestBuilder<HabitDetail>.Type = OpenAPIClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, headers: headerParameters)
     }
@@ -72,7 +72,7 @@ open class HabitAPI {
      - parameter apiResponseQueue: The queue on which api response is dispatched.
      - returns: Observable<HabitHistory>
      */
-    open class func habitHistoryGet(userId: Int, date: String, apiResponseQueue: DispatchQueue = WinnersHabitOASAPI.apiResponseQueue) -> Observable<HabitHistory> {
+    open class func habitHistoryGet(userId: Int, date: String, apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue) -> Observable<HabitHistory> {
         return Observable.create { observer -> Disposable in
             habitHistoryGetWithRequestBuilder(userId: userId, date: date).execute(apiResponseQueue) { result -> Void in
                 switch result {
@@ -96,7 +96,7 @@ open class HabitAPI {
      */
     open class func habitHistoryGetWithRequestBuilder(userId: Int, date: String) -> RequestBuilder<HabitHistory> {
         let path = "/habit-history"
-        let URLString = WinnersHabitOASAPI.basePath + path
+        let URLString = OpenAPIClientAPI.basePath + path
         let parameters: [String: Any]? = nil
 
         var url = URLComponents(string: URLString)
@@ -111,7 +111,7 @@ open class HabitAPI {
 
         let headerParameters = APIHelper.rejectNilHeaders(nillableHeaders)
 
-        let requestBuilder: RequestBuilder<HabitHistory>.Type = WinnersHabitOASAPI.requestBuilderFactory.getBuilder()
+        let requestBuilder: RequestBuilder<HabitHistory>.Type = OpenAPIClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, headers: headerParameters)
     }
