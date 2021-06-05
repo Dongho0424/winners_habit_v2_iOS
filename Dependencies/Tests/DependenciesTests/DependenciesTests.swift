@@ -1,12 +1,12 @@
 import XCTest
-@testable import ProxyModular
+@testable import Dependencies
 
-final class ProxyModularTests: XCTestCase {
+final class DependenciesTests: XCTestCase {
     func testExample() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(ProxyModular().text, "Hello, World!")
+        XCTAssertEqual(Dependencies().text, "Hello, World!")
     }
 
     static var allTests = [

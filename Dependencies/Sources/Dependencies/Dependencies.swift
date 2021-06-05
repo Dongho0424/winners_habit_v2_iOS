@@ -1,3 +1,3 @@
-struct ProxyModular {
+struct Dependencies {
     var text = "Hello, World!"
 }

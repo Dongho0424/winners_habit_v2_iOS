@@ -21,13 +21,13 @@
 		2E662E68263FD3CB00638E73 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E662E66263FD3CB00638E73 /* LaunchScreen.storyboard */; };
 		2E746F72265F7805009443AC /* ChallengeVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E746F71265F7805009443AC /* ChallengeVO.swift */; };
 		2E746F77265F93D1009443AC /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E746F76265F93D1009443AC /* API.swift */; };
+		2E9F63B3266B6767008C65C3 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 2E9F63B2266B6767008C65C3 /* Dependencies */; };
 		2EAA0D9F266896C500F156B4 /* WinnersHabitOAS in Frameworks */ = {isa = PBXBuildFile; productRef = 2EAA0D9E266896C500F156B4 /* WinnersHabitOAS */; };
 		2EB3B962263FD7D800CDD544 /* HabitCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB3B961263FD7D800CDD544 /* HabitCell.swift */; };
 		2EB3B965263FD80A00CDD544 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB3B964263FD80A00CDD544 /* Utils.swift */; };
 		2EC19FB2265F6955004FE527 /* HabitListVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC19FB1265F6955004FE527 /* HabitListVM.swift */; };
 		2EC84EBF2644F6760076FB28 /* HabitDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC84EBE2644F6760076FB28 /* HabitDetailVC.swift */; };
 		2EC84EC626450F3F0076FB28 /* HabitVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC84EC526450F3F0076FB28 /* HabitVO.swift */; };
-		2EE4877C2668B970009FE2CC /* ProxyModular in Frameworks */ = {isa = PBXBuildFile; productRef = 2EE4877B2668B970009FE2CC /* ProxyModular */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -59,8 +59,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2EE4877C2668B970009FE2CC /* ProxyModular in Frameworks */,
 				2EAA0D9F266896C500F156B4 /* WinnersHabitOAS in Frameworks */,
+				2E9F63B3266B6767008C65C3 /* Dependencies in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,7 +217,7 @@
 			name = "Winners Habit";
 			packageProductDependencies = (
 				2EAA0D9E266896C500F156B4 /* WinnersHabitOAS */,
-				2EE4877B2668B970009FE2CC /* ProxyModular */,
+				2E9F63B2266B6767008C65C3 /* Dependencies */,
 			);
 			productName = "Winners Habit";
 			productReference = 2E662E58263FD3CB00638E73 /* Winners Habit.app */;
@@ -512,13 +512,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		2E9F63B2266B6767008C65C3 /* Dependencies */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Dependencies;
+		};
 		2EAA0D9E266896C500F156B4 /* WinnersHabitOAS */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = WinnersHabitOAS;
-		};
-		2EE4877B2668B970009FE2CC /* ProxyModular */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ProxyModular;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

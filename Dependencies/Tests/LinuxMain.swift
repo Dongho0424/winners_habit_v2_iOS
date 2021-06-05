@@ -1,7 +1,7 @@
 import XCTest
 
-import ProxyModularTests
+import DependenciesTests
 
 var tests = [XCTestCaseEntry]()
-tests += ProxyModularTests.allTests()
+tests += DependenciesTests.allTests()
 XCTMain(tests)
