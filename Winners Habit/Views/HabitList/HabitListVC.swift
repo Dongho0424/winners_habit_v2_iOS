@@ -49,7 +49,6 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         self.initUI()
         
         self.bindUIWithViewModel()
-
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -68,6 +67,7 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         self.navigationController?.view.backgroundColor = UIColor.clear
         
         // set title by today date
+//        self.initTitleView()
         self.initTitleView()
         
         // long press recognizer
@@ -82,13 +82,17 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         
         // currentDate는 오늘로
         self.currentDate = Date()
+//        self.setTitleDate(date: dateStringDetail(date: self.currentDate), leftArrow: true, rightArrow: false)
         self.setTitleDate(date: dateStringDetail(date: self.currentDate), leftArrow: true, rightArrow: false)
     }
     
     func initTitleView() {
         
-        self.titleCtnView = UIView().then {
-            $0.frame.size = CGSize(width: 300, height: 44)
+        let stackView = UIStackView().then {
+            $0.axis = .horizontal
+            $0.distribution = .equalSpacing
+            $0.spacing = 15
+            $0.alignment = .center
         }
         
         self.dateLabel = UILabel().then {
@@ -97,89 +101,45 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         }
         
         self.prevDay = UIButton().then { (btn: UIButton) in
-            // UI
             let prevImg = UIImage(systemName: "chevron.left")
             btn.setImage(prevImg, for: .normal)
             btn.tintColor = .label
-
-            // RX
-            btn.rx.tap
-                .debug("prevDay")
-                .subscribe(onNext: { [weak self] in
-                    guard let self = self else { return }
-                    
-                    // let yesterday
-                    let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate)!
-                    self.currentDate = yesterday
-                    
-                    // set title and arrows
-                    self.setTitleDate(date: dateStringDetail(date: yesterday), leftArrow: true, rightArrow: true)
-                    
-                    // Business Logic
-                    self.viewModel.inputs.fetchHabitList.onNext(yesterday)
-                    
-                }, onCompleted: {print("completed")}, onDisposed: {print("disposed")}
-                )
-                .disposed(by: self.disposeBag)
         }
         
-        
         self.postDay = UIButton().then { btn in
-            // UI
             let postImg = UIImage(systemName: "chevron.right")
             btn.setImage(postImg, for: .normal)
             btn.tintColor = .label
-
-            // RX
-            btn.rx.tap
-                .subscribe(onNext: { [weak self] in
-                    guard let self = self else { return }
-                    
-                    // let tommorrow
-                    let tommorrow = Calendar.current.date(byAdding: .day, value: 1, to: self.currentDate)!
-                    self.currentDate = tommorrow
-                    
-                    // set title view and arrows
-                    if compareDate(tommorrow, Date()) {
-                        self.setTitleDate(date: dateStringDetail(date: tommorrow), leftArrow: true, rightArrow: false)
-                    } else {
-                        self.setTitleDate(date: dateStringDetail(date: tommorrow), leftArrow: true, rightArrow: true)
-                    }
-                    
-                    // Business Logic
-                    self.viewModel.inputs.fetchHabitList.onNext(tommorrow)
-                })
-                .disposed(by: self.disposeBag)
         }
         
-        self.titleCtnView.addSubview(self.dateLabel)
-        self.titleCtnView.addSubview(self.prevDay)
-        self.titleCtnView.addSubview(self.postDay)
+        stackView.addArrangedSubview(self.prevDay)
+        stackView.addArrangedSubview(self.dateLabel)
+        stackView.addArrangedSubview(self.postDay)
         
-        self.navigationItem.titleView = self.titleCtnView
-        
+        self.navigationItem.titleView = stackView
     }
+
     
     func setTitleDate(date: String, leftArrow: Bool, rightArrow: Bool) {
-        
-        let OFFSET: CGFloat = 15
-        
+
         self.dateLabel.text = date
-        self.dateLabel.sizeToFit()
-        self.dateLabel.center = self.titleCtnView.center
         
-        self.prevDay.isHidden = !leftArrow
-        self.prevDay.frame.size = CGSize(width: 15, height: 44)
-        self.prevDay.frame.origin.x = self.dateLabel.frame.origin.x - self.prevDay.frame.width - OFFSET
-        self.prevDay.center.y = self.dateLabel.center.y
+        if leftArrow {
+            self.prevDay.tintColor = .label
+            self.prevDay.isEnabled = true
+        } else {
+            self.prevDay.tintColor = .systemBackground
+            self.prevDay.isEnabled = false
+        }
         
-        self.postDay.isHidden = !rightArrow
-        self.postDay.frame.size = CGSize(width: 15, height: 44)
-        self.postDay.frame.origin.x = self.dateLabel.frame.origin.x + self.dateLabel.frame.width + OFFSET
-        self.postDay.center.y = self.dateLabel.center.y
+        if rightArrow {
+            self.postDay.tintColor = .label
+            self.postDay.isEnabled = true
+        } else {
+            self.postDay.tintColor = .systemBackground
+            self.postDay.isEnabled = false
+        }
     }
-    
-    
     
     @objc func longPress(_ sender: UILongPressGestureRecognizer){
         
@@ -196,19 +156,6 @@ class HabitListVC: UIViewController, UITableViewDelegate {
             }
         }
     }
-    /* temp temp temp */
-    @objc func goLeft(_ sender: UIButton) {
-        
-        // let yesterday
-        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate)!
-        self.currentDate = yesterday
-        // set title and arrows
-        self.setTitleDate(date: dateStringDetail(date: yesterday), leftArrow: true, rightArrow: true)
-        // Business logic
-        self.viewModel.inputs.fetchHabitList.onNext(yesterday)
-    }
-    /* temp temp temp */
-    
     
     // MARK: - Bind UI
     
@@ -220,6 +167,45 @@ class HabitListVC: UIViewController, UITableViewDelegate {
 
         self.viewModel.inputs.fetchHabitList.onNext(self.currentDate)
         self.viewModel.inputs.fetchChallenge.onNext(())
+        
+        // RX
+        self.prevDay.rx.tap
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+
+                // let yesterday
+                let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate)!
+                self.currentDate = yesterday
+
+                // set title and arrows
+                self.setTitleDate(date: dateStringDetail(date: yesterday), leftArrow: true, rightArrow: true)
+
+                // Business Logic
+                self.viewModel.inputs.fetchHabitList.onNext(yesterday)
+
+            }, onCompleted: {print("completed")}, onDisposed: {print("disposed")}
+            )
+            .disposed(by: self.disposeBag)
+
+        // RX
+        self.postDay.rx.tap
+            .debug("prevDay")
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+
+                // let yesterday
+                let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate)!
+                self.currentDate = yesterday
+
+                // set title and arrows
+                self.setTitleDate(date: dateStringDetail(date: yesterday), leftArrow: true, rightArrow: true)
+
+                // Business Logic
+                self.viewModel.inputs.fetchHabitList.onNext(yesterday)
+
+            }, onCompleted: {print("completed")}, onDisposed: {print("disposed")}
+            )
+            .disposed(by: self.disposeBag)
         
         // --------------------------------
         //             OUTPUT
