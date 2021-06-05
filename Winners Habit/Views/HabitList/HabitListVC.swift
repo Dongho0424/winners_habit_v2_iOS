@@ -68,7 +68,7 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         self.navigationController?.view.backgroundColor = UIColor.clear
         
         // set title by today date
-        self.initTitle()
+        self.initTitleView()
         
         // long press recognizer
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPress(_:)))
@@ -85,21 +85,15 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         self.setTitleDate(date: dateStringDetail(date: self.currentDate), leftArrow: true, rightArrow: false)
     }
     
-    func initTitle() {
+    func initTitleView() {
         
         self.titleCtnView = UIView().then {
-            $0.frame.size = CGSize(width: 200, height: 44)
-            self.navigationItem.titleView = $0
+            $0.frame.size = CGSize(width: 300, height: 44)
         }
         
         self.dateLabel = UILabel().then {
             $0.textColor = .label
             $0.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
-            $0.sizeToFit()
-            self.titleCtnView.addSubview($0)
-            $0.snp.makeConstraints { make in
-                make.center.equalTo(self.titleCtnView.snp.center)
-            }
         }
         
         self.prevDay = UIButton().then { (btn: UIButton) in
@@ -107,13 +101,7 @@ class HabitListVC: UIViewController, UITableViewDelegate {
             let prevImg = UIImage(systemName: "chevron.left")
             btn.setImage(prevImg, for: .normal)
             btn.tintColor = .label
-            self.titleCtnView.addSubview(btn)
-            // use SnapKit to set auto layout settings
-            btn.snp.makeConstraints { make in
-                make.right.equalTo(self.dateLabel.snp.left).offset(-20)
-                make.centerY.equalTo(titleCtnView.snp.centerY)
-            }
-            
+
             // RX
             btn.rx.tap
                 .debug("prevDay")
@@ -123,32 +111,27 @@ class HabitListVC: UIViewController, UITableViewDelegate {
                     // let yesterday
                     let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate)!
                     self.currentDate = yesterday
-
+                    
                     // set title and arrows
                     self.setTitleDate(date: dateStringDetail(date: yesterday), leftArrow: true, rightArrow: true)
-
-                    // Business logic
+                    
+                    // Business Logic
                     self.viewModel.inputs.fetchHabitList.onNext(yesterday)
+                    
                 }, onCompleted: {print("completed")}, onDisposed: {print("disposed")}
                 )
                 .disposed(by: self.disposeBag)
         }
         
         
-        self.postDay = UIButton().then {
+        self.postDay = UIButton().then { btn in
             // UI
             let postImg = UIImage(systemName: "chevron.right")
-            $0.setImage(postImg, for: .normal)
-            $0.tintColor = .label
-            self.titleCtnView.addSubview($0)
-            // use SnapKit to set auto layout settings
-            $0.snp.makeConstraints { make in
-                make.left.equalTo(self.dateLabel.snp.right).offset(20)
-                make.centerY.equalTo(titleCtnView.snp.centerY)
-            }
-            
+            btn.setImage(postImg, for: .normal)
+            btn.tintColor = .label
+
             // RX
-            $0.rx.tap
+            btn.rx.tap
                 .subscribe(onNext: { [weak self] in
                     guard let self = self else { return }
                     
@@ -168,13 +151,35 @@ class HabitListVC: UIViewController, UITableViewDelegate {
                 })
                 .disposed(by: self.disposeBag)
         }
+        
+        self.titleCtnView.addSubview(self.dateLabel)
+        self.titleCtnView.addSubview(self.prevDay)
+        self.titleCtnView.addSubview(self.postDay)
+        
+        self.navigationItem.titleView = self.titleCtnView
+        
     }
     
     func setTitleDate(date: String, leftArrow: Bool, rightArrow: Bool) {
+        
+        let OFFSET: CGFloat = 15
+        
         self.dateLabel.text = date
+        self.dateLabel.sizeToFit()
+        self.dateLabel.center = self.titleCtnView.center
+        
         self.prevDay.isHidden = !leftArrow
+        self.prevDay.frame.size = CGSize(width: 15, height: 44)
+        self.prevDay.frame.origin.x = self.dateLabel.frame.origin.x - self.prevDay.frame.width - OFFSET
+        self.prevDay.center.y = self.dateLabel.center.y
+        
         self.postDay.isHidden = !rightArrow
+        self.postDay.frame.size = CGSize(width: 15, height: 44)
+        self.postDay.frame.origin.x = self.dateLabel.frame.origin.x + self.dateLabel.frame.width + OFFSET
+        self.postDay.center.y = self.dateLabel.center.y
     }
+    
+    
     
     @objc func longPress(_ sender: UILongPressGestureRecognizer){
         

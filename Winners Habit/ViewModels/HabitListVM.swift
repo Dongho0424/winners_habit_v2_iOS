@@ -111,6 +111,7 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
              일일이 API 통신을 할 필요는 없으니까.
              */
 //            .debug("ViewModel: fetchHabitList STREAM")
+//            .timeout(RxTimeInterval.milliseconds(300), scheduler: MainScheduler.instance)
             .flatMap { date -> Observable<[HabitVO]> in
                 let _histories = domain._API.getHabitHistoriesFromDate(date: date)
                 let _habits = domain._API.getHabits()

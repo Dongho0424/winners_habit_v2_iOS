@@ -102,7 +102,7 @@
             </objects>
             <point key="canvasLocation" x="337.68115942028987" y="-129.24107142857142"/>
         </scene>
-        <!--< 01.04 (월)-->
+        <!--<  4월 24일 (월)  >-->
         <scene sceneID="uvu-8u-A0d">
             <objects>
                 <viewController id="ege-Ky-qeU" customClass="HabitListVC" customModule="Winners_Habit" customModuleProvider="target" sceneMemberID="viewController">
@@ -312,7 +312,7 @@
                             <constraint firstItem="0gf-7g-k65" firstAttribute="bottom" secondItem="QFk-O1-YFz" secondAttribute="bottom" id="zCa-4a-KY6"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="&lt; 01.04 (월)" id="TPL-SH-MFc"/>
+                    <navigationItem key="navigationItem" title="&lt;  4월 24일 (월)  &gt;" id="TPL-SH-MFc"/>
                     <connections>
                         <outlet property="challengeDDay" destination="eiP-kH-ARB" id="RX0-mH-YVA"/>
                         <outlet property="challengeImage" destination="l8U-Lz-Umr" id="IW3-XT-G73"/>

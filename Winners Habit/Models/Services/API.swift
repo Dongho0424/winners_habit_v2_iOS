@@ -43,6 +43,12 @@ class API {
         HabitHistory(habitId: 1, date: "2021-05-28", doneFlag: true),
         HabitHistory(habitId: 1, date: "2021-05-29", doneFlag: false),
         HabitHistory(habitId: 1, date: "2021-05-30", doneFlag: true),
+        HabitHistory(habitId: 1, date: "2021-05-31", doneFlag: true),
+        HabitHistory(habitId: 1, date: "2021-06-01", doneFlag: true),
+        HabitHistory(habitId: 1, date: "2021-06-02", doneFlag: true),
+        HabitHistory(habitId: 1, date: "2021-06-03", doneFlag: false),
+        HabitHistory(habitId: 1, date: "2021-06-04", doneFlag: true),
+        HabitHistory(habitId: 1, date: "2021-06-05", doneFlag: true),
     ])
     private let _habitDetail_2 = HabitDetail(userHabitId: 1, createDate: "2021-01-03", alarmFlag: true, alarmTime: "06:30:00", alarmMusic: nil, alarmHaptic: "Basic call", repeatMon: true, repeatTue: true, repeatWed: true, repeatThu: true, repeatFri: true, repeatSat: true, repeatSun: true, memo: "아침 운동", habitHistories: [
         HabitHistory(habitId: 2, date: "2021-05-24", doneFlag: false),
@@ -52,6 +58,12 @@ class API {
         HabitHistory(habitId: 2, date: "2021-05-28", doneFlag: false),
         HabitHistory(habitId: 2, date: "2021-05-29", doneFlag: false),
         HabitHistory(habitId: 2, date: "2021-05-30", doneFlag: false),
+        HabitHistory(habitId: 2, date: "2021-05-31", doneFlag: true),
+        HabitHistory(habitId: 2, date: "2021-06-01", doneFlag: true),
+        HabitHistory(habitId: 2, date: "2021-06-02", doneFlag: true),
+        HabitHistory(habitId: 2, date: "2021-06-03", doneFlag: false),
+        HabitHistory(habitId: 2, date: "2021-06-04", doneFlag: true),
+        HabitHistory(habitId: 2, date: "2021-06-05", doneFlag: true),
     ])
     private let _habitDetail_3 = HabitDetail(userHabitId: 1, createDate: "2021-01-03", alarmFlag: false, alarmTime: nil, alarmMusic: nil, alarmHaptic: nil, repeatMon: true, repeatTue: true, repeatWed: true, repeatThu: false, repeatFri: false, repeatSat: false, repeatSun: false, memo: "월든 1회독", habitHistories: [
         HabitHistory(habitId: 3, date: "2021-05-24", doneFlag: true),
@@ -61,6 +73,12 @@ class API {
         HabitHistory(habitId: 3, date: "2021-05-28", doneFlag: true),
         HabitHistory(habitId: 3, date: "2021-05-29", doneFlag: false),
         HabitHistory(habitId: 3, date: "2021-05-30", doneFlag: true),
+        HabitHistory(habitId: 3, date: "2021-05-31", doneFlag: true),
+        HabitHistory(habitId: 3, date: "2021-06-01", doneFlag: true),
+        HabitHistory(habitId: 3, date: "2021-06-02", doneFlag: true),
+        HabitHistory(habitId: 3, date: "2021-06-03", doneFlag: false),
+        HabitHistory(habitId: 3, date: "2021-06-04", doneFlag: true),
+        HabitHistory(habitId: 3, date: "2021-06-05", doneFlag: true),
     ])
     
     
@@ -72,20 +90,19 @@ class API {
     func getHabitHistoriesFromDate(date: Date) -> Observable<[HabitHistory]> {
         let temp: [HabitHistory]
         switch dateStringDetail(date: date) {
-        case "5월 30일 (일)":
-            temp = _habitHistories_1
-        case "5월 29일 (토)":
-            temp = _habitHistories_2
-        case "5월 28일 (금)":
-            temp = _habitHistories_1
-        case "5월 27일 (목)":
-            temp = _habitHistories_2
-        case "5월 26일 (수)":
-            temp = _habitHistories_3
-        case "5월 25일 (화)":
-            temp = _habitHistories_2
-        default:
-            temp = _habitHistories_1
+        case "6월 5일 (토)": temp = _habitHistories_1
+        case "6월 4일 (금)": temp = _habitHistories_2
+        case "6월 3일 (목)": temp = _habitHistories_2
+        case "6월 2일 (수)": temp = _habitHistories_1
+        case "6월 1일 (화)": temp = _habitHistories_3
+        case "5월 31일 (월)": temp = _habitHistories_2
+        case "5월 30일 (일)": temp = _habitHistories_1
+        case "5월 29일 (토)": temp = _habitHistories_2
+        case "5월 28일 (금)": temp = _habitHistories_1
+        case "5월 27일 (목)": temp = _habitHistories_2
+        case "5월 26일 (수)": temp = _habitHistories_3
+        case "5월 25일 (화)": temp = _habitHistories_2
+        default: temp = _habitHistories_1
         }
         return Observable.just(temp)
     }
