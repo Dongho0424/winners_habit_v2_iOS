@@ -17,26 +17,32 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     
     // MARK: - UI Components
     
+    
     @IBOutlet weak var challengeName: UILabel!
     @IBOutlet weak var habitImg: UIImageView!
     @IBOutlet weak var habitTitle: UILabel!
     @IBOutlet weak var alarmImg: UIImageView!
     @IBOutlet weak var alarmTime: UILabel!
     @IBOutlet weak var attribute: UILabel!
+    
     @IBOutlet weak var createDate: UILabel!
     @IBOutlet weak var alarmTime2: UILabel!
     @IBOutlet weak var alarmMusic: UILabel!
     @IBOutlet weak var alarmHaptic: UILabel!
+    
     @IBOutlet weak var alarmTimeSwitch: UISwitch!
     @IBOutlet weak var alarmMusicSwitch: UISwitch!
     @IBOutlet weak var alarmHapticSwitch: UISwitch!
-    @IBOutlet weak var alarmMon: UIButton!
-    @IBOutlet weak var alarmTue: UIButton!
-    @IBOutlet weak var alarmWed: UIButton!
-    @IBOutlet weak var alarmThu: UIButton!
-    @IBOutlet weak var alarmFri: UIButton!
-    @IBOutlet weak var alarmSat: UIButton!
-    @IBOutlet weak var alarmSun: UIButton!
+    
+    @IBOutlet var alarmRepeatButtons: [UIButton]!
+    @IBOutlet weak var alarmRepeatMon: UIButton!
+    @IBOutlet weak var alarmRepeatTue: UIButton!
+    @IBOutlet weak var alarmRepeatWed: UIButton!
+    @IBOutlet weak var alarmRepeatThu: UIButton!
+    @IBOutlet weak var alarmRepeatFri: UIButton!
+    @IBOutlet weak var alarmRepeatSat: UIButton!
+    @IBOutlet weak var alarmRepeatSun: UIButton!
+    
     @IBOutlet weak var memo: UITextView!
     @IBOutlet weak var fsCalendar: FSCalendar!
     
@@ -292,13 +298,13 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     
     func setAlarmButton(_ habitDetailVO: HabitDetailVO) {
         let buttons: [(UIButton, Bool)]
-            = [(self.alarmMon, habitDetailVO.repeatMon!),
-               (self.alarmTue, habitDetailVO.repeatTue!),
-               (self.alarmWed, habitDetailVO.repeatWed!),
-               (self.alarmThu, habitDetailVO.repeatThu!),
-               (self.alarmFri, habitDetailVO.repeatFri!),
-               (self.alarmSat, habitDetailVO.repeatSat!),
-               (self.alarmSun, habitDetailVO.repeatSun!)]
+            = [(self.alarmRepeatMon, habitDetailVO.repeatMon!),
+               (self.alarmRepeatTue, habitDetailVO.repeatTue!),
+               (self.alarmRepeatWed, habitDetailVO.repeatWed!),
+               (self.alarmRepeatThu, habitDetailVO.repeatThu!),
+               (self.alarmRepeatFri, habitDetailVO.repeatFri!),
+               (self.alarmRepeatSat, habitDetailVO.repeatSat!),
+               (self.alarmRepeatSun, habitDetailVO.repeatSun!)]
         
         for i in 0 ..< buttons.count {
             let currentButton = buttons[i].0
@@ -339,13 +345,13 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     }
     
     func setAllAlarmButtonsEnablement(editMode: Bool) {
-        let buttons = [self.alarmMon,
-                       self.alarmTue,
-                       self.alarmWed,
-                       self.alarmThu,
-                       self.alarmFri,
-                       self.alarmSat,
-                       self.alarmSun]
+        let buttons = [self.alarmRepeatMon,
+                       self.alarmRepeatTue,
+                       self.alarmRepeatWed,
+                       self.alarmRepeatThu,
+                       self.alarmRepeatFri,
+                       self.alarmRepeatSat,
+                       self.alarmRepeatSun]
         
         for i in 0 ..< buttons.count {
             let button = buttons[i]

@@ -687,21 +687,21 @@
                     </navigationItem>
                     <size key="freeformSize" width="414" height="896"/>
                     <connections>
-                        <outlet property="alarmFri" destination="GYa-3N-pI7" id="rEp-My-pdI"/>
                         <outlet property="alarmHaptic" destination="P1o-S7-AMO" id="Unz-ea-dJo"/>
                         <outlet property="alarmHapticSwitch" destination="LQ4-Ft-Kq6" id="NHo-Tf-SUj"/>
                         <outlet property="alarmImg" destination="6UJ-Sr-Va0" id="0fT-bm-NvQ"/>
-                        <outlet property="alarmMon" destination="Xhv-Bj-AQb" id="dTM-lh-yXG"/>
                         <outlet property="alarmMusic" destination="VNc-Fp-cQI" id="9BD-iC-gVC"/>
                         <outlet property="alarmMusicSwitch" destination="Lvx-bj-R4I" id="RsP-FW-GBj"/>
-                        <outlet property="alarmSat" destination="vbx-zR-d6I" id="jyB-A4-DE5"/>
-                        <outlet property="alarmSun" destination="LA1-vv-UGE" id="8Fp-KO-SNA"/>
-                        <outlet property="alarmThu" destination="mN6-9H-www" id="6dK-5K-Dxn"/>
+                        <outlet property="alarmRepeatFri" destination="GYa-3N-pI7" id="rEp-My-pdI"/>
+                        <outlet property="alarmRepeatMon" destination="Xhv-Bj-AQb" id="dTM-lh-yXG"/>
+                        <outlet property="alarmRepeatSat" destination="vbx-zR-d6I" id="jyB-A4-DE5"/>
+                        <outlet property="alarmRepeatSun" destination="LA1-vv-UGE" id="8Fp-KO-SNA"/>
+                        <outlet property="alarmRepeatThu" destination="mN6-9H-www" id="6dK-5K-Dxn"/>
+                        <outlet property="alarmRepeatTue" destination="9F6-Na-NOI" id="27r-fb-e09"/>
+                        <outlet property="alarmRepeatWed" destination="c0J-49-hzv" id="5w1-JL-7JA"/>
                         <outlet property="alarmTime" destination="KfK-EE-zXy" id="w3r-tu-Hzc"/>
                         <outlet property="alarmTime2" destination="X72-ur-oyA" id="Wt3-cn-dLY"/>
                         <outlet property="alarmTimeSwitch" destination="hJF-Fz-e95" id="nsx-YO-gbL"/>
-                        <outlet property="alarmTue" destination="9F6-Na-NOI" id="27r-fb-e09"/>
-                        <outlet property="alarmWed" destination="c0J-49-hzv" id="5w1-JL-7JA"/>
                         <outlet property="attribute" destination="rtv-Jr-2eX" id="r8r-36-ObX"/>
                         <outlet property="challengeName" destination="MJp-bX-koP" id="ze9-Hp-0QJ"/>
                         <outlet property="createDate" destination="bNS-4L-CcT" id="40K-AD-qbi"/>
@@ -709,6 +709,13 @@
                         <outlet property="habitImg" destination="9xS-9Q-43E" id="oGD-gv-viD"/>
                         <outlet property="habitTitle" destination="wGv-If-lF4" id="Ldr-Q7-TMg"/>
                         <outlet property="memo" destination="4Zm-94-Xyp" id="Arp-9D-Ayu"/>
+                        <outletCollection property="alarmRepeatButtons" destination="Xhv-Bj-AQb" collectionClass="NSMutableArray" id="13w-Bl-y3x"/>
+                        <outletCollection property="alarmRepeatButtons" destination="mN6-9H-www" collectionClass="NSMutableArray" id="J6P-di-ctc"/>
+                        <outletCollection property="alarmRepeatButtons" destination="9F6-Na-NOI" collectionClass="NSMutableArray" id="b7g-K7-avH"/>
+                        <outletCollection property="alarmRepeatButtons" destination="c0J-49-hzv" collectionClass="NSMutableArray" id="doA-nV-O02"/>
+                        <outletCollection property="alarmRepeatButtons" destination="GYa-3N-pI7" collectionClass="NSMutableArray" id="bW9-LT-fMJ"/>
+                        <outletCollection property="alarmRepeatButtons" destination="vbx-zR-d6I" collectionClass="NSMutableArray" id="Hrh-vZ-CrV"/>
+                        <outletCollection property="alarmRepeatButtons" destination="LA1-vv-UGE" collectionClass="NSMutableArray" id="oxA-Bg-rHm"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WUt-gv-poU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
