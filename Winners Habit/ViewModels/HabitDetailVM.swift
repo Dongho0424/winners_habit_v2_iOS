@@ -63,6 +63,7 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
         let domain = Domain()
         
         // MARK: - Streams
+        // 서버에서 받기 용
         let fetchHabitDetailVO$ = Observable<HabitVO>.just(currentHabitVO)
         let changeEditMode$ = PublishSubject<Void>()
         let editMode$ = BehaviorSubject(value: false)
@@ -70,6 +71,9 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
         let updateHabitDetailVOOnEditMode$ = PublishSubject<HabitDetailVO>()
         // for output
         let currentHabitDetailVO$ = BehaviorSubject<HabitDetailVO>(value: HabitDetailVO())
+        // for push updated habitDetailVO to server "HTTP PUT"
+        let PUTupdatedHabitDetailVO$ = PublishSubject<Void>()
+        
  
         // ---------------------------------
         //            Set Streams
@@ -96,21 +100,32 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
         // toggle editmode
         changeEditMode$
             .withLatestFrom(self.editMode)
+            .do(onNext: { editModeBeforeChanged in
+                if editModeBeforeChanged {
+                    PUTupdatedHabitDetailVO$.onNext(())
+                }
+            })
             .map { !$0 }
             .subscribe(onNext: editMode$.onNext)
             .disposed(by: self.disposeBag)
         
         // edit mode 에서 편집 할 때 마다 업데이트 되는 habitDetailVO 받는 녀석
-        // 마지막으로 저장눌렀을 때는 (onComplete) 서버랑 통신
         updateHabitDetailVOOnEditMode$
-            .debug("UI UPDATE 후 새로운 habitdetailVO")
-            .do(onNext: currentHabitDetailVO$.onNext) // UI 업데이트용
-            .takeLast(1) // 제일 마지막에 오는 놈이 가장 최신 버전의 HabitDetailVO 이므로
+            .debug("UI UPDATE on Edit Mode")
+            .subscribe(onNext: currentHabitDetailVO$.onNext)
+            .disposed(by: self.disposeBag)
+        
+        PUTupdatedHabitDetailVO$
+            // 제일 최신의 HabitDetailVO를 엮어서
+            .withLatestFrom(updateHabitDetailVOOnEditMode$)
             .subscribe(onNext: { _ in
                 /*
                  서버 통신
                  서버에 PUT
                  */
+                print("****************************")
+                print("서버에 새로운 habitdetail 정보들 업데이트")
+                print("****************************")
             })
             .disposed(by: self.disposeBag)
         
