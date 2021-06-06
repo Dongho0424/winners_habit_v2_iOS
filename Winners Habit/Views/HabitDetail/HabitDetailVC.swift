@@ -4,6 +4,13 @@
 //
 //  Created by 최동호 on 2021/05/07.
 //
+//                                                           ----------------------------------
+//                                                           ----------------------------------
+//
+//                                                                 SNU HOGWARTS SLYTHERIN
+//
+//                                                           ----------------------------------
+//                                                           ----------------------------------
 
 import Foundation
 import UIKit
@@ -26,14 +33,13 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     @IBOutlet weak var habitImg: UIImageView!
     @IBOutlet weak var habitTitle: UILabel!
     @IBOutlet weak var alarmImg: UIImageView!
-    @IBOutlet weak var alarmTime: UILabel!
+    @IBOutlet weak var alarmTimeLabel: UILabel!
     @IBOutlet weak var attribute: UILabel!
     
     @IBOutlet weak var createDate: UILabel!
-    @IBOutlet weak var alarmTime2: UILabel!
-    @IBOutlet weak var alarmMusic: UILabel!
-    
-    @IBOutlet weak var alarmHaptic: UITextField!
+    @IBOutlet weak var alarmTimeField: UILabel!
+    @IBOutlet weak var alarmMusicTextField: UILabel!
+    @IBOutlet weak var alarmHapticTextField: UITextField!
     
     @IBOutlet weak var alarmTimeSwitch: UISwitch!
     @IBOutlet weak var alarmMusicSwitch: UISwitch!
@@ -59,6 +65,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     var viewModel : HabitDetailVMType
     private let disposeBag = DisposeBag()
     private var repeatDisposeBag = DisposeBag()
+    private var hapticDisposeBag = DisposeBag()
     
     // MARK: - Init
     
@@ -201,7 +208,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
                 }
                 
                 // haptic
-                self.alarmHaptic.isEnabled = editMode
+                self.alarmHapticTextField.isEnabled = editMode
                 UIView.animate(withDuration: 0.3) {
                     self.alarmHapticDownButton.isHidden = !editMode
                 }
@@ -249,17 +256,17 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
          */
         if alarmFlag {
             self.alarmImg.isHidden = false
-            self.alarmTime.isHidden = false
+            self.alarmTimeLabel.isHidden = false
             self.alarmTimeSwitch.isOn = true
-            self.alarmTime.text = convertAlarmTime(time: alarmTime!)
-            self.alarmTime2.text = convertAlarmTime(time: alarmTime!)
-            self.alarmTime.textColor = color
+            self.alarmTimeLabel.text = convertAlarmTime(time: alarmTime!)
+            self.alarmTimeField.text = convertAlarmTime(time: alarmTime!)
+            self.alarmTimeLabel.textColor = color
         } else {
             self.alarmImg.isHidden = true
-            self.alarmTime.isHidden = true
+            self.alarmTimeLabel.isHidden = true
             self.alarmTimeSwitch.isOn = false
-            self.alarmTime2.text = "없음"
-            self.alarmTime2.textColor = .systemGray6
+            self.alarmTimeField.text = "없음"
+            self.alarmTimeField.textColor = .systemGray6
         }
     }
     
@@ -277,11 +284,11 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
          */
         if alarmMusic != nil {
             self.alarmMusicSwitch.isOn = true
-            self.alarmMusic.text = alarmMusic
+            self.alarmMusicTextField.text = alarmMusic
         } else {
-            self.alarmMusic.textColor = .systemGray6
+            self.alarmMusicTextField.textColor = .systemGray6
             self.alarmMusicSwitch.isOn = false
-            self.alarmMusic.text = "없음"
+            self.alarmMusicTextField.text = "없음"
         }
     }
     // MARK: - Alarm Haptic
@@ -291,27 +298,42 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     }
     
     func setAlarmHapticUI(_ habitDetailVO: HabitDetailVO) {
+        self.hapticDisposeBag = DisposeBag()
         /*
          가정
          1. alarmMusic은 nil이면 없는거
          2. nil이 아니면 무조건 뭐든 있어야 함.
          */
-        if alarmHaptic != nil {
-            self.alarmHapticSwitch.isOn = true
-            self.alarmHaptic.text = habitDetailVO.alarmHaptic
-        } else {
-            self.alarmHaptic.textColor = .systemGray6
-            self.alarmHapticSwitch.isOn = false
-            self.alarmHaptic.text = "없음"
-        }
-        // MARK: - TODO to fix
-//        self.alarmHapticSwitch.rx.isOn
-//            .subscribe(onNext: {
-//                print($0)
-//            })
-//            .disposed(by: self.disposeBag)
-//        var temp = habitDetailVO
         
+        if habitDetailVO.alarmHaptic != nil {
+            self.alarmHapticTextField.textColor = .label
+            self.alarmHapticSwitch.isOn = true
+            self.alarmHapticTextField.text = habitDetailVO.alarmHaptic
+        } else {
+            self.alarmHapticTextField.textColor = .systemGray6
+            self.alarmHapticSwitch.isOn = false
+            self.alarmHapticTextField.text = "없음"
+        }
+        
+        // rx
+        self.alarmHapticSwitch.rx
+            .isOn.changed
+            .distinctUntilChanged()
+            .debounce(RxTimeInterval.milliseconds(800), scheduler: MainScheduler.instance)
+            .debug("alarmHapticSwitch 누른 후")
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                
+                var temp = habitDetailVO
+                if $0 {
+                    temp.alarmHaptic = "Basic Call"
+                } else {
+                    temp.alarmHaptic = nil
+                }
+                self.viewModel.inputs.updateHabitDetailVOOnEditMode.onNext(temp)
+            })
+            .disposed(by: self.hapticDisposeBag)
+            
     }
     
     var hapticPickerView = UIPickerView()
@@ -320,13 +342,13 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     
     func initAlarmHaptic() {
         // make alarm haptic cursor color be clear
-        self.alarmHaptic.tintColor = .clear
+        self.alarmHapticTextField.tintColor = .clear
         
         // picker view settings
         self.hapticPickerView.delegate = self
         self.hapticPickerView.dataSource = self
         
-        self.alarmHaptic.inputView = hapticPickerView
+        self.alarmHapticTextField.inputView = hapticPickerView
 
         // bar button item "done"
         self.doneButtonForAlarmHaptic.title = "done"
@@ -346,12 +368,13 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         toolBar.frame = CGRect(x: 0, y: 0, width: 0, height: 35)
         toolBar.setItems([flexSpace, self.doneButtonForAlarmHaptic], animated: true)
         
-        self.alarmHaptic.inputAccessoryView = toolBar
+        self.alarmHapticTextField.inputAccessoryView = toolBar
     }
     
     // MARK: - Alarm Button
     
     func setAlarmButton(_ habitDetailVO: HabitDetailVO) {
+        // to fix serious bugs
         self.repeatDisposeBag = DisposeBag()
 
         let buttons: [(UIButton, Bool)]
@@ -378,7 +401,6 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
             }
             
             // - Rx -
-            // MARK: - TODO to fix
             currentButton.rx.tap
                 .debug("currentButton.rx.tap")
                 .subscribe(onNext: { [weak self] in
