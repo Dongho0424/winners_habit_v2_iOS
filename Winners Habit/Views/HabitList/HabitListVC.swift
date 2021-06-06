@@ -183,8 +183,7 @@ class HabitListVC: UIViewController, UITableViewDelegate {
                 // Business Logic
                 self.viewModel.inputs.fetchHabitList.onNext(yesterday)
 
-            }, onCompleted: {print("completed")}, onDisposed: {print("disposed")}
-            )
+            })
             .disposed(by: self.disposeBag)
 
         // RX
@@ -193,18 +192,21 @@ class HabitListVC: UIViewController, UITableViewDelegate {
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
 
-                // let yesterday
-                let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate)!
-                self.currentDate = yesterday
+                // let tommorrow
+                let tommorrow = Calendar.current.date(byAdding: .day, value: 1, to: self.currentDate)!
+                self.currentDate = tommorrow
 
                 // set title and arrows
-                self.setTitleDate(date: dateStringDetail(date: yesterday), leftArrow: true, rightArrow: true)
+                if compareDate(tommorrow, Date()) {
+                    self.setTitleDate(date: dateStringDetail(date: tommorrow), leftArrow: true, rightArrow: false)
+                } else {
+                    self.setTitleDate(date: dateStringDetail(date: tommorrow), leftArrow: true, rightArrow: true)
+                }
 
                 // Business Logic
-                self.viewModel.inputs.fetchHabitList.onNext(yesterday)
+                self.viewModel.inputs.fetchHabitList.onNext(tommorrow)
 
-            }, onCompleted: {print("completed")}, onDisposed: {print("disposed")}
-            )
+            })
             .disposed(by: self.disposeBag)
         
         // --------------------------------
