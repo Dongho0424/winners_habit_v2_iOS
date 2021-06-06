@@ -136,3 +136,28 @@ extension HabitDetailVO {
                              habitHistories: habitDetail.habitHistories)
     }
 }
+
+extension HabitDetailVO: Equatable {
+    static func ==(_ lhs: Self, _ rhs: Self) -> Bool {
+        return lhs.challengeName == rhs.challengeName &&
+                lhs.habitImg == rhs.habitImg &&
+                lhs.habitTitle == rhs.habitTitle &&
+                lhs.attribute == rhs.attribute &&
+                lhs.defaultAttributeValue == rhs.defaultAttributeValue &&
+                lhs.color == rhs.color &&
+                lhs.userHabitId == rhs.userHabitId &&
+                lhs.createDate == rhs.createDate &&
+                lhs.alarmFlag == rhs.alarmFlag &&
+                lhs.alarmTime == rhs.alarmTime &&
+                lhs.alarmMusic == rhs.alarmMusic &&
+                lhs.alarmHaptic == rhs.alarmHaptic &&
+                lhs.repeatMon == rhs.repeatMon &&
+                lhs.repeatTue == rhs.repeatTue &&
+                lhs.repeatWed == rhs.repeatWed &&
+                lhs.repeatThu == rhs.repeatThu &&
+                lhs.repeatFri == rhs.repeatFri &&
+                lhs.repeatSat == rhs.repeatSat &&
+                lhs.repeatSun == rhs.repeatSun &&
+                lhs.memo == rhs.memo
+    }
+}

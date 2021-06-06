@@ -12,11 +12,15 @@ import FSCalendar
 import RxSwift
 import RxCocoa
 
-class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource, FSCalendarDelegateAppearance, UITextViewDelegate {
+class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource, FSCalendarDelegateAppearance, UITextViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     static let identifier = "HabitDetailVC"
     
-    // MARK: - UI Components
+    // 임시 데이터들
+    // 실제 코딩에서는 음 plist 에 추가하든가 해야할듯?
+    let musics = ["Oh My God", "IU", "Butter", "Lonely"]
+    let haptics = ["Basic Call", "Swing", "HapHap", "NaCl"]
     
+    // MARK: - UI Components
     
     @IBOutlet weak var challengeName: UILabel!
     @IBOutlet weak var habitImg: UIImageView!
@@ -28,7 +32,8 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     @IBOutlet weak var createDate: UILabel!
     @IBOutlet weak var alarmTime2: UILabel!
     @IBOutlet weak var alarmMusic: UILabel!
-    @IBOutlet weak var alarmHaptic: UILabel!
+    
+    @IBOutlet weak var alarmHaptic: UITextField!
     
     @IBOutlet weak var alarmTimeSwitch: UISwitch!
     @IBOutlet weak var alarmMusicSwitch: UISwitch!
@@ -53,6 +58,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     
     var viewModel : HabitDetailVMType
     private let disposeBag = DisposeBag()
+    private var repeatDisposeBag = DisposeBag()
     
     // MARK: - Init
     
@@ -83,6 +89,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         // --------------------------------
         //             INPUT
         // --------------------------------
+        // MARK: - Bind UI - INPUT
         
         // edit 버튼 누르면 edit 모드 바꾸기
         self.onEdit.rx.tap
@@ -90,15 +97,10 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
             .bind(to: self.viewModel.inputs.changeEditMode)
             .disposed(by: self.disposeBag)
         
-        /*
-         현재 edit 모드가 아니면 그냥 change
-         현재 edit 모드이면 onComplete 보내고 종료
-         */
-        
         // --------------------------------
         //             OUTPUT
         // --------------------------------
-        
+        // MARK: - Bind UI - OUTPUT
         /*
          UI 요소 그리는 것을 한번에 합쳐버리기
          조건들
@@ -108,12 +110,13 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
          2. 각각의 ui 요소들의 action (tap, gesture) 등등은 따로 뺀다. (INPUT)으로
          */
         
+        // MARK: - OUTPUT - Data Sources
         // data source
         // MVVM+Rx의 핵심
         //   얘는 받아온 정보를 "그리기"만 한다.
         //   즉, 여기서 UI를 직접 어떤 값에 의해서 변경하는 로직은 좋은. 구조가. 아니다.
         self.viewModel.outputs.currentHabitDetailVO
-            //            .debug("HabitDetailVC: self.viewModel.outputs.getHabitDetailVO")
+            .debug("** 뷰모델에서 최신 데이터 가져오기 **")
             .subscribe(onNext: { [weak self] habitDetailVO in
                 guard let self = self else { return }
                 
@@ -144,7 +147,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
                 self.setAlarmMusicUI(alarmMusic: habitDetailVO.alarmMusic)
                 
                 // alarm haptic
-                self.setAlarmHapticUI(alarmHaptic: habitDetailVO.alarmHaptic)
+                self.setAlarmHapticUI(habitDetailVO)
                 
                 // alarm button
                 self.setAlarmButton(habitDetailVO)
@@ -155,6 +158,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
             })
             .disposed(by: self.disposeBag)
         
+        // MARK: - OUTPUT - Edit Mode
         // edit mode 시 각 UI 요소들의 기능 같은 것
         // UI 요소만!
         self.viewModel.outputs.editMode // default mode is not editing mode
@@ -196,6 +200,12 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
                     self.onEdit.title = nil
                 }
                 
+                // haptic
+                self.alarmHaptic.isEnabled = editMode
+                UIView.animate(withDuration: 0.3) {
+                    self.alarmHapticDownButton.isHidden = !editMode
+                }
+                
                 self.setAllAlarmButtonsEnablement(editMode: editMode)
                 
                 self.memo.isEditable = editMode
@@ -217,6 +227,8 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
             $0.tintColor = .label
             self.navigationItem.rightBarButtonItem = $0
         }
+        
+        self.initAlarmHaptic()
     }
     
     
@@ -278,7 +290,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         
     }
     
-    func setAlarmHapticUI(alarmHaptic: String?) {
+    func setAlarmHapticUI(_ habitDetailVO: HabitDetailVO) {
         /*
          가정
          1. alarmMusic은 nil이면 없는거
@@ -286,17 +298,62 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
          */
         if alarmHaptic != nil {
             self.alarmHapticSwitch.isOn = true
-            self.alarmHaptic.text = alarmHaptic
-        } else{
+            self.alarmHaptic.text = habitDetailVO.alarmHaptic
+        } else {
             self.alarmHaptic.textColor = .systemGray6
             self.alarmHapticSwitch.isOn = false
             self.alarmHaptic.text = "없음"
         }
+        // MARK: - TODO to fix
+//        self.alarmHapticSwitch.rx.isOn
+//            .subscribe(onNext: {
+//                print($0)
+//            })
+//            .disposed(by: self.disposeBag)
+//        var temp = habitDetailVO
+        
+    }
+    
+    var hapticPickerView = UIPickerView()
+    var doneButtonForAlarmHaptic = UIBarButtonItem()
+    @IBOutlet weak var alarmHapticDownButton: UIButton!
+    
+    func initAlarmHaptic() {
+        // make alarm haptic cursor color be clear
+        self.alarmHaptic.tintColor = .clear
+        
+        // picker view settings
+        self.hapticPickerView.delegate = self
+        self.hapticPickerView.dataSource = self
+        
+        self.alarmHaptic.inputView = hapticPickerView
+
+        // bar button item "done"
+        self.doneButtonForAlarmHaptic.title = "done"
+        self.doneButtonForAlarmHaptic.rx.tap
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                
+                self.view.endEditing(true)
+                print("doneBtn tapped")
+            })
+            .disposed(by: self.disposeBag)
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+
+        // tool bar
+        let toolBar = UIToolbar()
+        toolBar.tintColor = .label
+        toolBar.frame = CGRect(x: 0, y: 0, width: 0, height: 35)
+        toolBar.setItems([flexSpace, self.doneButtonForAlarmHaptic], animated: true)
+        
+        self.alarmHaptic.inputAccessoryView = toolBar
     }
     
     // MARK: - Alarm Button
     
     func setAlarmButton(_ habitDetailVO: HabitDetailVO) {
+        self.repeatDisposeBag = DisposeBag()
+
         let buttons: [(UIButton, Bool)]
             = [(self.alarmRepeatMon, habitDetailVO.repeatMon!),
                (self.alarmRepeatTue, habitDetailVO.repeatTue!),
@@ -306,11 +363,11 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
                (self.alarmRepeatSat, habitDetailVO.repeatSat!),
                (self.alarmRepeatSun, habitDetailVO.repeatSun!)]
         
-        for i in 0 ..< buttons.count {
-            let currentButton = buttons[i].0
-            let currentRepeat = buttons[i].1
+        for (index, button) in buttons.enumerated() {
             
-            // - UI -
+            let currentButton = button.0
+            let currentRepeat = button.1
+
             // 모양
             currentButton.layer.cornerRadius = currentButton.frame.width / 2
             // 색
@@ -321,12 +378,15 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
             }
             
             // - Rx -
-            currentButton.rx.tap.subscribe(onNext: { [weak self] in
+            // MARK: - TODO to fix
+            currentButton.rx.tap
+                .debug("currentButton.rx.tap")
+                .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 
                 var temp = habitDetailVO
-                
-                switch i {
+                    
+                switch index {
                 case 0: temp.repeatMon = !temp.repeatMon!
                 case 1: temp.repeatTue = !temp.repeatTue!
                 case 2: temp.repeatWed = !temp.repeatWed!
@@ -340,22 +400,14 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
                 self.viewModel.inputs.updateHabitDetailVOOnEditMode
                     .onNext(temp)
             })
-            .disposed(by: self.disposeBag)
+            .disposed(by: self.repeatDisposeBag)
         }
+        
     }
     
     func setAllAlarmButtonsEnablement(editMode: Bool) {
-        let buttons = [self.alarmRepeatMon,
-                       self.alarmRepeatTue,
-                       self.alarmRepeatWed,
-                       self.alarmRepeatThu,
-                       self.alarmRepeatFri,
-                       self.alarmRepeatSat,
-                       self.alarmRepeatSun]
-        
-        for i in 0 ..< buttons.count {
-            let button = buttons[i]
-            button?.isEnabled = editMode
+        for alarmRepeat in self.alarmRepeatButtons {
+            alarmRepeat.isEnabled = editMode
         }
     }
    
@@ -412,6 +464,45 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         
         return cell
     }
+    
+    // MARK: - UIPickerView Delegate
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.viewModel.outputs.currentHabitDetailVO
+            .observe(on: MainScheduler.instance)
+            .take(1)
+            .subscribe(onNext: { [weak self] habitDetailVO in
+                guard let self = self else { return }
+                
+                var temp = habitDetailVO
+                temp.alarmHaptic = self.haptics[row]
+                self.viewModel.inputs.updateHabitDetailVOOnEditMode.onNext(temp)
+            })
+            .disposed(by: self.disposeBag)
+    }
+    
+    // MARK: - UIPickerView DataSource
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if pickerView === self.hapticPickerView {
+            return self.haptics.count
+        }
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if pickerView === self.hapticPickerView {
+            return self.haptics[row]
+        }
+        else {
+            return "error"
+        }
+    }
+    
 }
 
 

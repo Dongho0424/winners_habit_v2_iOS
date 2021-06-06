@@ -111,6 +111,7 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
         
         // edit mode 에서 편집 할 때 마다 업데이트 되는 habitDetailVO 받는 녀석
         updateHabitDetailVOOnEditMode$
+            .distinctUntilChanged()
             .debug("UI UPDATE on Edit Mode")
             .subscribe(onNext: currentHabitDetailVO$.onNext)
             .disposed(by: self.disposeBag)
