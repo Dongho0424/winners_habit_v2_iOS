@@ -721,6 +721,7 @@
                         <outlet property="alarmHapticSwitch" destination="LQ4-Ft-Kq6" id="NHo-Tf-SUj"/>
                         <outlet property="alarmHapticTextField" destination="zZH-Hz-RGX" id="ZJe-k5-WbB"/>
                         <outlet property="alarmImg" destination="6UJ-Sr-Va0" id="0fT-bm-NvQ"/>
+                        <outlet property="alarmMusicDownButton" destination="P1Q-To-Ecp" id="kHg-gw-jGQ"/>
                         <outlet property="alarmMusicSwitch" destination="Lvx-bj-R4I" id="RsP-FW-GBj"/>
                         <outlet property="alarmMusicTextField" destination="xW2-92-F1O" id="rJ1-8s-mg4"/>
                         <outlet property="alarmRepeatFri" destination="GYa-3N-pI7" id="rEp-My-pdI"/>
@@ -730,9 +731,9 @@
                         <outlet property="alarmRepeatThu" destination="mN6-9H-www" id="6dK-5K-Dxn"/>
                         <outlet property="alarmRepeatTue" destination="9F6-Na-NOI" id="27r-fb-e09"/>
                         <outlet property="alarmRepeatWed" destination="c0J-49-hzv" id="5w1-JL-7JA"/>
-                        <outlet property="alarmTimeField" destination="AcX-eT-Xnw" id="jn2-bK-9hr"/>
                         <outlet property="alarmTimeLabel" destination="KfK-EE-zXy" id="w3r-tu-Hzc"/>
                         <outlet property="alarmTimeSwitch" destination="hJF-Fz-e95" id="nsx-YO-gbL"/>
+                        <outlet property="alarmTimeTextField" destination="AcX-eT-Xnw" id="jn2-bK-9hr"/>
                         <outlet property="attribute" destination="rtv-Jr-2eX" id="r8r-36-ObX"/>
                         <outlet property="challengeName" destination="MJp-bX-koP" id="ze9-Hp-0QJ"/>
                         <outlet property="createDate" destination="bNS-4L-CcT" id="40K-AD-qbi"/>

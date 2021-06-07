@@ -37,7 +37,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     @IBOutlet weak var attribute: UILabel!
     
     @IBOutlet weak var createDate: UILabel!
-    @IBOutlet weak var alarmTimeField: UITextField!
+    @IBOutlet weak var alarmTimeTextField: UITextField!
     @IBOutlet weak var alarmMusicTextField: UITextField!
     @IBOutlet weak var alarmHapticTextField: UITextField!
     
@@ -64,6 +64,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     var viewModel : HabitDetailVMType
     private let disposeBag = DisposeBag()
     private var repeatDisposeBag = DisposeBag()
+    private var musicDisposeBag = DisposeBag()
     private var hapticDisposeBag = DisposeBag()
     
     // MARK: - Init
@@ -73,19 +74,17 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         super.init(coder: coder)
     }
     
-    
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        //        print("viewDidLoad")
-        self.initFSCalendar()
+        
         self.initUI()
         self.bindUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        //        print("viewWillAppear")
+        
     }
     
     // MARK: - BindUI
@@ -99,7 +98,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         
         // edit 버튼 누르면 edit 모드 바꾸기
         self.onEdit.rx.tap
-            .throttle(RxTimeInterval.milliseconds(800), latest: false, scheduler: MainScheduler.instance)
+            .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
             .debug("onEdit.rx.tap")
             .bind(to: self.viewModel.inputs.changeEditMode)
             .disposed(by: self.disposeBag)
@@ -150,10 +149,10 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
                                     color: habitDetailVO.color)
                 
                 // alarm music
-                self.setAlarmMusicUI(alarmMusic: habitDetailVO.alarmMusic)
+                self.setAlarmMusic(habitDetailVO)
                 
                 // alarm haptic
-                self.setAlarmHapticUI(habitDetailVO)
+                self.setAlarmHaptic(habitDetailVO)
                 
                 // alarm button
                 self.setAlarmButton(habitDetailVO)
@@ -206,6 +205,15 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
                     self.onEdit.title = nil
                 }
                 
+                // alarmtime field
+                self.alarmTimeTextField.isEnabled = editMode
+                
+                // music
+                self.alarmMusicTextField.isEnabled = editMode
+                UIView.animate(withDuration: 0.3) {
+                    self.alarmMusicDownButton.isHidden = !editMode
+                }
+                
                 // haptic
                 self.alarmHapticTextField.isEnabled = editMode
                 UIView.animate(withDuration: 0.3) {
@@ -221,22 +229,30 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         
     }
     
-    // MARK: - UI
+    // MARK: - Init UI
     
     // Things which is not proper in bindUI() method
     // Because, in bindUI() method, things are repeatedly changed whenever
     // new habitDetailVO comes.
-    func initUI() {
+    private func initUI() {
+        self.initOnEditButton()
+        self.initAlarmMusic()
+        self.initAlarmHaptic()
+        self.initPickerViewAccessories()
+        
+        self.initFSCalendar()
+    }
+    
+    // MARK: - onEdit
+    
+    func initOnEditButton() {
         // edit mode button initialize
         self.onEdit = UIBarButtonItem().then {
             $0.image = UIImage(systemName: "pencil")
             $0.tintColor = .label
             self.navigationItem.rightBarButtonItem = $0
         }
-        
-        self.initAlarmHaptic()
     }
-    
     
     // MARK: - Alarm Time
     
@@ -258,45 +274,73 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
             self.alarmTimeLabel.isHidden = false
             self.alarmTimeSwitch.isOn = true
             self.alarmTimeLabel.text = convertAlarmTime(time: alarmTime!)
-            self.alarmTimeField.text = convertAlarmTime(time: alarmTime!)
+            self.alarmTimeTextField.text = convertAlarmTime(time: alarmTime!)
             self.alarmTimeLabel.textColor = color
         } else {
             self.alarmImg.isHidden = true
             self.alarmTimeLabel.isHidden = true
             self.alarmTimeSwitch.isOn = false
-            self.alarmTimeField.text = "없음"
-            self.alarmTimeField.textColor = .systemGray6
+            self.alarmTimeTextField.text = "없음"
+            self.alarmTimeTextField.textColor = .systemGray6
         }
     }
     
     // MARK: - Alarm Music
     
-    func setAlarmMusicActions() {
-        
-    }
-    
-    func setAlarmMusicUI(alarmMusic: String?) {
+    func setAlarmMusic(_ habitDetailVO: HabitDetailVO) {
+        self.musicDisposeBag = DisposeBag()
         /*
          가정
          1. alarmMusic은 nil이면 없는거
          2. nil이 아니면 무조건 뭐든 있어야 함.
          */
-        if alarmMusic != nil {
+        
+        // UI
+        if habitDetailVO.alarmMusic != nil {
             self.alarmMusicSwitch.isOn = true
-            self.alarmMusicTextField.text = alarmMusic
+            self.alarmMusicTextField.text = habitDetailVO.alarmMusic
         } else {
             self.alarmMusicTextField.textColor = .systemGray6
             self.alarmMusicSwitch.isOn = false
             self.alarmMusicTextField.text = "없음"
         }
-    }
-    // MARK: - Alarm Haptic
-    
-    func setAlarmHapticActions() {
         
+        // Rx
+        self.alarmMusicSwitch.rx
+            .isOn.changed
+            .distinctUntilChanged()
+            .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, alarmHapticOn in
+                
+                var nextHabitDetailVO = habitDetailVO
+                if alarmHapticOn {
+                    nextHabitDetailVO.alarmMusic = "Basic Call"
+                } else {
+                    nextHabitDetailVO.alarmMusic = nil
+                }
+                self.viewModel.inputs.updateHabitDetailVOOnEditMode.onNext(nextHabitDetailVO)
+            })
+            .disposed(by: self.musicDisposeBag)
     }
     
-    func setAlarmHapticUI(_ habitDetailVO: HabitDetailVO) {
+    var musicPickerView = UIPickerView()
+    @IBOutlet weak var alarmMusicDownButton: UIButton!
+    
+    func initAlarmMusic() {
+        // make alarm haptic cursor color be clear
+        self.alarmMusicTextField.tintColor = .clear
+        
+        // picker view settings
+        self.musicPickerView.delegate = self
+        self.musicPickerView.dataSource = self
+        
+        self.alarmMusicTextField.inputView = musicPickerView
+    }
+    
+    // MARK: - Alarm Haptic
+
+    func setAlarmHaptic(_ habitDetailVO: HabitDetailVO) {
         self.hapticDisposeBag = DisposeBag()
         /*
          가정
@@ -304,6 +348,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
          2. nil이 아니면 무조건 뭐든 있어야 함.
          */
         
+        // UI
         if habitDetailVO.alarmHaptic != nil {
             self.alarmHapticTextField.textColor = .label
             self.alarmHapticSwitch.isOn = true
@@ -314,11 +359,11 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
             self.alarmHapticTextField.text = "없음"
         }
         
-        // rx
+        // Rx
         self.alarmHapticSwitch.rx
             .isOn.changed
             .distinctUntilChanged()
-            .throttle(RxTimeInterval.milliseconds(800), latest: false, scheduler: MainScheduler.instance)
+            .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
             .debug("alarmHapticSwitch 누른 후")
             .withUnretained(self)
             .subscribe(onNext: { `self`, alarmHapticOn in
@@ -336,7 +381,6 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     }
     
     var hapticPickerView = UIPickerView()
-    var doneButtonForAlarmHaptic = UIBarButtonItem()
     @IBOutlet weak var alarmHapticDownButton: UIButton!
     
     func initAlarmHaptic() {
@@ -348,11 +392,14 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         self.hapticPickerView.dataSource = self
         
         self.alarmHapticTextField.inputView = hapticPickerView
+    }
 
+    func initPickerViewAccessories() {
         // bar button item "done"
-        self.doneButtonForAlarmHaptic.title = "done"
-        self.doneButtonForAlarmHaptic.rx.tap
-            .throttle(RxTimeInterval.milliseconds(800), latest: false, scheduler: MainScheduler.instance)
+        let doneButton = UIBarButtonItem()
+        doneButton.title = "done"
+        doneButton.rx.tap
+            .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
             .withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 self.view.endEditing(true)
@@ -364,8 +411,9 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         let toolBar = UIToolbar()
         toolBar.tintColor = .label
         toolBar.frame = CGRect(x: 0, y: 0, width: 0, height: 35)
-        toolBar.setItems([flexSpace, self.doneButtonForAlarmHaptic], animated: true)
+        toolBar.setItems([flexSpace, doneButton], animated: true)
         
+        self.alarmMusicTextField.inputAccessoryView = toolBar
         self.alarmHapticTextField.inputAccessoryView = toolBar
     }
     
@@ -401,7 +449,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
             // - Rx -
             currentButton.rx.tap
                 .debug("currentButton.rx.tap")
-                .throttle(RxTimeInterval.milliseconds(800), latest: false, scheduler: MainScheduler.instance)
+                .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
                 .withUnretained(self)
                 .subscribe(onNext: { `self`, _ in
                 
@@ -460,9 +508,9 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     func calendar(_ calendar: FSCalendar, cellFor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell {
         var _habitDetailVO: HabitDetailVO? = nil
         
-        self.viewModel.outputs.currentHabitDetailVO.subscribe(onNext: {
-            _habitDetailVO = $0
-        })
+        self.viewModel.outputs.currentHabitDetailVO
+            .take(1)
+            .subscribe(onNext: { _habitDetailVO = $0 })
         .disposed(by: self.disposeBag)
         
         let cell = calendar.dequeueReusableCell(withIdentifier: "cell", for: date, at: position).then {
@@ -512,7 +560,9 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         if pickerView === self.hapticPickerView {
             return self.haptics.count
         }
-        return 1
+        else {
+            return self.musics.count
+        }
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
@@ -520,10 +570,9 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
             return self.haptics[row]
         }
         else {
-            return "error"
+            return self.musics[row]
         }
     }
-    
 }
 
 

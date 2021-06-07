@@ -72,8 +72,7 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
         // for output
         let currentHabitDetailVO$ = BehaviorSubject<HabitDetailVO>(value: HabitDetailVO())
         // for push updated habitDetailVO to server "HTTP PUT"
-        let PUTupdatedHabitDetailVO$ = PublishSubject<Void>()
-        
+        let pushUpdatedHabitDetailVOToServer$ = PublishSubject<Void>()
  
         // ---------------------------------
         //            Set Streams
@@ -90,7 +89,6 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
                     .map { HabitDetailVO.getHabitDetailVO(habitVO: $1, habitDetail: $0) }
                 return ob
             }
-//            .debug("fetchHabitDetailVO$")
             .subscribe(onNext: currentHabitDetailVO$.onNext)
             .disposed(by: self.disposeBag)
         
@@ -102,7 +100,7 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
             .withLatestFrom(self.editMode)
             .do(onNext: { editModeBeforeChanged in
                 if editModeBeforeChanged {
-                    PUTupdatedHabitDetailVO$.onNext(())
+                    pushUpdatedHabitDetailVOToServer$.onNext(())
                 }
             })
             .map { !$0 }
@@ -116,9 +114,9 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
             .subscribe(onNext: currentHabitDetailVO$.onNext)
             .disposed(by: self.disposeBag)
         
-        PUTupdatedHabitDetailVO$
-            // 제일 최신의 HabitDetailVO를 엮어서
-            .withLatestFrom(updateHabitDetailVOOnEditMode$)
+        pushUpdatedHabitDetailVOToServer$
+            .withLatestFrom(updateHabitDetailVOOnEditMode$) // 제일 최신의 HabitDetailVO를 엮어서
+            .distinctUntilChanged() // 변경이 있는 경우만 서버로
             .subscribe(onNext: { _ in
                 /*
                  서버 통신

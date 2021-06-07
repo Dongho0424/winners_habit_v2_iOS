@@ -58,7 +58,7 @@ class HabitListVC: UIViewController, UITableViewDelegate {
     
     // MARK: - set UI
     
-    func initUI() {
+    private func initUI() {
         
         // default navigation bar clear
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
