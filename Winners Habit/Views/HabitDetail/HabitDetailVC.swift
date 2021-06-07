@@ -3,23 +3,16 @@
 //  Winners Habit
 //
 //  Created by 최동호 on 2021/05/07.
-//
-//                                                           ----------------------------------
-//                                                           ----------------------------------
-//
-//                                                                 SNU HOGWARTS SLYTHERIN
-//
-//                                                           ----------------------------------
-//                                                           ----------------------------------
 
 import Foundation
 import UIKit
+
 import WinnersHabitOAS
 import FSCalendar
 import RxSwift
 import RxCocoa
 
-class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource, FSCalendarDelegateAppearance, UITextViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
+class HabitDetailVC: UIViewController, UITextViewDelegate {
     static let identifier = "HabitDetailVC"
     
     // 임시 데이터들
@@ -79,50 +72,323 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         super.viewDidLoad()
         
         self.initUI()
-        self.bindUI()
+        self.bindViewModel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
+    }
+    
+    // MARK: - Init UI
+    
+    /// Things which is not proper in bindUI() method
+    /// Because, in bindUI() method, things are repeatedly changed whenever
+    /// new habitDetailVO comes.
+    private func initUI() {
+        self.initOnEditButton()
+        self.initAlarmMusic()
+        self.initAlarmHaptic()
+        self.initPickerViewAccessories()
+        self.initFSCalendar()
+    }
+    
+    // MARK: - onEdit
+    
+    func initOnEditButton() {
+        // edit mode button initialize
+        self.onEdit = UIBarButtonItem().then {
+            $0.image = UIImage(systemName: "pencil")
+            $0.tintColor = .label
+            self.navigationItem.rightBarButtonItem = $0
+        }
+    }
+    
+    // MARK: - Alarm Time
+    
+    func setAlarmTimeActions() {
         
+    }
+    
+    /**
+     가정
+     1. alarmFlag가 true면 alarmMusic이랑 alarmHaptic은 알아서
+     2. alarmFlag가 false면 alarmMusic이랑 alarmHaptic은 무조건 nil
+     */
+    func setAlarmTimeUI(alarmFlag: Bool, alarmTime: String?, color: UIColor) {
+        if alarmFlag {
+            self.alarmImg.isHidden = false
+            self.alarmTimeLabel.isHidden = false
+            self.alarmTimeSwitch.isOn = true
+            self.alarmTimeLabel.text = convertAlarmTime(time: alarmTime!)
+            self.alarmTimeTextField.text = convertAlarmTime(time: alarmTime!)
+            self.alarmTimeLabel.textColor = color
+        } else {
+            self.alarmImg.isHidden = true
+            self.alarmTimeLabel.isHidden = true
+            self.alarmTimeSwitch.isOn = false
+            self.alarmTimeTextField.text = "없음"
+            self.alarmTimeTextField.textColor = .systemGray6
+        }
+    }
+    
+    // MARK: - Alarm Music
+    
+    var musicPickerView = UIPickerView()
+    @IBOutlet weak var alarmMusicDownButton: UIButton!
+    
+    func initAlarmMusic() {
+        // make alarm haptic cursor color be clear
+        self.alarmMusicTextField.tintColor = .clear
+        
+        // picker view settings
+        self.musicPickerView.delegate = self
+        self.musicPickerView.dataSource = self
+        
+        self.alarmMusicTextField.inputView = musicPickerView
+    }
+    
+    /**
+     가정
+     1. alarmMusic은 nil이면 없는거
+     2. nil이 아니면 무조건 뭐든 있어야 함.
+     */
+    func setAlarmMusicUI(_ habitDetailVO: HabitDetailVO) {
+        if habitDetailVO.alarmMusic != nil {
+            self.alarmMusicTextField.textColor = .label
+            self.alarmMusicSwitch.isOn = true
+            self.alarmMusicTextField.text = habitDetailVO.alarmMusic
+        } else {
+            self.alarmMusicTextField.textColor = .systemGray6
+            self.alarmMusicSwitch.isOn = false
+            self.alarmMusicTextField.text = "없음"
+        }
+    }
+    
+    // MARK: - Alarm Haptic
+    
+    var hapticPickerView = UIPickerView()
+    @IBOutlet weak var alarmHapticDownButton: UIButton!
+    
+    func initAlarmHaptic() {
+        // make alarm haptic cursor color be clear
+        self.alarmHapticTextField.tintColor = .clear
+        
+        // picker view settings
+        self.hapticPickerView.delegate = self
+        self.hapticPickerView.dataSource = self
+        
+        self.alarmHapticTextField.inputView = hapticPickerView
+    }
+    
+    /**
+     가정
+     1. alarmHaptic은 nil이면 없는거
+     2. nil이 아니면 무조건 뭐든 있어야 함.
+     */
+    func setAlarmHapticUI(_ habitDetailVO: HabitDetailVO) {
+        if habitDetailVO.alarmHaptic != nil {
+            self.alarmHapticTextField.textColor = .label
+            self.alarmHapticSwitch.isOn = true
+            self.alarmHapticTextField.text = habitDetailVO.alarmHaptic
+        } else {
+            self.alarmHapticTextField.textColor = .systemGray6
+            self.alarmHapticSwitch.isOn = false
+            self.alarmHapticTextField.text = "없음"
+        }
+    }
+    
+    // MARK: - Init Picker View Accessories
+
+    func initPickerViewAccessories() {
+        // bar button item "done"
+        let doneButton = UIBarButtonItem()
+        doneButton.title = "done"
+        doneButton.rx.tap
+            .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.view.endEditing(true)
+            })
+            .disposed(by: self.disposeBag)
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+
+        // tool bar
+        let toolBar = UIToolbar()
+        toolBar.tintColor = .label
+        toolBar.frame = CGRect(x: 0, y: 0, width: 0, height: 35)
+        toolBar.setItems([flexSpace, doneButton], animated: true)
+        
+        self.alarmMusicTextField.inputAccessoryView = toolBar
+        self.alarmHapticTextField.inputAccessoryView = toolBar
+    }
+    
+    // MARK: - Alarm Button
+    
+    func setAlarmButton(_ habitDetailVO: HabitDetailVO) {
+        let buttons: [(UIButton, Bool)]
+            = [(self.alarmRepeatMon, habitDetailVO.repeatMon!),
+               (self.alarmRepeatTue, habitDetailVO.repeatTue!),
+               (self.alarmRepeatWed, habitDetailVO.repeatWed!),
+               (self.alarmRepeatThu, habitDetailVO.repeatThu!),
+               (self.alarmRepeatFri, habitDetailVO.repeatFri!),
+               (self.alarmRepeatSat, habitDetailVO.repeatSat!),
+               (self.alarmRepeatSun, habitDetailVO.repeatSun!)]
+        
+        for button in buttons {
+            let currentButton = button.0
+            let currentRepeat = button.1
+
+            // 모양
+            currentButton.layer.cornerRadius = currentButton.frame.width / 2
+            // 색
+            if currentRepeat {
+                currentButton.backgroundColor = habitDetailVO.color
+            } else {
+                currentButton.backgroundColor = .systemBackground
+            }
+        }
+    }
+    
+    func setAllAlarmButtonsEnablement(editMode: Bool) {
+        for alarmRepeat in self.alarmRepeatButtons {
+            alarmRepeat.isEnabled = editMode
+        }
     }
     
     // MARK: - BindUI
     
-    private func bindUI() {
+    private func bindViewModel() {
         
-        // --------------------------------
-        //             INPUT
-        // --------------------------------
         // MARK: - Bind UI - INPUT
+        /// things to go to viewModel.inputs
+
+        self.bindOnEditButton()
         
-        // edit 버튼 누르면 edit 모드 바꾸기
+        // things which needs up-to-date habitDetailVO
+        self.viewModel.outputs.currentHabitDetailVO
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, habitDetailVO in
+                
+                self.bindAlarmMusicSwitch(habitDetailVO)
+                self.bindAlarmHapticSwitch(habitDetailVO)
+                self.bindAlarmRepeatButton(habitDetailVO)
+                
+            })
+            .disposed(by: self.disposeBag)
+
+        // MARK: - Bind UI - OUTPUT
+        /**
+         UI 요소 그리는 것을 한번에 합쳐버리기
+         
+         1. current HabitDetailVO가 바뀌는 스트림은
+         이것이 구독하여 UI를 그린다.
+         2. 각각의 ui 요소들의 action (tap, gesture) 등등은 따로 뺀다. (INPUT)으로
+         */
+        self.bindMainUI()
+        self.bindEditModeUI()
+    }
+    
+    // MARK: - INPUT - onEdit
+    
+    /// edit 버튼 누르면 edit 모드 바꾸기
+    func bindOnEditButton() {
         self.onEdit.rx.tap
             .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
             .debug("onEdit.rx.tap")
             .bind(to: self.viewModel.inputs.changeEditMode)
             .disposed(by: self.disposeBag)
+    }
+    
+    // MARK: - INPUT - MusicSwitch
+    
+    /// alarmMusicSwitch tap
+    func bindAlarmMusicSwitch(_ habitDetailVO: HabitDetailVO) {
+        self.musicDisposeBag = DisposeBag()
         
-        // --------------------------------
-        //             OUTPUT
-        // --------------------------------
-        // MARK: - Bind UI - OUTPUT
-        /*
-         UI 요소 그리는 것을 한번에 합쳐버리기
-         조건들
-         1. current HabitDetailVO가 바뀌는 스트림은
-         이것이 구독하여 UI를 그린다.
-         HabitDetailVO + editMode 고려하기.
-         2. 각각의 ui 요소들의 action (tap, gesture) 등등은 따로 뺀다. (INPUT)으로
-         */
+        self.alarmMusicSwitch.rx
+            .isOn.changed
+            .distinctUntilChanged()
+            .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, alarmHapticOn in
+                
+                var nextHabitDetailVO = habitDetailVO
+                if alarmHapticOn {
+                    nextHabitDetailVO.alarmMusic = "Basic Call"
+                } else {
+                    nextHabitDetailVO.alarmMusic = nil
+                }
+                self.viewModel.inputs.updateHabitDetailVOOnEditMode.onNext(nextHabitDetailVO)
+            })
+            .disposed(by: self.musicDisposeBag)
+    }
+    
+    // MARK: - INPUT - HapticSwitch
+    
+    // alarmHapticSwitch를 누르면
+    func bindAlarmHapticSwitch(_ habitDetailVO: HabitDetailVO) {
+        self.hapticDisposeBag = DisposeBag()
         
-        // MARK: - OUTPUT - Data Sources
-        // data source
-        // MVVM+Rx의 핵심
-        //   얘는 받아온 정보를 "그리기"만 한다.
-        //   즉, 여기서 UI를 직접 어떤 값에 의해서 변경하는 로직은 좋은. 구조가. 아니다.
+        self.alarmHapticSwitch.rx
+            .isOn.changed
+            .distinctUntilChanged()
+            .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
+            .debug("alarmHapticSwitch 누른 후")
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, alarmHapticOn in
+                
+                var nextHabitDetailVO = habitDetailVO
+                if alarmHapticOn {
+                    nextHabitDetailVO.alarmHaptic = "Basic Call"
+                } else {
+                    nextHabitDetailVO.alarmHaptic = nil
+                }
+                self.viewModel.inputs.updateHabitDetailVOOnEditMode.onNext(nextHabitDetailVO)
+            })
+            .disposed(by: self.hapticDisposeBag)
+    }
+    
+    // MARK: - INPUT - RepeatButtons
+    
+    func bindAlarmRepeatButton(_ habitDetailVO: HabitDetailVO) {
+        // to fix serious bugs
+        self.repeatDisposeBag = DisposeBag()
+        
+        for (index, currentButton) in self.alarmRepeatButtons.enumerated() {
+            
+            currentButton.rx.tap
+                .debug("currentButton.rx.tap")
+                .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
+                .withUnretained(self)
+                .subscribe(onNext: { `self`, _ in
+                
+                var nextHabitDetailVO = habitDetailVO
+                    
+                switch index {
+                case 0: nextHabitDetailVO.repeatMon = !nextHabitDetailVO.repeatMon!
+                case 1: nextHabitDetailVO.repeatTue = !nextHabitDetailVO.repeatTue!
+                case 2: nextHabitDetailVO.repeatWed = !nextHabitDetailVO.repeatWed!
+                case 3: nextHabitDetailVO.repeatThu = !nextHabitDetailVO.repeatThu!
+                case 4: nextHabitDetailVO.repeatFri = !nextHabitDetailVO.repeatFri!
+                case 5: nextHabitDetailVO.repeatSat = !nextHabitDetailVO.repeatSat!
+                case 6: nextHabitDetailVO.repeatSun = !nextHabitDetailVO.repeatSun!
+                default: ()
+                }
+                
+                self.viewModel.inputs.updateHabitDetailVOOnEditMode
+                    .onNext(nextHabitDetailVO)
+            })
+            .disposed(by: self.repeatDisposeBag)
+        }
+    }
+    
+    // MARK: - OUTPUT - Bind UI
+    
+    /// bind main UI
+    /// viewModel의 output에서 오는 최신 정보들을 받아 "그리기"만 한다.
+    func bindMainUI() {
         self.viewModel.outputs.currentHabitDetailVO
-            .debug("** 뷰모델에서 최신 데이터 가져오기 **")
+            .debug("** fetch current habitDetailVO **")
             .withUnretained(self)
             .subscribe(onNext: { `self`, habitDetailVO in
                 
@@ -149,10 +415,10 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
                                     color: habitDetailVO.color)
                 
                 // alarm music
-                self.setAlarmMusic(habitDetailVO)
+                self.setAlarmMusicUI(habitDetailVO)
                 
                 // alarm haptic
-                self.setAlarmHaptic(habitDetailVO)
+                self.setAlarmHapticUI(habitDetailVO)
                 
                 // alarm button
                 self.setAlarmButton(habitDetailVO)
@@ -162,36 +428,33 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
 
             })
             .disposed(by: self.disposeBag)
-        
-        // MARK: - OUTPUT - Edit Mode
-        // edit mode 시 각 UI 요소들의 기능 같은 것
-        // UI 요소만!
+    }
+    
+    // MARK: - OUTPUT - Bind EditMode UI
+    
+    /// edit mode 시 각 UI 요소들의 기능 같은 것
+    /// UI 요소만!
+    /// ## open editing Mode ###
+    /// 1. 각 알람 스위치 enable
+    /// 2. edit 버튼 바뀌기
+    /// 3. 알람 시간, 알람음, 알람 진동 고를 수 있게 하는 창 나오기
+    ///    - 알람 on: 위에 해결, 알람 시간 바꾸면 위에 부분도 해결하기
+    ///    - 알람 off: 위에 알람시계랑 라벨도 떼고
+    ///    - 알람 시간: 없음
+    ///    - 알람 음, 진동: 없음
+    /// 4. 각 알람 버튼 선택할 수 있게 하기
+    /// 5. 메모 편집할 수 있도록 + 현재 자/최대 50자 + 지우개 버튼 나오기
+    /// ## not editing Mode
+    /// 1. 각 알람 스위치 not enable
+    /// 2. edit 버튼 바뀌기
+    /// 3. 알람 시간, 알람음, 알람 진동 고를 수 있게 하는 삭제
+    /// 4. 각 알람 버튼 선택할 수 없게 하기
+    /// 5. 메모 편집할 수 없도록 + 현재 자/최대 50자(삭제) + 지우개 버튼 나오기(삭제)
+    func bindEditModeUI() {
         self.viewModel.outputs.editMode // default mode is not editing mode
             .observe(on: MainScheduler.instance)
             .withUnretained(self)
             .subscribe(onNext: { `self`, editMode in
-                
-                /*
-                 ### open editing Mode ###
-                 
-                 1. 각 알람 스위치 enable
-                 2. edit 버튼 바뀌기
-                 3. 알람 시간, 알람음, 알람 진동 고를 수 있게 하는 창 나오기
-                 3-1. 알람 on: 위에 해결, 알람 시간 바꾸면 위에 부분도 해결하기
-                 3-2. 알람 off: 위에 알람시계랑 라벨도 떼고
-                 알람 시간: 없음
-                 알람 음, 진동: 없음
-                 4. 각 알람 버튼 선택할 수 있게 하기
-                 5. 메모 편집할 수 있도록 + 현재 자/최대 50자 + 지우개 버튼 나오기
-                 
-                 ### not editing Mode ###
-
-                 1. 각 알람 스위치 not enable
-                 2. edit 버튼 바뀌기
-                 3. 알람 시간, 알람음, 알람 진동 고를 수 있게 하는 삭제
-                 4. 각 알람 버튼 선택할 수 없게 하기
-                 5. 메모 편집할 수 없도록 + 현재 자/최대 50자(삭제) + 지우개 버튼 나오기(삭제)
-                 */
                 
                 self.alarmTimeSwitch.isEnabled = editMode
                 self.alarmMusicSwitch.isEnabled = editMode
@@ -226,261 +489,13 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
 
             })
             .disposed(by: self.disposeBag)
-        
     }
-    
-    // MARK: - Init UI
-    
-    // Things which is not proper in bindUI() method
-    // Because, in bindUI() method, things are repeatedly changed whenever
-    // new habitDetailVO comes.
-    private func initUI() {
-        self.initOnEditButton()
-        self.initAlarmMusic()
-        self.initAlarmHaptic()
-        self.initPickerViewAccessories()
-        
-        self.initFSCalendar()
-    }
-    
-    // MARK: - onEdit
-    
-    func initOnEditButton() {
-        // edit mode button initialize
-        self.onEdit = UIBarButtonItem().then {
-            $0.image = UIImage(systemName: "pencil")
-            $0.tintColor = .label
-            self.navigationItem.rightBarButtonItem = $0
-        }
-    }
-    
-    // MARK: - Alarm Time
-    
-    func setAlarmTimeActions() {
-        /*
-         actions
-         */
-        
-    }
-    
-    func setAlarmTimeUI(alarmFlag: Bool, alarmTime: String?, color: UIColor) {
-        /*
-         가정
-         1. alarmFlag가 true면 alarmMusic이랑 alarmHaptic은 알아서
-         2. alarmFlag가 false면 alarmMusic이랑 alarmHaptic은 무조건 nil
-         */
-        if alarmFlag {
-            self.alarmImg.isHidden = false
-            self.alarmTimeLabel.isHidden = false
-            self.alarmTimeSwitch.isOn = true
-            self.alarmTimeLabel.text = convertAlarmTime(time: alarmTime!)
-            self.alarmTimeTextField.text = convertAlarmTime(time: alarmTime!)
-            self.alarmTimeLabel.textColor = color
-        } else {
-            self.alarmImg.isHidden = true
-            self.alarmTimeLabel.isHidden = true
-            self.alarmTimeSwitch.isOn = false
-            self.alarmTimeTextField.text = "없음"
-            self.alarmTimeTextField.textColor = .systemGray6
-        }
-    }
-    
-    // MARK: - Alarm Music
-    
-    func setAlarmMusic(_ habitDetailVO: HabitDetailVO) {
-        self.musicDisposeBag = DisposeBag()
-        /*
-         가정
-         1. alarmMusic은 nil이면 없는거
-         2. nil이 아니면 무조건 뭐든 있어야 함.
-         */
-        
-        // UI
-        if habitDetailVO.alarmMusic != nil {
-            self.alarmMusicSwitch.isOn = true
-            self.alarmMusicTextField.text = habitDetailVO.alarmMusic
-        } else {
-            self.alarmMusicTextField.textColor = .systemGray6
-            self.alarmMusicSwitch.isOn = false
-            self.alarmMusicTextField.text = "없음"
-        }
-        
-        // Rx
-        self.alarmMusicSwitch.rx
-            .isOn.changed
-            .distinctUntilChanged()
-            .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
-            .withUnretained(self)
-            .subscribe(onNext: { `self`, alarmHapticOn in
-                
-                var nextHabitDetailVO = habitDetailVO
-                if alarmHapticOn {
-                    nextHabitDetailVO.alarmMusic = "Basic Call"
-                } else {
-                    nextHabitDetailVO.alarmMusic = nil
-                }
-                self.viewModel.inputs.updateHabitDetailVOOnEditMode.onNext(nextHabitDetailVO)
-            })
-            .disposed(by: self.musicDisposeBag)
-    }
-    
-    var musicPickerView = UIPickerView()
-    @IBOutlet weak var alarmMusicDownButton: UIButton!
-    
-    func initAlarmMusic() {
-        // make alarm haptic cursor color be clear
-        self.alarmMusicTextField.tintColor = .clear
-        
-        // picker view settings
-        self.musicPickerView.delegate = self
-        self.musicPickerView.dataSource = self
-        
-        self.alarmMusicTextField.inputView = musicPickerView
-    }
-    
-    // MARK: - Alarm Haptic
+}
 
-    func setAlarmHaptic(_ habitDetailVO: HabitDetailVO) {
-        self.hapticDisposeBag = DisposeBag()
-        /*
-         가정
-         1. alarmMusic은 nil이면 없는거
-         2. nil이 아니면 무조건 뭐든 있어야 함.
-         */
-        
-        // UI
-        if habitDetailVO.alarmHaptic != nil {
-            self.alarmHapticTextField.textColor = .label
-            self.alarmHapticSwitch.isOn = true
-            self.alarmHapticTextField.text = habitDetailVO.alarmHaptic
-        } else {
-            self.alarmHapticTextField.textColor = .systemGray6
-            self.alarmHapticSwitch.isOn = false
-            self.alarmHapticTextField.text = "없음"
-        }
-        
-        // Rx
-        self.alarmHapticSwitch.rx
-            .isOn.changed
-            .distinctUntilChanged()
-            .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
-            .debug("alarmHapticSwitch 누른 후")
-            .withUnretained(self)
-            .subscribe(onNext: { `self`, alarmHapticOn in
-                
-                var nextHabitDetailVO = habitDetailVO
-                if alarmHapticOn {
-                    nextHabitDetailVO.alarmHaptic = "Basic Call"
-                } else {
-                    nextHabitDetailVO.alarmHaptic = nil
-                }
-                self.viewModel.inputs.updateHabitDetailVOOnEditMode.onNext(nextHabitDetailVO)
-            })
-            .disposed(by: self.hapticDisposeBag)
-            
-    }
-    
-    var hapticPickerView = UIPickerView()
-    @IBOutlet weak var alarmHapticDownButton: UIButton!
-    
-    func initAlarmHaptic() {
-        // make alarm haptic cursor color be clear
-        self.alarmHapticTextField.tintColor = .clear
-        
-        // picker view settings
-        self.hapticPickerView.delegate = self
-        self.hapticPickerView.dataSource = self
-        
-        self.alarmHapticTextField.inputView = hapticPickerView
-    }
 
-    func initPickerViewAccessories() {
-        // bar button item "done"
-        let doneButton = UIBarButtonItem()
-        doneButton.title = "done"
-        doneButton.rx.tap
-            .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
-            .withUnretained(self)
-            .subscribe(onNext: { `self`, _ in
-                self.view.endEditing(true)
-            })
-            .disposed(by: self.disposeBag)
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-
-        // tool bar
-        let toolBar = UIToolbar()
-        toolBar.tintColor = .label
-        toolBar.frame = CGRect(x: 0, y: 0, width: 0, height: 35)
-        toolBar.setItems([flexSpace, doneButton], animated: true)
-        
-        self.alarmMusicTextField.inputAccessoryView = toolBar
-        self.alarmHapticTextField.inputAccessoryView = toolBar
-    }
+extension HabitDetailVC: FSCalendarDelegate, FSCalendarDataSource, FSCalendarDelegateAppearance {
     
-    // MARK: - Alarm Button
-    
-    func setAlarmButton(_ habitDetailVO: HabitDetailVO) {
-        // to fix serious bugs
-        self.repeatDisposeBag = DisposeBag()
-
-        let buttons: [(UIButton, Bool)]
-            = [(self.alarmRepeatMon, habitDetailVO.repeatMon!),
-               (self.alarmRepeatTue, habitDetailVO.repeatTue!),
-               (self.alarmRepeatWed, habitDetailVO.repeatWed!),
-               (self.alarmRepeatThu, habitDetailVO.repeatThu!),
-               (self.alarmRepeatFri, habitDetailVO.repeatFri!),
-               (self.alarmRepeatSat, habitDetailVO.repeatSat!),
-               (self.alarmRepeatSun, habitDetailVO.repeatSun!)]
-        
-        for (index, button) in buttons.enumerated() {
-            
-            let currentButton = button.0
-            let currentRepeat = button.1
-
-            // 모양
-            currentButton.layer.cornerRadius = currentButton.frame.width / 2
-            // 색
-            if currentRepeat {
-                currentButton.backgroundColor = habitDetailVO.color
-            } else {
-                currentButton.backgroundColor = .systemBackground
-            }
-            
-            // - Rx -
-            currentButton.rx.tap
-                .debug("currentButton.rx.tap")
-                .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
-                .withUnretained(self)
-                .subscribe(onNext: { `self`, _ in
-                
-                var nextHabitDetailVO = habitDetailVO
-                    
-                switch index {
-                case 0: nextHabitDetailVO.repeatMon = !nextHabitDetailVO.repeatMon!
-                case 1: nextHabitDetailVO.repeatTue = !nextHabitDetailVO.repeatTue!
-                case 2: nextHabitDetailVO.repeatWed = !nextHabitDetailVO.repeatWed!
-                case 3: nextHabitDetailVO.repeatThu = !nextHabitDetailVO.repeatThu!
-                case 4: nextHabitDetailVO.repeatFri = !nextHabitDetailVO.repeatFri!
-                case 5: nextHabitDetailVO.repeatSat = !nextHabitDetailVO.repeatSat!
-                case 6: nextHabitDetailVO.repeatSun = !nextHabitDetailVO.repeatSun!
-                default: ()
-                }
-                
-                self.viewModel.inputs.updateHabitDetailVOOnEditMode
-                    .onNext(nextHabitDetailVO)
-            })
-            .disposed(by: self.repeatDisposeBag)
-        }
-        
-    }
-    
-    func setAllAlarmButtonsEnablement(editMode: Bool) {
-        for alarmRepeat in self.alarmRepeatButtons {
-            alarmRepeat.isEnabled = editMode
-        }
-    }
-   
-    // MARK: - Fs Calendar
+    // MARK: - Init FsCalendar
     
     func initFSCalendar() {
         self.fsCalendar.delegate = self
@@ -491,17 +506,17 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         self.fsCalendar.register(FSCalendarCell.self, forCellReuseIdentifier: "cell")
     }
     
-    //    func getHistories(month: Int) -> [HabitHistory] {
-    //        var habitHistoriesByMonth = [HabitHistory]()
-    //        if let habitHistories = self.habitDetailVO.habitHistories {
-    //            for history in habitHistories {
-    //                if getMonth(date: history.date!) == "\(month)" {
-    //                    habitHistoriesByMonth.append(history)
-    //                }
-    //            }
-    //        }
-    //        return habitHistoriesByMonth
-    //    }
+//    func getHistories(month: Int) -> [HabitHistory] {
+//        var habitHistoriesByMonth = [HabitHistory]()
+//        if let habitHistories = self.habitDetailVO.habitHistories {
+//            for history in habitHistories {
+//                if getMonth(date: history.date!) == "\(month)" {
+//                    habitHistoriesByMonth.append(history)
+//                }
+//            }
+//        }
+//        return habitHistoriesByMonth
+//    }
     
     // MARK: - FS Calendar Delegate
     
@@ -533,7 +548,9 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         
         return cell
     }
-    
+}
+
+extension HabitDetailVC: UIPickerViewDelegate, UIPickerViewDataSource {
     // MARK: - UIPickerView Delegate
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
@@ -574,5 +591,3 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         }
     }
 }
-
-
