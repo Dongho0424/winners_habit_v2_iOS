@@ -37,8 +37,8 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     @IBOutlet weak var attribute: UILabel!
     
     @IBOutlet weak var createDate: UILabel!
-    @IBOutlet weak var alarmTimeField: UILabel!
-    @IBOutlet weak var alarmMusicTextField: UILabel!
+    @IBOutlet weak var alarmTimeField: UITextField!
+    @IBOutlet weak var alarmMusicTextField: UITextField!
     @IBOutlet weak var alarmHapticTextField: UITextField!
     
     @IBOutlet weak var alarmTimeSwitch: UISwitch!
