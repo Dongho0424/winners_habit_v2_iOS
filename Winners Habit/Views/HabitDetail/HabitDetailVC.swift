@@ -124,8 +124,8 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         //   즉, 여기서 UI를 직접 어떤 값에 의해서 변경하는 로직은 좋은. 구조가. 아니다.
         self.viewModel.outputs.currentHabitDetailVO
             .debug("** 뷰모델에서 최신 데이터 가져오기 **")
-            .subscribe(onNext: { [weak self] habitDetailVO in
-                guard let self = self else { return }
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, habitDetailVO in
                 
                 // 절대 안바뀌는 애들
                 self.challengeName.text = habitDetailVO.challengeName
@@ -169,8 +169,8 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         // UI 요소만!
         self.viewModel.outputs.editMode // default mode is not editing mode
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] editMode in
-                guard let self = self else { return }
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, editMode in
                 
                 /*
                  ### open editing Mode ###
@@ -320,11 +320,11 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
             .distinctUntilChanged()
             .debounce(RxTimeInterval.milliseconds(800), scheduler: MainScheduler.instance)
             .debug("alarmHapticSwitch 누른 후")
-            .subscribe(onNext: { [weak self] in
-                guard let self = self else { return }
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, alarmHapticOn in
                 
                 var nextHabitDetailVO = habitDetailVO
-                if $0 {
+                if alarmHapticOn {
                     nextHabitDetailVO.alarmHaptic = "Basic Call"
                 } else {
                     nextHabitDetailVO.alarmHaptic = nil
@@ -353,8 +353,8 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         self.doneButtonForAlarmHaptic.title = "done"
         self.doneButtonForAlarmHaptic.rx.tap
             .debounce(RxTimeInterval.milliseconds(800), scheduler: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] in
-                guard let self = self else { return }
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
                 self.view.endEditing(true)
             })
             .disposed(by: self.disposeBag)
@@ -402,8 +402,8 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
             currentButton.rx.tap
                 .debug("currentButton.rx.tap")
                 .debounce(RxTimeInterval.milliseconds(800), scheduler: MainScheduler.instance)
-                .subscribe(onNext: { [weak self] in
-                guard let self = self else { return }
+                .withUnretained(self)
+                .subscribe(onNext: { `self`, _ in
                 
                 var nextHabitDetailVO = habitDetailVO
                     
@@ -492,8 +492,8 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         self.viewModel.outputs.currentHabitDetailVO
             .observe(on: MainScheduler.instance)
             .take(1)
-            .subscribe(onNext: { [weak self] habitDetailVO in
-                guard let self = self else { return }
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, habitDetailVO in
                 
                 var nextHabitDetailVO = habitDetailVO
                 nextHabitDetailVO.alarmHaptic = self.haptics[row]

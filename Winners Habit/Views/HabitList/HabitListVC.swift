@@ -170,8 +170,8 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         
         // RX
         self.prevDay.rx.tap
-            .subscribe(onNext: { [weak self] in
-                guard let self = self else { return }
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
 
                 // let yesterday
                 let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate)!
@@ -189,8 +189,8 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         // RX
         self.postDay.rx.tap
             .debug("prevDay")
-            .subscribe(onNext: { [weak self] in
-                guard let self = self else { return }
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
 
                 // let tommorrow
                 let tommorrow = Calendar.current.date(byAdding: .day, value: 1, to: self.currentDate)!
@@ -255,8 +255,8 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         
         // challenge 그리기
         self.viewModel.outputs.challenge
-//            .debug("ViewController: challenge")
-            .subscribe(onNext: { challengeVO in
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, challengeVO in
                 self.challengeName.text  = challengeVO.challengeName
                 self.challengeImage.image = challengeVO.challengeImage
                 self.challengeDDay.text = challengeVO.challengeDDay != nil ? "D - \(challengeVO.challengeDDay!)" : ""
@@ -270,10 +270,10 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         self.viewModel.outputs.getHabitDetailView
 //            .debug("화면 전환!")
             .filter { $0.iconImage != nil }
-            .subscribe(onNext: { [weak self] selectedHabitVO in
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, selectedHabitVO in
                 
-                guard let self = self,
-                      let habitDetailVC = self.storyboard?.instantiateViewController(identifier: HabitDetailVC.identifier) as? HabitDetailVC
+                guard let habitDetailVC = self.storyboard?.instantiateViewController(identifier: HabitDetailVC.identifier) as? HabitDetailVC
                 else {
                     fatalError("MainVC: tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)")
                 }
