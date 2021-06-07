@@ -99,7 +99,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         
         // edit 버튼 누르면 edit 모드 바꾸기
         self.onEdit.rx.tap
-            .debounce(RxTimeInterval.milliseconds(800), scheduler: MainScheduler.instance)
+            .throttle(RxTimeInterval.milliseconds(800), latest: false, scheduler: MainScheduler.instance)
             .debug("onEdit.rx.tap")
             .bind(to: self.viewModel.inputs.changeEditMode)
             .disposed(by: self.disposeBag)
@@ -318,7 +318,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         self.alarmHapticSwitch.rx
             .isOn.changed
             .distinctUntilChanged()
-            .debounce(RxTimeInterval.milliseconds(800), scheduler: MainScheduler.instance)
+            .throttle(RxTimeInterval.milliseconds(800), latest: false, scheduler: MainScheduler.instance)
             .debug("alarmHapticSwitch 누른 후")
             .withUnretained(self)
             .subscribe(onNext: { `self`, alarmHapticOn in
@@ -352,7 +352,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         // bar button item "done"
         self.doneButtonForAlarmHaptic.title = "done"
         self.doneButtonForAlarmHaptic.rx.tap
-            .debounce(RxTimeInterval.milliseconds(800), scheduler: MainScheduler.instance)
+            .throttle(RxTimeInterval.milliseconds(800), latest: false, scheduler: MainScheduler.instance)
             .withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 self.view.endEditing(true)
@@ -401,7 +401,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
             // - Rx -
             currentButton.rx.tap
                 .debug("currentButton.rx.tap")
-                .debounce(RxTimeInterval.milliseconds(800), scheduler: MainScheduler.instance)
+                .throttle(RxTimeInterval.milliseconds(800), latest: false, scheduler: MainScheduler.instance)
                 .withUnretained(self)
                 .subscribe(onNext: { `self`, _ in
                 
