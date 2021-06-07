@@ -59,7 +59,6 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
     
     private var onEdit: UIBarButtonItem!
     
-    
     // MARK: - MVVM-Rx Components
     
     var viewModel : HabitDetailVMType
@@ -100,6 +99,7 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         
         // edit 버튼 누르면 edit 모드 바꾸기
         self.onEdit.rx.tap
+            .debounce(RxTimeInterval.milliseconds(800), scheduler: MainScheduler.instance)
             .debug("onEdit.rx.tap")
             .bind(to: self.viewModel.inputs.changeEditMode)
             .disposed(by: self.disposeBag)
@@ -143,7 +143,6 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
                     ()
                 }
                 self.attribute.textColor = habitDetailVO.color
-                
                 
                 // alarm time
                 self.setAlarmTimeUI(alarmFlag: habitDetailVO.alarmFlag,
@@ -324,13 +323,13 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 
-                var temp = habitDetailVO
+                var nextHabitDetailVO = habitDetailVO
                 if $0 {
-                    temp.alarmHaptic = "Basic Call"
+                    nextHabitDetailVO.alarmHaptic = "Basic Call"
                 } else {
-                    temp.alarmHaptic = nil
+                    nextHabitDetailVO.alarmHaptic = nil
                 }
-                self.viewModel.inputs.updateHabitDetailVOOnEditMode.onNext(temp)
+                self.viewModel.inputs.updateHabitDetailVOOnEditMode.onNext(nextHabitDetailVO)
             })
             .disposed(by: self.hapticDisposeBag)
             
@@ -353,11 +352,10 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
         // bar button item "done"
         self.doneButtonForAlarmHaptic.title = "done"
         self.doneButtonForAlarmHaptic.rx.tap
+            .debounce(RxTimeInterval.milliseconds(800), scheduler: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
-                
                 self.view.endEditing(true)
-                print("doneBtn tapped")
             })
             .disposed(by: self.disposeBag)
         let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
@@ -403,24 +401,25 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
             // - Rx -
             currentButton.rx.tap
                 .debug("currentButton.rx.tap")
+                .debounce(RxTimeInterval.milliseconds(800), scheduler: MainScheduler.instance)
                 .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 
-                var temp = habitDetailVO
+                var nextHabitDetailVO = habitDetailVO
                     
                 switch index {
-                case 0: temp.repeatMon = !temp.repeatMon!
-                case 1: temp.repeatTue = !temp.repeatTue!
-                case 2: temp.repeatWed = !temp.repeatWed!
-                case 3: temp.repeatThu = !temp.repeatThu!
-                case 4: temp.repeatFri = !temp.repeatFri!
-                case 5: temp.repeatSat = !temp.repeatSat!
-                case 6: temp.repeatSun = !temp.repeatSun!
+                case 0: nextHabitDetailVO.repeatMon = !nextHabitDetailVO.repeatMon!
+                case 1: nextHabitDetailVO.repeatTue = !nextHabitDetailVO.repeatTue!
+                case 2: nextHabitDetailVO.repeatWed = !nextHabitDetailVO.repeatWed!
+                case 3: nextHabitDetailVO.repeatThu = !nextHabitDetailVO.repeatThu!
+                case 4: nextHabitDetailVO.repeatFri = !nextHabitDetailVO.repeatFri!
+                case 5: nextHabitDetailVO.repeatSat = !nextHabitDetailVO.repeatSat!
+                case 6: nextHabitDetailVO.repeatSun = !nextHabitDetailVO.repeatSun!
                 default: ()
                 }
                 
                 self.viewModel.inputs.updateHabitDetailVOOnEditMode
-                    .onNext(temp)
+                    .onNext(nextHabitDetailVO)
             })
             .disposed(by: self.repeatDisposeBag)
         }
@@ -496,9 +495,9 @@ class HabitDetailVC: UIViewController, FSCalendarDelegate, FSCalendarDataSource,
             .subscribe(onNext: { [weak self] habitDetailVO in
                 guard let self = self else { return }
                 
-                var temp = habitDetailVO
-                temp.alarmHaptic = self.haptics[row]
-                self.viewModel.inputs.updateHabitDetailVOOnEditMode.onNext(temp)
+                var nextHabitDetailVO = habitDetailVO
+                nextHabitDetailVO.alarmHaptic = self.haptics[row]
+                self.viewModel.inputs.updateHabitDetailVOOnEditMode.onNext(nextHabitDetailVO)
             })
             .disposed(by: self.disposeBag)
     }
