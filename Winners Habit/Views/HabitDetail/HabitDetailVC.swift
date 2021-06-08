@@ -11,6 +11,7 @@ import WinnersHabitOAS
 import FSCalendar
 import RxSwift
 import RxCocoa
+import RxGesture
 
 class HabitDetailVC: UIViewController, UITextViewDelegate {
     static let identifier = "HabitDetailVC"
@@ -164,7 +165,13 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
         self.musicPickerView.delegate = self
         self.musicPickerView.dataSource = self
         
+        // make inputView pickerview
         self.alarmMusicTextField.inputView = musicPickerView
+        
+        // add alarmMusicDownButton tap event -> picker view
+        self.alarmMusicDownButton.rx.tap
+            .subscribe(onNext: { self.alarmMusicTextField.becomeFirstResponder() })
+            .disposed(by: self.disposeBag)
     }
     
     /**
@@ -197,7 +204,13 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
         self.hapticPickerView.delegate = self
         self.hapticPickerView.dataSource = self
         
+        // make inputView pickerview
         self.alarmHapticTextField.inputView = hapticPickerView
+        
+        // add alarmMusicDownButton tap event -> picker view
+        self.alarmHapticDownButton.rx.tap
+            .subscribe(onNext: { self.alarmHapticTextField.becomeFirstResponder() })
+            .disposed(by: self.disposeBag)
     }
     
     /**
