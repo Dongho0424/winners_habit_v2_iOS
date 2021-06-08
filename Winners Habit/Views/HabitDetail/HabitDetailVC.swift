@@ -13,7 +13,7 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-class HabitDetailVC: UIViewController, UITextViewDelegate {
+class HabitDetailVC: UIViewController {
     static let identifier = "HabitDetailVC"
     
     // 임시 데이터들
@@ -323,7 +323,7 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
     
     private func bindViewModel() {
         
-        // MARK: - Bind UI - INPUT
+        // MARK: - INPUT
         /// things to go to viewModel.inputs
         
         self.bindOnEditButton()
@@ -341,7 +341,7 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
             })
             .disposed(by: self.disposeBag)
         
-        // MARK: - Bind UI - OUTPUT
+        // MARK: - OUTPUT
         /**
          UI 요소 그리는 것을 한번에 합쳐버리기
          

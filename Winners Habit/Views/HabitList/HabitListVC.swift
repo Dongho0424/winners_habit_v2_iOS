@@ -11,7 +11,7 @@ import SnapKit
 import WinnersHabitOAS
 import RxSwift
 
-class HabitListVC: UIViewController, UITableViewDelegate {
+class HabitListVC: UIViewController {
     
     // MARK: - UI Components
     
@@ -41,35 +41,28 @@ class HabitListVC: UIViewController, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // table view initial settings
-        self.tableView.delegate = self
-//        self.tableView.dataSource = self
-        self.tableView.separatorStyle = .none
-        
         self.initUI()
-        
         self.bindViewModel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        print("viewWillAppear")
     }
     
-    // MARK: - set UI
+    // MARK: - Init UI
     
     private func initUI() {
-        
+        self.initTableView()
         self.setNavigationBarClear()
         self.initTitleView()
-        
-        // long press recognizer
-        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPress(_:)))
-        self.tableView.addGestureRecognizer(longPressRecognizer)
-        
-        // currentDate는 오늘로
-        self.currentDate = Date()
-        self.setTitleDate(date: dateStringDetail(date: self.currentDate), leftArrow: true, rightArrow: false)
+        self.longPressGesture()
+        self.initToday()
+    }
+    
+    /// table view initial settings
+    func initTableView() {
+        self.tableView.delegate = self
+        self.tableView.separatorStyle = .none
     }
     
     /// default navigation bar clear
@@ -113,7 +106,18 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         
         self.navigationItem.titleView = stackView
     }
-
+    
+    /// long press recognizer
+    func longPressGesture() {
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPress(_:)))
+        self.tableView.addGestureRecognizer(longPressRecognizer)
+    }
+    
+    /// currentDate는 오늘로
+    func initToday() {
+        self.currentDate = Date()
+        self.setTitleDate(date: dateStringDetail(date: self.currentDate), leftArrow: true, rightArrow: false)
+    }
     
     func setTitleDate(date: String, leftArrow: Bool, rightArrow: Bool) {
 
@@ -156,9 +160,7 @@ class HabitListVC: UIViewController, UITableViewDelegate {
     
     func bindViewModel() {
         
-        // --------------------------------
-        //             INPUT
-        // --------------------------------
+        // MARK: - INPUT
 
         self.viewModel.inputs.fetchHabitList.onNext(self.currentDate)
         self.viewModel.inputs.fetchChallenge.onNext(())
@@ -204,9 +206,7 @@ class HabitListVC: UIViewController, UITableViewDelegate {
             })
             .disposed(by: self.disposeBag)
         
-        // --------------------------------
-        //             OUTPUT
-        // --------------------------------
+        // MARK: - OUTPUT
         
         // table view 그리기
         // viewModel의 allHabits와 연결
@@ -216,14 +216,12 @@ class HabitListVC: UIViewController, UITableViewDelegate {
          이를 구독하는 self.tableView.rx.items의 기존 cell들은 disposed 된다.
          */
         self.viewModel.outputs.allHabits
-//            .debug("ViewController: allHabits")
             .observe(on: MainScheduler.instance)
             .bind(to: self.tableView.rx.items(cellIdentifier: HabitCell.identifier, cellType: HabitCell.self)) {
                 _, habitVO, cell in
                 
                 // iconImage network에서 get
                 cell.fetchImage
-//                    .debug("ViewController: cell.fetchImage")
                     .map { habitVO }
                     .subscribe(onNext: self.viewModel.inputs.fetchHabitIconImage.onNext)
                     .disposed(by: cell.cellDisposeBag)
@@ -232,7 +230,6 @@ class HabitListVC: UIViewController, UITableViewDelegate {
                 cell.checked
                     .delay(RxTimeInterval.milliseconds(700), scheduler: MainScheduler.instance)
                     .map { (habitVO, $0) }
-//                    .debug("ViewController: cell.checked")
                     .subscribe(onNext: self.viewModel.inputs.checkHabit.onNext)
                     .disposed(by: cell.cellDisposeBag)
 
@@ -240,7 +237,6 @@ class HabitListVC: UIViewController, UITableViewDelegate {
                 cell.getHabitDetailView
                     .map { habitVO }
                     .filter { $0.iconImage != nil }
-//                    .debug("ViewController: cell.getHabitDetailView")
                     .subscribe(onNext: self.viewModel.inputs.showHabitDetailView.onNext)
                     .disposed(by: cell.cellDisposeBag)
                 
@@ -263,7 +259,6 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         // --------------------------------
         
         self.viewModel.outputs.getHabitDetailView
-//            .debug("화면 전환!")
             .filter { $0.iconImage != nil }
             .withUnretained(self)
             .subscribe(onNext: { `self`, selectedHabitVO in
@@ -281,7 +276,9 @@ class HabitListVC: UIViewController, UITableViewDelegate {
             })
             .disposed(by: self.disposeBag)
     }
-    
+}
+
+extension HabitListVC: UITableViewDelegate {
     // MARK: - TableView Delegate
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
