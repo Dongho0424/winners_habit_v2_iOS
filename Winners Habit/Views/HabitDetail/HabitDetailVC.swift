@@ -61,6 +61,7 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
     private var musicDisposeBag = DisposeBag()
     private var hapticDisposeBag = DisposeBag()
     private var alarmTimeDisposeBag = DisposeBag()
+    private var memoDisposeBag = DisposeBag()
     
     // MARK: - Init
     
@@ -254,6 +255,7 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
         self.alarmTimeTextField.inputAccessoryView = toolBar
         self.alarmMusicTextField.inputAccessoryView = toolBar
         self.alarmHapticTextField.inputAccessoryView = toolBar
+        self.memo.inputAccessoryView = toolBar
     }
     
     // MARK: - Alarm Button
@@ -289,6 +291,10 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
         }
     }
     
+    // MARK: - Memo
+    
+    @IBOutlet weak var eraseButton: UIButton!
+    
     // MARK: - BindUI
     
     private func bindViewModel() {
@@ -307,7 +313,7 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
                 self.bindAlarmMusicSwitch(habitDetailVO)
                 self.bindAlarmHapticSwitch(habitDetailVO)
                 self.bindAlarmRepeatButton(habitDetailVO)
-                
+                self.bindMemo(habitDetailVO)
             })
             .disposed(by: self.disposeBag)
         
@@ -464,6 +470,35 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
         }
     }
     
+    // MARK: - INPUT - Memo
+    
+    func bindMemo(_ habitDetailVO: HabitDetailVO) {
+        self.memoDisposeBag = DisposeBag()
+        
+        // text 입력할 때마다 viewModel로 보내기
+        self.memo.rx
+            .text.changed
+            .distinctUntilChanged()
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, text in
+                var nextHabitDetailVO = habitDetailVO
+                nextHabitDetailVO.memo = text
+                self.viewModel.inputs.updateHabitDetailVOOnEditMode.onNext(nextHabitDetailVO)
+            })
+            .disposed(by: self.memoDisposeBag)
+        
+        // erase 버튼 누르면
+        // 삭제해서 viewModel로 보내기
+        self.eraseButton.rx.tap
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                var nextHabitDetailVO = habitDetailVO
+                nextHabitDetailVO.memo = nil
+                self.viewModel.inputs.updateHabitDetailVOOnEditMode.onNext(nextHabitDetailVO)
+            })
+            .disposed(by: self.memoDisposeBag)
+    }
+    
     // MARK: - OUTPUT - Bind UI
     
     /// bind main UI
@@ -563,10 +598,14 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
                     self.alarmHapticDownButton.isHidden = !editMode
                 }
                 
+                // alarm buttons
                 self.setAllAlarmButtonsEnablement(editMode: editMode)
                 
+                // memo
                 self.memo.isEditable = editMode
-                
+                UIView.animate(withDuration: 0.3) {
+                    self.eraseButton.isHidden = !editMode
+                }
             })
             .disposed(by: self.disposeBag)
     }
