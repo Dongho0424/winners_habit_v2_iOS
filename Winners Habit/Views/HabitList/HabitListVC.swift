@@ -48,7 +48,7 @@ class HabitListVC: UIViewController, UITableViewDelegate {
         
         self.initUI()
         
-        self.bindUIWithViewModel()
+        self.bindViewModel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -60,32 +60,27 @@ class HabitListVC: UIViewController, UITableViewDelegate {
     
     private func initUI() {
         
-        // default navigation bar clear
-        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        self.navigationController?.navigationBar.shadowImage = UIImage()
-        self.navigationController?.navigationBar.isTranslucent = true
-        self.navigationController?.view.backgroundColor = UIColor.clear
-        
-        // set title by today date
-//        self.initTitleView()
+        self.setNavigationBarClear()
         self.initTitleView()
         
         // long press recognizer
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPress(_:)))
         self.tableView.addGestureRecognizer(longPressRecognizer)
         
-        // back button title to nil
-        _ = UIBarButtonItem(title: nil, style: .plain, target: self, action: nil).then { [unowned self] in
-            $0.tintColor = .label
-            self.navigationItem.backBarButtonItem = $0
-        }
-        
         // currentDate는 오늘로
         self.currentDate = Date()
-//        self.setTitleDate(date: dateStringDetail(date: self.currentDate), leftArrow: true, rightArrow: false)
         self.setTitleDate(date: dateStringDetail(date: self.currentDate), leftArrow: true, rightArrow: false)
     }
     
+    /// default navigation bar clear
+    func setNavigationBarClear() {
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = true
+        self.navigationController?.view.backgroundColor = UIColor.clear
+    }
+    
+    /// set title by today date
     func initTitleView() {
         
         let stackView = UIStackView().then {
@@ -159,7 +154,7 @@ class HabitListVC: UIViewController, UITableViewDelegate {
     
     // MARK: - Bind UI
     
-    func bindUIWithViewModel() {
+    func bindViewModel() {
         
         // --------------------------------
         //             INPUT

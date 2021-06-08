@@ -88,12 +88,36 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
     /// Because, in bindUI() method, things are repeatedly changed whenever
     /// new habitDetailVO comes.
     private func initUI() {
+        self.initBackButton()
         self.initOnEditButton()
         self.initAlarmTime()
         self.initAlarmMusic()
         self.initAlarmHaptic()
         self.initPickerViewAccessories()
         self.initFSCalendar()
+    }
+    
+    // MARK: - Back Button
+    
+    func initBackButton() {
+        
+        let backButton = UIButton().then {
+            $0.tintColor = .label
+            $0.setImage(UIImage(systemName: "arrow.backward"), for: .normal)
+            $0.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(scale: .large), forImageIn: .normal)
+            $0.rx.tap
+                .asDriver()
+                .drive(onNext: {
+                    print("hi")
+                    self.navigationController?.popViewController(animated: true)
+                })
+                .disposed(by: self.disposeBag)
+        }
+        
+        let backBarButtonItem = UIBarButtonItem().then {
+            $0.customView = backButton
+        }
+        self.navigationItem.leftBarButtonItem = backBarButtonItem
     }
     
     // MARK: - onEdit
@@ -108,7 +132,7 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
     }
     
     // MARK: - Alarm Time
-
+    
     let datePicker = UIDatePicker()
     
     func initAlarmTime() {
@@ -344,7 +368,7 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
     
     func bindAlarmTimeField(_ habitDetailVO: HabitDetailVO) {
         self.alarmTimeDisposeBag = DisposeBag()
-
+        
         // 알람 시간 변경
         // 시간 고르기
         self.datePicker.rx.date.changed
@@ -623,18 +647,6 @@ extension HabitDetailVC: FSCalendarDelegate, FSCalendarDataSource, FSCalendarDel
         self.fsCalendar.scrollDirection = .horizontal
         self.fsCalendar.register(FSCalendarCell.self, forCellReuseIdentifier: "cell")
     }
-    
-    //    func getHistories(month: Int) -> [HabitHistory] {
-    //        var habitHistoriesByMonth = [HabitHistory]()
-    //        if let habitHistories = self.habitDetailVO.habitHistories {
-    //            for history in habitHistories {
-    //                if getMonth(date: history.date!) == "\(month)" {
-    //                    habitHistoriesByMonth.append(history)
-    //                }
-    //            }
-    //        }
-    //        return habitHistoriesByMonth
-    //    }
     
     // MARK: - FS Calendar Delegate
     
