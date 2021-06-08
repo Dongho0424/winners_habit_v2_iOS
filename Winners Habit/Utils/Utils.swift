@@ -8,6 +8,8 @@
 import Foundation
 import UIKit
 
+// MARK: - Color
+
 extension UIColor {
    convenience init(red: Int, green: Int, blue: Int) {
        assert(red >= 0 && red <= 255, "Invalid red component")
@@ -29,6 +31,8 @@ extension UIColor {
 func hexToUIColor(hex: String) -> UIColor {
     return UIColor(rgb: Int(hex, radix: 16)!)
 }
+
+// MARK: - Time, Date, ...
 
 func getWeekDayKor(date: Int?) -> String {
     switch date {

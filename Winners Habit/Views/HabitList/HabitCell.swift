@@ -43,9 +43,7 @@ class HabitCell: UITableViewCell {
         
         self.showHabitDetailView$ = PublishSubject<Void>()
         self.showHabitDetailView = showHabitDetailView$.asObserver()
-        self.getHabitDetailView = showHabitDetailView$
-//            .debug("cell click!!! ")
-            .asObservable()
+        self.getHabitDetailView = showHabitDetailView$.asObservable()
         
         super.init(coder: coder)
     }

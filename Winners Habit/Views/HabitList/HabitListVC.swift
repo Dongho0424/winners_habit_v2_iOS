@@ -90,12 +90,14 @@ class HabitListVC: UIViewController {
         
         self.prevDay = UIButton().then { (btn: UIButton) in
             let prevImg = UIImage(systemName: "chevron.left")
+            btn.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(scale: .large), forImageIn: .normal)
             btn.setImage(prevImg, for: .normal)
             btn.tintColor = .label
         }
         
         self.postDay = UIButton().then { btn in
             let postImg = UIImage(systemName: "chevron.right")
+            btn.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(scale: .large), forImageIn: .normal)
             btn.setImage(postImg, for: .normal)
             btn.tintColor = .label
         }
