@@ -59,6 +59,7 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
     private var repeatDisposeBag = DisposeBag()
     private var musicDisposeBag = DisposeBag()
     private var hapticDisposeBag = DisposeBag()
+    private var alarmTimeDisposeBag = DisposeBag()
     
     // MARK: - Init
     
@@ -86,6 +87,7 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
     /// new habitDetailVO comes.
     private func initUI() {
         self.initOnEditButton()
+        self.initAlarmTime()
         self.initAlarmMusic()
         self.initAlarmHaptic()
         self.initPickerViewAccessories()
@@ -104,9 +106,22 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
     }
     
     // MARK: - Alarm Time
+
+    let datePicker = UIDatePicker()
     
-    func setAlarmTimeActions() {
+    func initAlarmTime() {
+        _ = datePicker.then {
+            $0.preferredDatePickerStyle = .wheels
+            $0.datePickerMode = .time
+            $0.locale = Locale(identifier: "ko-KR")
+            $0.timeZone = .autoupdatingCurrent
+            $0.minuteInterval = 1
+            $0.tintColor = .label
+        }
         
+        self.alarmTimeTextField.tintColor = .clear
+        
+        self.alarmTimeTextField.inputView = datePicker
     }
     
     /**
@@ -114,18 +129,23 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
      1. alarmFlag가 true면 alarmMusic이랑 alarmHaptic은 알아서
      2. alarmFlag가 false면 alarmMusic이랑 alarmHaptic은 무조건 nil
      */
-    func setAlarmTimeUI(alarmFlag: Bool, alarmTime: String?, color: UIColor) {
+    func setAlarmTimeFieldUI(_ habitDetailVO: HabitDetailVO) {
+        let alarmFlag = habitDetailVO.alarmFlag
+        let alarmTime = habitDetailVO.alarmTime
+        let color = habitDetailVO.color
+        
+        self.alarmImg.isHidden = !alarmFlag
+        self.alarmTimeLabel.isHidden = !alarmFlag
+        
+        self.alarmTimeSwitch.isOn = alarmFlag
+        
         if alarmFlag {
-            self.alarmImg.isHidden = false
-            self.alarmTimeLabel.isHidden = false
-            self.alarmTimeSwitch.isOn = true
             self.alarmTimeLabel.text = convertAlarmTime(time: alarmTime!)
-            self.alarmTimeTextField.text = convertAlarmTime(time: alarmTime!)
             self.alarmTimeLabel.textColor = color
+            
+            self.alarmTimeTextField.text = convertAlarmTime(time: alarmTime!)
+            self.alarmTimeTextField.textColor = .label
         } else {
-            self.alarmImg.isHidden = true
-            self.alarmTimeLabel.isHidden = true
-            self.alarmTimeSwitch.isOn = false
             self.alarmTimeTextField.text = "없음"
             self.alarmTimeTextField.textColor = .systemGray6
         }
@@ -198,7 +218,7 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
     }
     
     // MARK: - Init Picker View Accessories
-
+    
     func initPickerViewAccessories() {
         // bar button item "done"
         let doneButton = UIBarButtonItem()
@@ -211,13 +231,14 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
             })
             .disposed(by: self.disposeBag)
         let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-
+        
         // tool bar
         let toolBar = UIToolbar()
         toolBar.tintColor = .label
         toolBar.frame = CGRect(x: 0, y: 0, width: 0, height: 35)
         toolBar.setItems([flexSpace, doneButton], animated: true)
         
+        self.alarmTimeTextField.inputAccessoryView = toolBar
         self.alarmMusicTextField.inputAccessoryView = toolBar
         self.alarmHapticTextField.inputAccessoryView = toolBar
     }
@@ -237,7 +258,7 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
         for button in buttons {
             let currentButton = button.0
             let currentRepeat = button.1
-
+            
             // 모양
             currentButton.layer.cornerRadius = currentButton.frame.width / 2
             // 색
@@ -261,7 +282,7 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
         
         // MARK: - Bind UI - INPUT
         /// things to go to viewModel.inputs
-
+        
         self.bindOnEditButton()
         
         // things which needs up-to-date habitDetailVO
@@ -269,13 +290,14 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
             .withUnretained(self)
             .subscribe(onNext: { `self`, habitDetailVO in
                 
+                self.bindAlarmTimeField(habitDetailVO)
                 self.bindAlarmMusicSwitch(habitDetailVO)
                 self.bindAlarmHapticSwitch(habitDetailVO)
                 self.bindAlarmRepeatButton(habitDetailVO)
                 
             })
             .disposed(by: self.disposeBag)
-
+        
         // MARK: - Bind UI - OUTPUT
         /**
          UI 요소 그리는 것을 한번에 합쳐버리기
@@ -299,6 +321,53 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
             .disposed(by: self.disposeBag)
     }
     
+    // MARK: - INPUT - AlarmTime
+    
+    func bindAlarmTimeField(_ habitDetailVO: HabitDetailVO) {
+        self.alarmTimeDisposeBag = DisposeBag()
+
+        // 알람 시간 변경
+        // 시간 고르기
+        self.datePicker.rx.date.changed
+            .distinctUntilChanged()
+            .withUnretained(self)
+            .debug("date picker")
+            .subscribe(onNext: { `self`, date in
+                
+                var nextHabitDetailVO = habitDetailVO
+                let df = DateFormatter()
+                df.dateFormat = "HH:mm:ss"
+                nextHabitDetailVO.alarmTime = df.string(from: date)
+                
+                self.viewModel.inputs.updateHabitDetailVOOnEditMode.onNext(nextHabitDetailVO)
+            })
+            .disposed(by: self.alarmTimeDisposeBag)
+        
+        // 알람 스위치 눌렀을 때
+        self.alarmTimeSwitch.rx
+            .isOn.changed
+            .distinctUntilChanged()
+            .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, alarmOn in
+                
+                var nextHabitDetailVO = habitDetailVO
+                nextHabitDetailVO.alarmFlag = alarmOn
+                // 기본 값
+                if alarmOn {
+                    nextHabitDetailVO.alarmMusic = "Basic Call"
+                    nextHabitDetailVO.alarmHaptic = "Basic Call"
+                }
+                // alarm을 끈 것이라면 알람음과 진동은 무조건 nil: 서비스 정책
+                else {
+                    nextHabitDetailVO.alarmMusic = nil
+                    nextHabitDetailVO.alarmHaptic = nil
+                }
+                self.viewModel.inputs.updateHabitDetailVOOnEditMode.onNext(nextHabitDetailVO)
+            })
+            .disposed(by: self.alarmTimeDisposeBag)
+    }
+    
     // MARK: - INPUT - MusicSwitch
     
     /// alarmMusicSwitch tap
@@ -310,10 +379,10 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
             .distinctUntilChanged()
             .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
             .withUnretained(self)
-            .subscribe(onNext: { `self`, alarmHapticOn in
+            .subscribe(onNext: { `self`, alarmMusicOn in
                 
                 var nextHabitDetailVO = habitDetailVO
-                if alarmHapticOn {
+                if alarmMusicOn {
                     nextHabitDetailVO.alarmMusic = "Basic Call"
                 } else {
                     nextHabitDetailVO.alarmMusic = nil
@@ -361,24 +430,24 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
                 .throttle(RxTimeInterval.milliseconds(300), latest: false, scheduler: MainScheduler.instance)
                 .withUnretained(self)
                 .subscribe(onNext: { `self`, _ in
-                
-                var nextHabitDetailVO = habitDetailVO
                     
-                switch index {
-                case 0: nextHabitDetailVO.repeatMon = !nextHabitDetailVO.repeatMon!
-                case 1: nextHabitDetailVO.repeatTue = !nextHabitDetailVO.repeatTue!
-                case 2: nextHabitDetailVO.repeatWed = !nextHabitDetailVO.repeatWed!
-                case 3: nextHabitDetailVO.repeatThu = !nextHabitDetailVO.repeatThu!
-                case 4: nextHabitDetailVO.repeatFri = !nextHabitDetailVO.repeatFri!
-                case 5: nextHabitDetailVO.repeatSat = !nextHabitDetailVO.repeatSat!
-                case 6: nextHabitDetailVO.repeatSun = !nextHabitDetailVO.repeatSun!
-                default: ()
-                }
-                
-                self.viewModel.inputs.updateHabitDetailVOOnEditMode
-                    .onNext(nextHabitDetailVO)
-            })
-            .disposed(by: self.repeatDisposeBag)
+                    var nextHabitDetailVO = habitDetailVO
+                    
+                    switch index {
+                    case 0: nextHabitDetailVO.repeatMon = !nextHabitDetailVO.repeatMon!
+                    case 1: nextHabitDetailVO.repeatTue = !nextHabitDetailVO.repeatTue!
+                    case 2: nextHabitDetailVO.repeatWed = !nextHabitDetailVO.repeatWed!
+                    case 3: nextHabitDetailVO.repeatThu = !nextHabitDetailVO.repeatThu!
+                    case 4: nextHabitDetailVO.repeatFri = !nextHabitDetailVO.repeatFri!
+                    case 5: nextHabitDetailVO.repeatSat = !nextHabitDetailVO.repeatSat!
+                    case 6: nextHabitDetailVO.repeatSun = !nextHabitDetailVO.repeatSun!
+                    default: ()
+                    }
+                    
+                    self.viewModel.inputs.updateHabitDetailVOOnEditMode
+                        .onNext(nextHabitDetailVO)
+                })
+                .disposed(by: self.repeatDisposeBag)
         }
     }
     
@@ -410,9 +479,7 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
                 self.attribute.textColor = habitDetailVO.color
                 
                 // alarm time
-                self.setAlarmTimeUI(alarmFlag: habitDetailVO.alarmFlag,
-                                    alarmTime: habitDetailVO.alarmTime,
-                                    color: habitDetailVO.color)
+                self.setAlarmTimeFieldUI(habitDetailVO)
                 
                 // alarm music
                 self.setAlarmMusicUI(habitDetailVO)
@@ -425,7 +492,7 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
                 
                 // alarm memo
                 self.memo.text = habitDetailVO.memo
-
+                
             })
             .disposed(by: self.disposeBag)
     }
@@ -486,12 +553,11 @@ class HabitDetailVC: UIViewController, UITextViewDelegate {
                 self.setAllAlarmButtonsEnablement(editMode: editMode)
                 
                 self.memo.isEditable = editMode
-
+                
             })
             .disposed(by: self.disposeBag)
     }
 }
-
 
 extension HabitDetailVC: FSCalendarDelegate, FSCalendarDataSource, FSCalendarDelegateAppearance {
     
@@ -506,17 +572,17 @@ extension HabitDetailVC: FSCalendarDelegate, FSCalendarDataSource, FSCalendarDel
         self.fsCalendar.register(FSCalendarCell.self, forCellReuseIdentifier: "cell")
     }
     
-//    func getHistories(month: Int) -> [HabitHistory] {
-//        var habitHistoriesByMonth = [HabitHistory]()
-//        if let habitHistories = self.habitDetailVO.habitHistories {
-//            for history in habitHistories {
-//                if getMonth(date: history.date!) == "\(month)" {
-//                    habitHistoriesByMonth.append(history)
-//                }
-//            }
-//        }
-//        return habitHistoriesByMonth
-//    }
+    //    func getHistories(month: Int) -> [HabitHistory] {
+    //        var habitHistoriesByMonth = [HabitHistory]()
+    //        if let habitHistories = self.habitDetailVO.habitHistories {
+    //            for history in habitHistories {
+    //                if getMonth(date: history.date!) == "\(month)" {
+    //                    habitHistoriesByMonth.append(history)
+    //                }
+    //            }
+    //        }
+    //        return habitHistoriesByMonth
+    //    }
     
     // MARK: - FS Calendar Delegate
     
@@ -526,7 +592,7 @@ extension HabitDetailVC: FSCalendarDelegate, FSCalendarDataSource, FSCalendarDel
         self.viewModel.outputs.currentHabitDetailVO
             .take(1)
             .subscribe(onNext: { _habitDetailVO = $0 })
-        .disposed(by: self.disposeBag)
+            .disposed(by: self.disposeBag)
         
         let cell = calendar.dequeueReusableCell(withIdentifier: "cell", for: date, at: position).then {
             $0.layer.cornerRadius = $0.frame.width / 2
