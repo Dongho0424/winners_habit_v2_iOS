@@ -16,13 +16,14 @@ class HabitCell: UITableViewCell {
     
     // MARK: - Stream
 
-    private let check$: PublishSubject<Bool>
+    
     private let fetchImage$: PublishSubject<Void>
     private let showHabitDetailView$: PublishSubject<Void>
+    private let isChecked = BehaviorSubject(value: false)
     
     // MARK: - Input
     
-    let check: AnyObserver<Bool>
+    let toggleChecking = PublishSubject<Void>()
     let showHabitDetailView: AnyObserver<Void>
     
     // MARK: - Output
@@ -34,9 +35,12 @@ class HabitCell: UITableViewCell {
     // MARK: - Init
     
     required init?(coder: NSCoder) {
-        self.check$ = PublishSubject<Bool>()
-        self.checked = self.check$.asObservable()
-        self.check = self.check$.asObserver()
+        checked = isChecked.asObservable()
+        toggleChecking
+            .withLatestFrom(isChecked)
+            .map { !$0 }
+            .bind(to: isChecked)
+            .disposed(by: cellDisposeBag)
         
         self.fetchImage$ = PublishSubject<Void>()
         self.fetchImage = self.fetchImage$.asObservable()
@@ -44,6 +48,8 @@ class HabitCell: UITableViewCell {
         self.showHabitDetailView$ = PublishSubject<Void>()
         self.showHabitDetailView = showHabitDetailView$.asObserver()
         self.getHabitDetailView = showHabitDetailView$.asObservable()
+        
+        
         
         super.init(coder: coder)
     }
@@ -58,8 +64,6 @@ class HabitCell: UITableViewCell {
     @IBOutlet weak var hView: UIView!
     
     // MARK: - UI
-    
-    var isChecked = false
     
     lazy var checkBGView = UIView().then {
         $0.backgroundColor = UIColor(rgb: 0x363636)
@@ -87,10 +91,8 @@ class HabitCell: UITableViewCell {
                 make.size.equalTo(CGSize(width: 50, height: 50))
                 make.center.equalTo(checkBGView.snp.center)
             }
-            self.isChecked = done
         } else {
             checkBGView.removeFromSuperview()
-            self.isChecked = done
         }
     }
     
