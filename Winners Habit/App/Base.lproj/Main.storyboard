@@ -750,12 +750,12 @@
                         <outlet property="habitTitle" destination="wGv-If-lF4" id="Ldr-Q7-TMg"/>
                         <outlet property="memo" destination="4Zm-94-Xyp" id="Arp-9D-Ayu"/>
                         <outletCollection property="alarmRepeatButtons" destination="Xhv-Bj-AQb" collectionClass="NSMutableArray" id="13w-Bl-y3x"/>
-                        <outletCollection property="alarmRepeatButtons" destination="mN6-9H-www" collectionClass="NSMutableArray" id="J6P-di-ctc"/>
                         <outletCollection property="alarmRepeatButtons" destination="9F6-Na-NOI" collectionClass="NSMutableArray" id="b7g-K7-avH"/>
                         <outletCollection property="alarmRepeatButtons" destination="c0J-49-hzv" collectionClass="NSMutableArray" id="doA-nV-O02"/>
-                        <outletCollection property="alarmRepeatButtons" destination="GYa-3N-pI7" collectionClass="NSMutableArray" id="bW9-LT-fMJ"/>
-                        <outletCollection property="alarmRepeatButtons" destination="vbx-zR-d6I" collectionClass="NSMutableArray" id="Hrh-vZ-CrV"/>
-                        <outletCollection property="alarmRepeatButtons" destination="LA1-vv-UGE" collectionClass="NSMutableArray" id="oxA-Bg-rHm"/>
+                        <outletCollection property="alarmRepeatButtons" destination="mN6-9H-www" collectionClass="NSMutableArray" id="gA5-st-HLW"/>
+                        <outletCollection property="alarmRepeatButtons" destination="GYa-3N-pI7" collectionClass="NSMutableArray" id="y2v-DD-0ga"/>
+                        <outletCollection property="alarmRepeatButtons" destination="vbx-zR-d6I" collectionClass="NSMutableArray" id="rXd-Pw-e1m"/>
+                        <outletCollection property="alarmRepeatButtons" destination="LA1-vv-UGE" collectionClass="NSMutableArray" id="71Y-WX-Clh"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WUt-gv-poU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

@@ -12,8 +12,14 @@ import RxCocoa
 import UIKit
 
 protocol HabitDetailVMInputs {
-    var changeEditMode: AnyObserver<Void> { get }
-    var updateHabitDetailVOOnEditMode: AnyObserver<HabitDetailVO> { get }
+    var toggleEditMode: PublishSubject<Void> { get }
+    
+    var changeAlarmTime: AnyObserver<Date> { get }
+    var changeAlarmMusic: AnyObserver<String> { get }
+    var changeAlarmHaptic: AnyObserver<String> { get }
+    var changeRepeatButton: AnyObserver<Day> { get }
+    var changeAlarmSwitch: AnyObserver<(isOn: Bool, alarmSwitch: SwitchType)> { get }
+    var changeMemo: AnyObserver<String?> { get }
 }
 
 protocol HabitDetailVMOutputs {
@@ -27,8 +33,8 @@ protocol HabitDetailVMType {
 }
 
 class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutputs {
-    // MARK: - Domain
     
+    // MARK: - Domain
     struct Domain {
         // 임시로 해놓은 API 호출용 변수
         let _API = API()
@@ -46,8 +52,13 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
     
     // MARK: - Input
     
-    let changeEditMode: AnyObserver<Void>
-    var updateHabitDetailVOOnEditMode: AnyObserver<HabitDetailVO>
+    let toggleEditMode: PublishSubject<Void>
+    let changeAlarmTime: AnyObserver<Date>
+    let changeAlarmMusic: AnyObserver<String>
+    let changeAlarmHaptic: AnyObserver<String>
+    let changeRepeatButton: AnyObserver<Day>
+    let changeAlarmSwitch: AnyObserver<(isOn: Bool, alarmSwitch: SwitchType)>
+    let changeMemo: AnyObserver<String?>
     
     // MARK: - Output
     
@@ -63,12 +74,19 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
         let domain = Domain()
         
         // MARK: - Streams
+        
         // 서버에서 받기 용
         let fetchHabitDetailVO$ = Observable<HabitVO>.just(currentHabitVO)
-        let changeEditMode$ = PublishSubject<Void>()
+        // for editmode
         let editMode$ = BehaviorSubject(value: false)
+        toggleEditMode = PublishSubject<Void>()
         // for input
-        let updateHabitDetailVOOnEditMode$ = PublishSubject<HabitDetailVO>()
+        let changeAlarmTime$ = PublishSubject<Date>()
+        let changeAlarmMusic$ = PublishSubject<String>()
+        let changeAlarmHaptic$ = PublishSubject<String>()
+        let changeRepeatButton$ = PublishSubject<Day>()
+        let changeAlarmSwitch$ = PublishSubject<(isOn: Bool, alarmSwitch: SwitchType)>()
+        let changeMemo$ = PublishSubject<String?>()
         // for output
         let currentHabitDetailVO$ = BehaviorSubject<HabitDetailVO>(value: HabitDetailVO())
         // for push updated habitDetailVO to server "HTTP PUT"
@@ -90,49 +108,126 @@ class HabitDetailVM: HabitDetailVMType, HabitDetailVMInputs, HabitDetailVMOutput
                 return ob
             }
             .subscribe(onNext: currentHabitDetailVO$.onNext)
-            .disposed(by: self.disposeBag)
-        
-        // editMode observable
-        self.editMode = editMode$.asObservable()
+            .disposed(by: disposeBag)
         
         // toggle editmode
-        changeEditMode$
-            .withLatestFrom(self.editMode)
+        toggleEditMode
+            .withLatestFrom(editMode$)
+            // editMode가 true 였으면
+            // 서버에 전송
             .do(onNext: { editModeBeforeChanged in
                 if editModeBeforeChanged {
                     pushUpdatedHabitDetailVOToServer$.onNext(())
                 }
             })
             .map { !$0 }
-            .subscribe(onNext: editMode$.onNext)
-            .disposed(by: self.disposeBag)
+            .bind(to: editMode$)
+            .disposed(by: disposeBag)
         
-        // edit mode 에서 편집 할 때 마다 업데이트 되는 habitDetailVO 받는 녀석
-        updateHabitDetailVOOnEditMode$
-            .distinctUntilChanged()
-            .debug("UI UPDATE on Edit Mode")
-            .subscribe(onNext: currentHabitDetailVO$.onNext)
-            .disposed(by: self.disposeBag)
+        // alarm time
+        changeAlarmTime$
+            .withLatestFrom(currentHabitDetailVO$) { date, habitDetailVO in
+                var nextHabitDetailVO = habitDetailVO
+                let df = DateFormatter()
+                df.dateFormat = "HH:mm:ss"
+                nextHabitDetailVO.alarmTime = df.string(from: date)
+                return nextHabitDetailVO
+            }
+            .bind(to: currentHabitDetailVO$)
+            .disposed(by: disposeBag)
         
+        // alarm music
+        changeAlarmMusic$
+            .withLatestFrom(currentHabitDetailVO$) { music, habitDetailVO in
+                var nextHabitDetailVO = habitDetailVO
+                nextHabitDetailVO.alarmMusic = music
+                return nextHabitDetailVO
+            }
+            .bind(to: currentHabitDetailVO$)
+            .disposed(by: disposeBag)
+            
+        // alarm haptic
+        changeAlarmHaptic$
+            .withLatestFrom(currentHabitDetailVO$) { haptic, habitDetailVO in
+                var nextHabitDetailVO = habitDetailVO
+                nextHabitDetailVO.alarmHaptic = haptic
+                return nextHabitDetailVO
+            }
+            .bind(to: currentHabitDetailVO$)
+            .disposed(by: disposeBag)
+        
+        // alarm switch
+        changeAlarmSwitch$
+            .withLatestFrom(currentHabitDetailVO$) { tuple, habitDetailVO in
+                var nextHabitDetailVO = habitDetailVO
+                let isOn = tuple.isOn
+                let alarmSwitch = tuple.alarmSwitch
+                
+                switch alarmSwitch {
+                case .alarmTime:
+                    nextHabitDetailVO.alarmFlag = isOn
+                    nextHabitDetailVO.alarmMusic = isOn ? "Basic Call" : nil
+                    nextHabitDetailVO.alarmHaptic = isOn ? "Basic Call" : nil
+                case .alarmMusic:
+                    nextHabitDetailVO.alarmMusic = isOn ? "Basic Call" : nil
+                case .alarmHaptic:
+                    nextHabitDetailVO.alarmHaptic = isOn ? "Basic Call" : nil
+                }
+                return nextHabitDetailVO
+            }
+            .bind(to: currentHabitDetailVO$)
+            .disposed(by: disposeBag)
+        
+        // alarm repeat button
+        changeRepeatButton$
+            .withLatestFrom(currentHabitDetailVO$) { button, habitDetailVO in
+                var nextHabitDetailVO = habitDetailVO
+                switch button {
+                case .Mon: nextHabitDetailVO.repeatMon = !nextHabitDetailVO.repeatMon!
+                case .Tue: nextHabitDetailVO.repeatTue = !nextHabitDetailVO.repeatTue!
+                case .Wed: nextHabitDetailVO.repeatWed = !nextHabitDetailVO.repeatWed!
+                case .Thu: nextHabitDetailVO.repeatThu = !nextHabitDetailVO.repeatThu!
+                case .Fri: nextHabitDetailVO.repeatFri = !nextHabitDetailVO.repeatFri!
+                case .Sat: nextHabitDetailVO.repeatSat = !nextHabitDetailVO.repeatSat!
+                case .Sun: nextHabitDetailVO.repeatSun = !nextHabitDetailVO.repeatSun!
+                case .error: fatalError("changeRepeatButton$")
+                }
+                return nextHabitDetailVO
+            }
+            .bind(to: currentHabitDetailVO$)
+            .disposed(by: disposeBag)
+        
+        // alarm memo
+        changeMemo$
+            .withLatestFrom(currentHabitDetailVO$) { memo, habitDetailVO in
+                var nextHabitDetailVO = habitDetailVO
+                nextHabitDetailVO.memo = memo
+                return nextHabitDetailVO
+            }
+            .bind(to: currentHabitDetailVO$)
+            .disposed(by: disposeBag)
+        
+        // push brand-new habitdetailVO to server
         pushUpdatedHabitDetailVOToServer$
-            .withLatestFrom(updateHabitDetailVOOnEditMode$) // 제일 최신의 HabitDetailVO를 엮어서
+            .withLatestFrom(currentHabitDetailVO$) // 제일 최신의 HabitDetailVO를 엮어서
             .distinctUntilChanged() // 변경이 있는 경우만 서버로
             .subscribe(onNext: { _ in
-                /*
-                 서버 통신
-                 서버에 PUT
-                 */
                 print("****************************")
                 print("서버에 새로운 habitdetail 정보들 업데이트")
                 print("****************************")
             })
-            .disposed(by: self.disposeBag)
+            .disposed(by: disposeBag)
         
         // INPUT
-        self.changeEditMode = changeEditMode$.asObserver()
-        self.updateHabitDetailVOOnEditMode = updateHabitDetailVOOnEditMode$.asObserver()
+        changeAlarmTime = changeAlarmTime$.asObserver()
+        changeAlarmMusic = changeAlarmMusic$.asObserver()
+        changeAlarmHaptic = changeAlarmHaptic$.asObserver()
+        changeRepeatButton = changeRepeatButton$.asObserver()
+        changeAlarmSwitch = changeAlarmSwitch$.asObserver()
+        changeMemo = changeMemo$.asObserver()
         
         // OUTPUT
-        self.currentHabitDetailVO = currentHabitDetailVO$.asObservable()
+        currentHabitDetailVO = currentHabitDetailVO$.asObservable()
+        editMode = editMode$.asObservable()
     }
 }
