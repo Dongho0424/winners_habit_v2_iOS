@@ -13,17 +13,17 @@ class HabitCell: UITableViewCell {
     static let identifier = "habitCell"
     
     var cellDisposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
     
     // MARK: - Stream
 
-    
     private let fetchImage$: PublishSubject<Void>
     private let showHabitDetailView$: PublishSubject<Void>
-    private let isChecked = BehaviorSubject(value: false)
+    let isChecked$ : BehaviorSubject<Bool>
     
     // MARK: - Input
     
-    let toggleChecking = PublishSubject<Void>()
+    let toggleChecking : PublishSubject<Void>
     let showHabitDetailView: AnyObserver<Void>
     
     // MARK: - Output
@@ -34,24 +34,37 @@ class HabitCell: UITableViewCell {
     
     // MARK: - Init
     
+    /*
+     새로 구독하게 되면
+     기존에 구독하던 것은 dispose 됨.
+     이때 dispose 된다는 것은
+     같은 disposeBag에 들어있는 애들 전부다 dispose 된다는 뜻
+     */
+    
     required init?(coder: NSCoder) {
-        checked = isChecked.asObservable()
+        isChecked$ = BehaviorSubject<Bool>(value: false)
+        toggleChecking = PublishSubject<Void>()
+        
         toggleChecking
-            .withLatestFrom(isChecked)
+            .withLatestFrom(isChecked$)
             .map { !$0 }
-            .bind(to: isChecked)
-            .disposed(by: cellDisposeBag)
+            .bind(to: isChecked$)
+            .disposed(by: disposeBag)
+
+        checked = isChecked$.asObservable()
         
-        self.fetchImage$ = PublishSubject<Void>()
-        self.fetchImage = self.fetchImage$.asObservable()
-        
-        self.showHabitDetailView$ = PublishSubject<Void>()
-        self.showHabitDetailView = showHabitDetailView$.asObserver()
-        self.getHabitDetailView = showHabitDetailView$.asObservable()
-        
-        
+        fetchImage$ = PublishSubject<Void>()
+        fetchImage = fetchImage$.asObservable()
+   
+        showHabitDetailView$ = PublishSubject<Void>()
+        showHabitDetailView = showHabitDetailView$.asObserver()
+        getHabitDetailView = showHabitDetailView$.asObservable()
         
         super.init(coder: coder)
+    }
+    
+    deinit {
+        print("Cell DeInitㅠㅠㅠㅠㅠㅠ")
     }
     
     // MARK: - UI Components
@@ -77,15 +90,13 @@ class HabitCell: UITableViewCell {
     
     func setChecking(done: Bool, date: Date) {
         // 오늘만 check 바꿀 수 있음.
-        guard compareDate(date, Date()) else {
-            return
-        }
+        guard compareDate(date, Date()) else { return }
         if done {
-            self.hView.addSubview(checkBGView)
+            hView.addSubview(checkBGView)
             checkBGView.addSubview(checkView)
             checkBGView.snp.makeConstraints { make in
-                make.size.equalTo(self.hView.snp.size)
-                make.center.equalTo(self.hView.snp.center)
+                make.size.equalTo(hView.snp.size)
+                make.center.equalTo(hView.snp.center)
             }
             checkView.snp.makeConstraints { make in
                 make.size.equalTo(CGSize(width: 50, height: 50))
@@ -99,45 +110,45 @@ class HabitCell: UITableViewCell {
     func initCell(habitVO: HabitVO) {
         let cellColor = habitVO.color
         
-        self.habitTitle.text = habitVO.habitName
+        habitTitle.text = habitVO.habitName
 
         if habitVO.iconImage == nil {
-            self.fetchImage$.onNext(())
+            fetchImage$.onNext(())
         } else {
-            self.habitImg.image = habitVO.iconImage
+            habitImg.image = habitVO.iconImage
         }
         
         if habitVO.alarmFlag {
-            self.habitAlarmTime.text = convertAlarmTime(time: habitVO.alarmTime!)
-            self.habitAlarmTime.textColor = cellColor
+            habitAlarmTime.text = convertAlarmTime(time: habitVO.alarmTime!)
+            habitAlarmTime.textColor = cellColor
         } else {
-            self.alarmImg.isHidden = true
-            self.habitAlarmTime.isHidden = true
+            alarmImg.isHidden = true
+            habitAlarmTime.isHidden = true
         }
         
         switch habitVO.attribute {
         case "s/f":
-            self.habitAttr.text = "성공/실패"
+            habitAttr.text = "성공/실패"
         case "min":
-            self.habitAttr.text = "0/\(habitVO.defaultAttributeValue!) min"
+            habitAttr.text = "0/\(habitVO.defaultAttributeValue!) min"
         case "pages":
-            self.habitAttr.text = "0/\(habitVO.defaultAttributeValue!) 장"
+            habitAttr.text = "0/\(habitVO.defaultAttributeValue!) 장"
         default:
             ()
         }
-        self.habitAttr.textColor = cellColor
+        habitAttr.textColor = cellColor
         
-        self.selectedBackgroundView = UIView()
+        selectedBackgroundView = UIView()
         
-        self.hView.layer.cornerRadius = 15
-        self.hView.backgroundColor = UIColor(rgb: 0x464646)
+        hView.layer.cornerRadius = 15
+        hView.backgroundColor = UIColor(rgb: 0x464646)
         
-        self.setChecking(done: habitVO.doneFlag, date: Date())
+        setChecking(done: habitVO.doneFlag, date: Date())
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        self.cellDisposeBag = DisposeBag()
+        cellDisposeBag = DisposeBag()
     }
 }

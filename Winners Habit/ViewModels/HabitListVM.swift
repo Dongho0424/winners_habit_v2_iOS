@@ -13,19 +13,17 @@ import Alamofire
 import WinnersHabitOAS
 
 protocol HabitListVMInputs {
+    var changeDate: AnyObserver<MoveDayType> { get }
     var checkHabit: AnyObserver<(HabitVO, Bool)> { get }
-    var fetchHabitList: AnyObserver<Date> { get }
-    var fetchChallenge: AnyObserver<Void> { get }
-    var showHabitDetailView: AnyObserver<HabitVO> { get }
     var fetchHabitIconImage: AnyObserver<HabitVO> { get }
+    var viewDidLoad: AnyObserver<Void> { get }
 }
 
 protocol HabitListVMOutputs {
-    var allHabits: Observable<[HabitVO]> { get }
-    var errorMessage: Observable<NSError> { get }
-    var challenge: Observable<ChallengeVO> { get }
-    var ad: Observable<String> { get }
-    var getHabitDetailView: Observable<HabitVO> { get }
+    var currentDate: Observable<String> { get }
+    var hasPostdayButton: Observable<Bool> { get }
+    var currentHabitVOList: Observable<[HabitVO]> { get }
+    var currentChallenge: Observable<ChallengeVO> { get }
 }
 
 protocol HabitListVMType {
@@ -54,20 +52,17 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
     
     // MARK: - Input
     
+    var changeDate: AnyObserver<MoveDayType>
     var checkHabit: AnyObserver<(HabitVO, Bool)>
-    var fetchHabitList: AnyObserver<Date>
-    var fetchChallenge: AnyObserver<Void>
-    var showHabitDetailView: AnyObserver<HabitVO>
     var fetchHabitIconImage: AnyObserver<HabitVO>
+    var viewDidLoad: AnyObserver<Void>
     
     // MARK: - Output
     
-    var allHabits: Observable<[HabitVO]>
-    var challenge: Observable<ChallengeVO>
-    var errorMessage: Observable<NSError>
-    var ad: Observable<String>
-    var getHabitDetailView: Observable<HabitVO>
-//    var getHabitIconImage: Observable<UIImage>
+    var currentDate: Observable<String>
+    var hasPostdayButton: Observable<Bool>
+    var currentHabitVOList: Observable<[HabitVO]>
+    var currentChallenge: Observable<ChallengeVO>
     
     // MARK: - Init
     
@@ -76,20 +71,42 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
         
         // MARK: - Streams
         
+        let changeDate$ = PublishSubject<MoveDayType>()
         let checkHabit$ = PublishSubject<(HabitVO, Bool)>()
-        let fetchHabitList$ = PublishSubject<Date>()
-        let fetchChallenge$ = BehaviorSubject<Void>(value: ())
-        let showHabitDetailView$ = PublishSubject<HabitVO>()
         let fetchHabitIconImage$ = PublishSubject<HabitVO>()
-        let allHabits$ = BehaviorSubject<[HabitVO]>(value: [])
-        let errorMessage$ = PublishSubject<NSError>()
-        let ad$ = BehaviorSubject<String>(value: "")
+        let viewDidLoad$ = PublishSubject<Void>()
+        
+        let hasPostdayButton$ = BehaviorSubject(value: false)
+        
+        let currentHabitVOList$ = BehaviorSubject<[HabitVO]>(value: [])
+        let currentChallenge$ = BehaviorSubject<ChallengeVO>(value: ChallengeVO())
+        let currentDate$ = BehaviorSubject<Date>(value: Date())
+        
+        let fetchHabitList$ = PublishSubject<Date>()
+        let fetchChallenge$ = PublishSubject<Void>()
         
         // Set Streams
         
+        changeDate$
+            .withLatestFrom(currentDate$) { moveDayType, date -> Date in
+                var changingDate : Date = date
+                switch moveDayType {
+                case .prev:
+                    changingDate = Calendar.current.date(byAdding: .day, value: -1, to: date)!
+                case .post:
+                    changingDate = Calendar.current.date(byAdding: .day, value: 1, to: date)!
+                }
+                return changingDate
+            }
+            .do(onNext: fetchHabitList$.onNext)
+            .do(onNext: { hasPostdayButton$.onNext(!compareDate($0, Date())) })
+            .bind(to: currentDate$)
+            .disposed(by: disposeBag)
+        
         checkHabit$
+            .debug("checkHabit$")
             .map { $0.setDoneFlag($1) }
-            .withLatestFrom(allHabits$) { (updated, originals) -> [HabitVO] in
+            .withLatestFrom(currentHabitVOList$) { (updated, originals) -> [HabitVO] in
                 originals.map {
                     if updated.habitId == $0.habitId {
                         return updated
@@ -98,20 +115,18 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
                     }
                 }
             }
-            .do(onError: { err in errorMessage$.onNext(err as NSError) })
-            .subscribe(onNext: allHabits$.onNext)
-            .disposed(by: self.disposeBag)
+            .subscribe(onNext: currentHabitVOList$.onNext)
+            .disposed(by: disposeBag)
+        
+        viewDidLoad$
+            .withLatestFrom(currentDate$)
+            .subscribe(onNext: { date in
+                fetchHabitList$.onNext(date)
+                fetchChallenge$.onNext(())
+            })
+            .disposed(by: disposeBag)
         
         fetchHabitList$ // may cause network error
-            /*
-             생각해보니까 잘못 짠 코드
-             이유: 로직상 날짜 변경에 대한 인풋이 와도
-             habits을 일일이 불러올 필요는 없다.
-             기존 [habitVO]에 doneflag만 덮어서 내보내면 되지
-             일일이 API 통신을 할 필요는 없으니까.
-             */
-//            .debug("ViewModel: fetchHabitList STREAM")
-//            .timeout(RxTimeInterval.milliseconds(300), scheduler: MainScheduler.instance)
             .flatMap { date -> Observable<[HabitVO]> in
                 let _histories = domain._API.getHabitHistoriesFromDate(date: date)
                 let _habits = domain._API.getHabits()
@@ -121,43 +136,35 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
                 
                 return ob
             }
-            .do(onError: { err in errorMessage$.onNext(err as NSError) })
-            .subscribe(onNext: allHabits$.onNext)
-            .disposed(by: self.disposeBag)
+            .bind(to: currentHabitVOList$)
+            .disposed(by: disposeBag)
         
-        // 그냥 HabitDetailVM 에 값만 전달하는 역할
-        self.getHabitDetailView = showHabitDetailView$.asObservable()
-        
-        self.challenge = fetchChallenge$ // may cause network error
+        fetchChallenge$ // may cause network error
             .flatMap { domain._API.getChallenge() }
             .map { ChallengeVO.ChallengeVOFromChallenge($0) }
-            .do(onError: { err in errorMessage$.onNext(err as NSError) })
-            .asObservable()
+            .bind(to: currentChallenge$)
+            .disposed(by: disposeBag)
         
         // MARK: - TODO: 하드 코딩된거 고치기
         fetchHabitIconImage$
             .flatMap { $0.getHabitWithImage($0) } // for habit icon image caching
-//            .debug("ViewModel: fetchHabitIconImage$ ** before buffer **")
             .buffer(timeSpan: RxTimeInterval.never, count: 3, scheduler: MainScheduler.instance)
-//            .debug("ViewModel: fetchHabitIconImage$ ** after buffer **")
-            .subscribe(onNext: allHabits$.onNext)
-            .disposed(by: self.disposeBag)
-        
-        ad$.onNext("심리 상담을 받아보세요!")
+            .bind(to: currentHabitVOList$)
+            .disposed(by: disposeBag)
         
         // INPUT
-        
-        self.checkHabit = checkHabit$.asObserver()
-        self.fetchHabitList = fetchHabitList$.asObserver()
-        self.fetchChallenge = fetchChallenge$.asObserver()
-        self.fetchHabitIconImage = fetchHabitIconImage$.asObserver()
-        self.showHabitDetailView = showHabitDetailView$.asObserver()
+        changeDate = changeDate$.asObserver()
+        checkHabit = checkHabit$.asObserver()
+        fetchHabitIconImage = fetchHabitIconImage$.asObserver()
+        viewDidLoad = viewDidLoad$.asObserver()
         
         // OUTPUT
-        
-        self.allHabits = allHabits$.asObservable()
-        self.errorMessage = errorMessage$.asObservable()
-        self.ad = ad$.asObservable()
+        hasPostdayButton = hasPostdayButton$.asObservable()
+        currentDate = currentDate$
+            .map { dateStringDetail(date: $0) }
+            .asObservable()
+        currentHabitVOList = currentHabitVOList$.asObservable()
+        currentChallenge = currentChallenge$.asObservable()
     }
 }
 

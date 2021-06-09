@@ -16,6 +16,31 @@ struct ChallengeVO {
     let challengeDDay: Int?
     let totalCompleteRatio: Int
     let todayCompleteRatio: Int
+    
+    init() {
+        self.challengeId = 0
+        self.challengeImage = UIImage()
+        self.challengeName = ""
+        self.challengeDDay = nil
+        self.totalCompleteRatio = 0
+        self.todayCompleteRatio = 0
+    }
+    
+    init(
+        challengeId: Int,
+        challengeImage: UIImage,
+        challengeName: String,
+        challengeDDay: Int?,
+        totalCompleteRatio: Int,
+        todayCompleteRatio: Int
+    ) {
+        self.challengeId = challengeId
+        self.challengeImage = challengeImage
+        self.challengeName = challengeName
+        self.challengeDDay = challengeDDay
+        self.totalCompleteRatio = totalCompleteRatio
+        self.todayCompleteRatio = todayCompleteRatio
+    }
 }
 
 extension ChallengeVO {

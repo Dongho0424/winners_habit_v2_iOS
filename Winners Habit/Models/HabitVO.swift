@@ -61,17 +61,17 @@ struct HabitVO {
 }
 
 extension HabitVO {
-//    static func HabitVOFromHabit(habit: Habit) -> HabitVO {
-//        return HabitVO(habitId: habit.habitId,
-//                       habitName: habit.habitName,
-//                       icon: habit.icon,
-//                       color: hexToUIColor(hex: habit.color),
-//                       defaultAttributeValue: habit.defaultAttributeValue,
-//                       attribute: habit.attribute ?? "",
-//                       alarmFlag: habit.alarmFlag,
-//                       alarmTime: habit.alarmTime,
-//                       iconImage: UIImage())
-//    }
+    //    static func HabitVOFromHabit(habit: Habit) -> HabitVO {
+    //        return HabitVO(habitId: habit.habitId,
+    //                       habitName: habit.habitName,
+    //                       icon: habit.icon,
+    //                       color: hexToUIColor(hex: habit.color),
+    //                       defaultAttributeValue: habit.defaultAttributeValue,
+    //                       attribute: habit.attribute ?? "",
+    //                       alarmFlag: habit.alarmFlag,
+    //                       alarmTime: habit.alarmTime,
+    //                       iconImage: UIImage())
+    //    }
     
     static func getHabitVOList(habits: [Habit], habitHistories: [HabitHistory]) -> [HabitVO] {
         guard habits.count == habitHistories.count else {
@@ -99,12 +99,6 @@ extension HabitVO {
         return habitVOList
     }
     
-    //    func toggle() -> Self {
-    //        var temp = self
-    //        temp.doneFlag = !temp.doneFlag
-    //        return temp
-    //    }
-    
     func setDoneFlag(_ done: Bool) -> Self {
         var temp = self
         temp.doneFlag = done
@@ -121,7 +115,16 @@ extension HabitVO {
 extension HabitVO: Equatable {
     // id랑 image가 같아야 두 HabitVO는 같은 것이라고 정의.
     static func ==(lhs: HabitVO, rhs: HabitVO) -> Bool {
-        return lhs.habitId == rhs.habitId && lhs.iconImage == rhs.iconImage
+        return lhs.habitId == rhs.habitId &&
+            lhs.habitName == rhs.habitName &&
+            lhs.icon == rhs.icon &&
+            lhs.color == rhs.color &&
+            lhs.defaultAttributeValue == rhs.defaultAttributeValue &&
+            lhs.attribute == rhs.attribute &&
+            lhs.alarmFlag == rhs.alarmFlag &&
+            lhs.alarmTime == rhs.alarmTime &&
+            lhs.doneFlag == rhs.doneFlag &&
+            lhs.iconImage == rhs.iconImage
     }
 }
 
