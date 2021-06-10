@@ -40,7 +40,6 @@ class HabitCell: UITableViewCell {
      이때 dispose 된다는 것은
      같은 disposeBag에 들어있는 애들 전부다 dispose 된다는 뜻
      */
-    
     required init?(coder: NSCoder) {
         isChecked$ = BehaviorSubject<Bool>(value: false)
         toggleChecking = PublishSubject<Void>()
@@ -61,10 +60,6 @@ class HabitCell: UITableViewCell {
         getHabitDetailView = showHabitDetailView$.asObservable()
         
         super.init(coder: coder)
-    }
-    
-    deinit {
-        print("Cell DeInitㅠㅠㅠㅠㅠㅠ")
     }
     
     // MARK: - UI Components

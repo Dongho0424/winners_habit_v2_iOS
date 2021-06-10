@@ -60,7 +60,6 @@ class HabitListVC: UIViewController {
         initTableView()
         setNavigationBarClear()
         initTitleView()
-        initToday()
     }
     
     /// table view initial settings
