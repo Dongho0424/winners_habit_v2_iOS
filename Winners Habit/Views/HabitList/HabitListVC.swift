@@ -179,7 +179,7 @@ class HabitListVC: UIViewController {
                 
                 // 특정 습관을 check 하면, habits 업데이트 됨
                 cell.checked
-                    .debug("cell.checked")
+                    
                     .delay(RxTimeInterval.milliseconds(700), scheduler: MainScheduler.instance)
                     .map { (habitVO, $0) }
                     .subscribe(onNext: self.viewModel.inputs.checkHabit.onNext)

@@ -45,6 +45,8 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
          */
     }
     
+    // MARK: - Rx
+    
     var inputs: HabitListVMInputs { return self }
     var outputs: HabitListVMOutputs { return self }
     
@@ -68,6 +70,8 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
     
     init() {
         let domain = Domain()
+        
+        var habitListCount = 0
         
         // MARK: - Streams
         
@@ -136,6 +140,7 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
                 
                 return ob
             }
+            .do(onNext: { habitListCount = $0.count })
             .bind(to: currentHabitVOList$)
             .disposed(by: disposeBag)
         
@@ -145,10 +150,10 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
             .bind(to: currentChallenge$)
             .disposed(by: disposeBag)
         
-        // MARK: - TODO: 하드 코딩된거 고치기
+        print("habitListCount: \(habitListCount)")
         fetchHabitIconImage$
             .flatMap { $0.getHabitWithImage() } // for habit icon image caching
-            .buffer(timeSpan: RxTimeInterval.never, count: 3, scheduler: MainScheduler.instance)
+            .buffer(timeSpan: RxTimeInterval.never, count: habitListCount, scheduler: MainScheduler.instance)
             .bind(to: currentHabitVOList$)
             .disposed(by: disposeBag)
         
