@@ -104,16 +104,14 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
             .disposed(by: disposeBag)
         
         checkHabit$
-            .debug("checkHabit$")
             .map { $0.setDoneFlag($1) }
-            .withLatestFrom(currentHabitVOList$) { (updated, originals) -> [HabitVO] in
-                originals.map {
-                    if updated.habitId == $0.habitId {
-                        return updated
-                    } else {
-                        return $0
-                    }
+            .withLatestFrom(currentHabitVOList$) { new, olds in
+                var result = [HabitVO]()
+                for old in olds {
+                    if new.habitId == old.habitId { result.append(new) }
+                    else { result.append(old) }
                 }
+                return result
             }
             .subscribe(onNext: currentHabitVOList$.onNext)
             .disposed(by: disposeBag)
@@ -145,10 +143,16 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
             .bind(to: currentChallenge$)
             .disposed(by: disposeBag)
         
-        // MARK: - TODO: 하드 코딩된거 고치기
         fetchHabitIconImage$
-            .flatMap { $0.getHabitWithImage($0) } // for habit icon image caching
-            .buffer(timeSpan: RxTimeInterval.never, count: 3, scheduler: MainScheduler.instance)
+            .flatMap { $0.getHabitWithImage() }
+            .withLatestFrom(currentHabitVOList$) { new, olds in
+                var result = [HabitVO]()
+                for old in olds {
+                    if new.habitId == old.habitId { result.append(new) }
+                    else { result.append(old) }
+                }
+                return result
+            }
             .bind(to: currentHabitVOList$)
             .disposed(by: disposeBag)
         
