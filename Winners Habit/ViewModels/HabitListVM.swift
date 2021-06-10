@@ -71,8 +71,6 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
     init() {
         let domain = Domain()
         
-        var habitListCount = 0
-        
         // MARK: - Streams
         
         let changeDate$ = PublishSubject<MoveDayType>()
@@ -108,16 +106,14 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
             .disposed(by: disposeBag)
         
         checkHabit$
-            .debug("checkHabit$")
             .map { $0.setDoneFlag($1) }
-            .withLatestFrom(currentHabitVOList$) { (updated, originals) -> [HabitVO] in
-                originals.map {
-                    if updated.habitId == $0.habitId {
-                        return updated
-                    } else {
-                        return $0
-                    }
+            .withLatestFrom(currentHabitVOList$) { new, olds in
+                var result = [HabitVO]()
+                for old in olds {
+                    if new.habitId == old.habitId { result.append(new) }
+                    else { result.append(old) }
                 }
+                return result
             }
             .subscribe(onNext: currentHabitVOList$.onNext)
             .disposed(by: disposeBag)
@@ -140,7 +136,6 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
                 
                 return ob
             }
-            .do(onNext: { habitListCount = $0.count })
             .bind(to: currentHabitVOList$)
             .disposed(by: disposeBag)
         
@@ -150,10 +145,17 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
             .bind(to: currentChallenge$)
             .disposed(by: disposeBag)
         
-        print("habitListCount: \(habitListCount)")
+
         fetchHabitIconImage$
-            .flatMap { $0.getHabitWithImage() } // for habit icon image caching
-            .buffer(timeSpan: RxTimeInterval.never, count: habitListCount, scheduler: MainScheduler.instance)
+            .flatMap { $0.getHabitWithImage() }
+            .withLatestFrom(currentHabitVOList$) { new, olds in
+                var result = [HabitVO]()
+                for old in olds {
+                    if new.habitId == old.habitId { result.append(new) }
+                    else { result.append(old) }
+                }
+                return result
+            }
             .bind(to: currentHabitVOList$)
             .disposed(by: disposeBag)
         

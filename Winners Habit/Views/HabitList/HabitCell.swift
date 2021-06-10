@@ -16,21 +16,11 @@ class HabitCell: UITableViewCell {
     private let disposeBag = DisposeBag()
     
     // MARK: - Stream
-
-    private let fetchImage$: PublishSubject<Void>
-    private let showHabitDetailView$: PublishSubject<Void>
-    private let isChecked$ : BehaviorSubject<Bool>
     
-    // MARK: - Input
-    
-    let toggleChecking : PublishSubject<Void>
-    let showHabitDetailView: AnyObserver<Void>
-    
-    // MARK: - Output
-    
-    let checked: Observable<Bool>
-    let fetchImage: Observable<Void>
-    let getHabitDetailView: Observable<Void>
+    let fetchImage$ = PublishSubject<Void>()
+    let toggleChecking = PublishSubject<Void>()
+    let isChecked = PublishSubject<Bool>()
+    let goToHabitDetailVC$ = PublishSubject<Void>()
     
     // MARK: - Init
     
@@ -41,23 +31,12 @@ class HabitCell: UITableViewCell {
      같은 disposeBag에 들어있는 애들 전부다 dispose 된다는 뜻
      */
     required init?(coder: NSCoder) {
-        isChecked$ = BehaviorSubject<Bool>(value: false)
-        toggleChecking = PublishSubject<Void>()
-        
         toggleChecking
-            .withLatestFrom(isChecked$)
+            .withLatestFrom(isChecked)
             .map { !$0 }
-            .bind(to: isChecked$)
+            .debug("toggle")
+            .bind(to: isChecked)
             .disposed(by: disposeBag)
-
-        checked = isChecked$.asObservable()
-        
-        fetchImage$ = PublishSubject<Void>()
-        fetchImage = fetchImage$.asObservable()
-   
-        showHabitDetailView$ = PublishSubject<Void>()
-        showHabitDetailView = showHabitDetailView$.asObserver()
-        getHabitDetailView = showHabitDetailView$.asObservable()
         
         super.init(coder: coder)
     }
@@ -100,6 +79,8 @@ class HabitCell: UITableViewCell {
         } else {
             checkBGView.removeFromSuperview()
         }
+        
+        isChecked.onNext(done)
     }
     
     func initCell(habitVO: HabitVO) {
@@ -107,6 +88,9 @@ class HabitCell: UITableViewCell {
         
         habitTitle.text = habitVO.habitName
 
+        // image caching asynchronously
+        // When get image from server,
+        // update habitImg and update current habitVO
         if habitVO.iconImage == nil {
             fetchImage$.onNext(())
         } else {

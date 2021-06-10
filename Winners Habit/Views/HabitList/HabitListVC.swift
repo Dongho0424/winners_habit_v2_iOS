@@ -150,54 +150,52 @@ class HabitListVC: UIViewController {
         
         // Reactive wrapper for delegate tableView(:didSelectRowAtIndexPath:)
         tableView.rx.itemSelected
+            .debug("inputs")
             .withUnretained(self)
             .subscribe(onNext: { `self`, indexPath in
-                guard let cell = self.tableView.cellForRow(at: indexPath) as? HabitCell else {
-                    fatalError("tableView.rx.itemSelected")
-                }
+                guard let cell = self.tableView.cellForRow(at: indexPath) as? HabitCell
+                else { fatalError("tableView.rx.itemSelected") }
                 
-                cell.showHabitDetailView.onNext(())
+                cell.goToHabitDetailVC$.onNext(())
             })
             .disposed(by: disposeBag)
         
         // MARK: - OUTPUT
-        
-        // table view 그리기
-        // viewModel의 allHabits와 연결
+/*
+ Rules are fllowing.
+     1. Only ViewModel knows brand-new data (--> Array<habitVO>)
+     2. View just draws.
+        When a single cell has updated its image, NOT draw directly, BUT tell ViewModel and View draws depending on data from ViewModel
+     3. Navigation to HabitDetailVC is not updating data so that View doesn't need to tell ViewModel. Just navigate to next page.
+ */
         viewModel.outputs.currentHabitVOList
             .observe(on: MainScheduler.instance)
+            .debug("최신 Habit LIST!!")
             .distinctUntilChanged()
             .bind(to: tableView.rx.items(cellIdentifier: HabitCell.identifier, cellType: HabitCell.self)) {
-                [weak self] _, habitVO, cell in
+                [weak self] row, habitVO, cell in
                 guard let self = self else { return }
                 
-                // iconImage network에서 get
-                cell.fetchImage
+                cell.fetchImage$
                     .map { habitVO }
-                    .subscribe(onNext: self.viewModel.inputs.fetchHabitIconImage.onNext)
+                    .bind(to: self.viewModel.inputs.fetchHabitIconImage)
                     .disposed(by: cell.cellDisposeBag)
                 
-                // 특정 습관을 check 하면, habits 업데이트 됨
-                cell.checked
-                    
+                cell.isChecked
                     .delay(RxTimeInterval.milliseconds(700), scheduler: MainScheduler.instance)
                     .map { (habitVO, $0) }
-                    .subscribe(onNext: self.viewModel.inputs.checkHabit.onNext)
+                    .debug("VC")
+                    .bind(to: self.viewModel.inputs.checkHabit)
                     .disposed(by: cell.cellDisposeBag)
                 
-                // 화면 전환
-                cell.getHabitDetailView
+                cell.goToHabitDetailVC$
                     .map { habitVO }
                     .withUnretained(self)
                     .subscribe(onNext: { `self`, habitVO in
                         guard let habitDetailVC = self.storyboard?.instantiateViewController(identifier: HabitDetailVC.identifier) as? HabitDetailVC
-                        else {
-                            fatalError("instantiateViewController")
-                        }
-
+                        else { fatalError("instantiateViewController") }
                         // habitDetailVC 에 현재 HabitDetailVO injected 된 뷰모델 넘기기
                         habitDetailVC.viewModel = HabitDetailVM(currentHabitVO: habitVO)
-
                         // 화면 전환
                         self.navigationController?.pushViewController(habitDetailVC, animated: true)
                     })
@@ -207,7 +205,6 @@ class HabitListVC: UIViewController {
             }
             .disposed(by: self.disposeBag)
         
-        // challenge 그리기
         viewModel.outputs.currentChallenge
             .withUnretained(self)
             .subscribe(onNext: { `self`, challengeVO in

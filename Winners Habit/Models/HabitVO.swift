@@ -128,6 +128,32 @@ extension HabitVO: Equatable {
     }
 }
 
+//extension HabitVO {
+//    func getHabitWithImage() -> Observable<HabitVO> {
+//        
+//        return Observable.create { observer in
+//            
+//            guard let url = URL(string: icon) else {
+//                observer.onError(NSError(domain: "no icon image url", code: 1, userInfo: nil))
+//                return Disposables.create()
+//            }
+//            
+//            AF.request(url).responseData { res in
+//                if let imgData = res.data,
+//                   let img = UIImage(data: imgData) {
+//                    iconImage = img
+//                    observer.onNext(self)
+//                }
+//                else {
+//                    observer.onError(NSError(domain: "network error", code: 2))
+//                }
+//                observer.onCompleted()
+//            }
+//            return Disposables.create()
+//        }
+//    }
+//}
+
 extension HabitVO {
     func getHabitWithImage() -> Observable<HabitVO> {
         
@@ -148,7 +174,7 @@ extension HabitVO {
                 else {
                     observer.onError(NSError(domain: "network error", code: 2))
                 }
-                observer.onCompleted()
+                
             }
             return Disposables.create()
         }
