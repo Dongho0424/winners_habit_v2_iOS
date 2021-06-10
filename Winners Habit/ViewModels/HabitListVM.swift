@@ -147,7 +147,7 @@ class HabitListVM: HabitListVMType, HabitListVMInputs, HabitListVMOutputs {
         
         // MARK: - TODO: 하드 코딩된거 고치기
         fetchHabitIconImage$
-            .flatMap { $0.getHabitWithImage($0) } // for habit icon image caching
+            .flatMap { $0.getHabitWithImage() } // for habit icon image caching
             .buffer(timeSpan: RxTimeInterval.never, count: 3, scheduler: MainScheduler.instance)
             .bind(to: currentHabitVOList$)
             .disposed(by: disposeBag)

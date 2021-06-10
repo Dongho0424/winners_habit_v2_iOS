@@ -129,11 +129,11 @@ extension HabitVO: Equatable {
 }
 
 extension HabitVO {
-    func getHabitWithImage(_ habitVO: HabitVO) -> Observable<HabitVO> {
+    func getHabitWithImage() -> Observable<HabitVO> {
         
         return Observable.create { observer in
             
-            guard let url = URL(string: habitVO.icon) else {
+            guard let url = URL(string: icon) else {
                 observer.onError(NSError(domain: "no icon image url", code: 1, userInfo: nil))
                 return Disposables.create()
             }
@@ -141,9 +141,9 @@ extension HabitVO {
             AF.request(url).responseData { res in
                 if let imgData = res.data,
                    let img = UIImage(data: imgData) {
-                    var temp = habitVO
-                    temp.iconImage = img
-                    observer.onNext(temp)
+                    var nextHabitVO = self
+                    nextHabitVO.iconImage = img
+                    observer.onNext(nextHabitVO)
                 }
                 else {
                     observer.onError(NSError(domain: "network error", code: 2))

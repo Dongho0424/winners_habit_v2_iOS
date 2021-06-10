@@ -19,7 +19,7 @@ class HabitCell: UITableViewCell {
 
     private let fetchImage$: PublishSubject<Void>
     private let showHabitDetailView$: PublishSubject<Void>
-    let isChecked$ : BehaviorSubject<Bool>
+    private let isChecked$ : BehaviorSubject<Bool>
     
     // MARK: - Input
     
